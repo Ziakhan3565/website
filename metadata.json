@@ -1,0 +1,6 @@
+{
+  "name": "Course Crash",
+  "description": "Course Crash (कोर्स क्रैश): cryptocurrency trading crash course, live classes, real-time Binance data, spot & futures signals platform.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --chatgpt-green: #10a37f;
+    --chatgpt-green-hover: #19c37d;
+    --terminal-dark: #0d0d0d;
+    --terminal-surface: #171717;
+    --terminal-elevated: #212121;
+    --terminal-border: #2a2a2a;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    min-height: 100%;
+    overflow-x: hidden;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: #0d0d0d;
+    color: #ececec;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: auto;
+    background-image: 
+      radial-gradient(ellipse 90% 60% at 50% -25%, rgba(16, 163, 127, 0.09), transparent 70%),
+      radial-gradient(ellipse 70% 40% at 85% 15%, rgba(6, 182, 212, 0.05), transparent 60%),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+      linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+  }
+
+  /* Sleek ChatGPT / Pro terminal dark scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0d0d0d;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #2a2a2a;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #10a37f;
+  }
+
+  /* Tactile click feedback for every button and interactive action across the application */
+  button, [role="button"], input[type="button"], input[type="submit"] {
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), filter 0.1s ease, opacity 0.1s ease;
+  }
+
+  button:active:not(:disabled), [role="button"]:active:not(:disabled), input[type="submit"]:active:not(:disabled) {
+    transform: scale(0.96) translateY(1px);
+    filter: brightness(0.92);
+  }
+
+  button:disabled, [role="button"]:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none !important;
+  }
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ChatGPT terminal custom styles */
+.terminal-glow-emerald {
+  box-shadow: 0 0 25px -4px rgba(16, 163, 127, 0.25);
+}
+.terminal-glow-cyan {
+  box-shadow: 0 0 25px -4px rgba(6, 182, 212, 0.22);
+}
+.terminal-border {
+  border: 1px solid #2a2a2a;
+}
+.terminal-card {
+  background-color: #171717;
+  border: 1px solid #2a2a2a;
+}
+.terminal-card:hover {
+  border-color: rgba(16, 163, 127, 0.45);
+}
+.terminal-input {
+  background-color: #212121;
+  border: 1px solid #2a2a2a;
+  color: #ececec;
+}
+.terminal-input:focus {
+  outline: none;
+  border-color: #10a37f;
+  box-shadow: 0 0 0 2px rgba(16, 163, 127, 0.2);
+}

@@ -1,0 +1,274 @@
+{
+  "users": [
+    {
+      "id": "user_admin_zia",
+      "email": "ziakhan5348@gmail.com",
+      "name": "Zia Khan",
+      "role": "admin",
+      "tier": "premium",
+      "hasBeginnerAccess": true,
+      "hasAdvancedAccess": true,
+      "createdAt": "2026-01-10T10:00:00Z",
+      "completedLessons": [],
+      "savedSignals": [],
+      "attendedClasses": [],
+      "avatarUrl": "/src/assets/images/instructor_lead_avatar_1792164740686.jpg",
+      "passwordHash": "b649b891e64ff19fd409c20a2a237f0108a7c67ed4fac44c76b12a90c14f766590651003bf5af954091dfeeedcaea356632017c85149f9a67bfaf3ab708ef948",
+      "salt": "23a003a571a789b1206aceb2f3aec549"
+    },
+    {
+      "id": "user_admin",
+      "email": "admin@gmail.com",
+      "name": "Zia Khan",
+      "role": "admin",
+      "tier": "premium",
+      "hasBeginnerAccess": true,
+      "hasAdvancedAccess": true,
+      "createdAt": "2026-01-10T10:00:00Z",
+      "completedLessons": [],
+      "savedSignals": [],
+      "attendedClasses": [],
+      "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      "passwordHash": "85e394030e58c3ac146e57ef6d07072313efd8a89db8f51168ee58fb437fa96a284fb17cd361935a50a9f866fb1cce4fb6ad051430ecadb700579b12205c4467",
+      "salt": "03296b3fb119b67e8529ada40721526f"
+    },
+    {
+      "id": "user_student_alex",
+      "email": "student@coursecrash.io",
+      "name": "Alex Chen",
+      "role": "student",
+      "tier": "free",
+      "hasBeginnerAccess": false,
+      "hasAdvancedAccess": false,
+      "createdAt": "2026-02-15T14:30:00Z",
+      "completedLessons": [],
+      "savedSignals": [],
+      "attendedClasses": [],
+      "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
+      "passwordHash": "0106bd99de9229946819961cc4c564216ac07369c3caf8c1d71f05065e6dda1664f7bff8deacd70665b071ad2e1886eb80b17e7ea4e0605a8fb550a856415e9d",
+      "salt": "3e2b0162ce1b792ad0cfb71a04b92016",
+      "enrollments": [
+        {
+          "id": "enr_1792769652037_4109",
+          "courseType": "beginner",
+          "enrolledAt": "2026-10-23T15:34:12.037Z",
+          "amount": 2,
+          "currency": "USD",
+          "transactionReference": "SANDBOX_TX_1792769652037_4242",
+          "orderId": "tx_1792769651994_ef125a",
+          "paymentMethod": "card",
+          "status": "revoked"
+        }
+      ]
+    },
+    {
+      "id": "user_1792500887412_125835",
+      "email": "verify123@gmail.com",
+      "name": "Verify User",
+      "role": "student",
+      "tier": "free",
+      "hasBeginnerAccess": false,
+      "hasAdvancedAccess": false,
+      "createdAt": "2026-10-20T12:54:47.413Z",
+      "completedLessons": [],
+      "savedSignals": [],
+      "attendedClasses": [],
+      "passwordHash": "9fea452f90b57cde3d7c2df73e907cbd0b1797679aa7f4a77e1cade7417921b3f54c060650934d4e7d8c7ecd7aade56bb07ef2856605e7b7beaab5f6cec71368",
+      "salt": "58445865c1c76f93afa43a8133612db5"
+    }
+  ],
+  "lessons": [],
+  "liveClasses": [
+    {
+      "id": "class_live_1",
+      "title": "NY Session Live Execution & Order Book Depth Analysis",
+      "description": "Live market analysis and trade execution as New York equities open. Real-time CVD tracking and liquidity sweeps.",
+      "instructorName": "Zia Khan",
+      "instructorRole": "Head of Quantitative Strategy",
+      "instructorAvatar": "/src/assets/images/instructor_lead_avatar_1792164740686.jpg",
+      "scheduledAt": "2026-10-20T13:22:14.903Z",
+      "durationMinutes": 60,
+      "status": "live",
+      "platform": "YouTube Live",
+      "streamUrl": "https://www.youtube.com/embed/live_stream?channel=UC4R8DWoMoI7CAwX8_BQQ50A",
+      "meetingLink": "https://meet.google.com/zia-live-desk",
+      "notesDoc": "Focus: BTC 4H PDL sweep and $64,200 absorption cluster.",
+      "attendees": [
+        "user_admin_zia",
+        "user_student_alex"
+      ],
+      "createdAt": "2026-10-18T10:00:00Z"
+    }
+  ],
+  "chatMessages": [
+    {
+      "id": "msg_1",
+      "classId": "class_live_1",
+      "userId": "user_admin_zia",
+      "userName": "Zia Khan",
+      "userRole": "admin",
+      "text": "Welcome to today’s live desk. We are monitoring BTC approaching the $65,200 liquidity cluster.",
+      "timestamp": "14:32:05",
+      "isQuestion": false,
+      "upvotes": 14
+    }
+  ],
+  "spotSignals": [],
+  "futuresSignals": [],
+  "analysisReports": [],
+  "materials": [],
+  "announcements": [
+    {
+      "id": "ann_1",
+      "title": "Welcome to Course Crash Official Platform",
+      "content": "Our quantitative video lessons and real-time execution desks are now live. Admin Zia Khan publishes daily updates.",
+      "priority": "Normal",
+      "date": "2026-10-20",
+      "author": "Course Crash Desk"
+    }
+  ],
+  "pricingConfig": {
+    "beginnerPrice": 2,
+    "advancedPrice": 5,
+    "currency": "USD",
+    "usdtTrc20Address": "TQ3aXm9yKLZpTRC20OfficialCourseCrashDesk99",
+    "usdtBep20Address": "0x71C56897b209E780f2d91B0c0B345672A1B1C892",
+    "easypaisaTitle": "Course Crash Official Desk",
+    "easypaisaNumber": "0300-8492019",
+    "jazzcashTitle": "Course Crash Official Desk",
+    "jazzcashNumber": "0301-7291048",
+    "bankName": "Meezan Bank Ltd / Standard Chartered",
+    "bankAccountTitle": "Course Crash Digital Academy",
+    "bankIban": "PK36MEZN0001092847291048",
+    "upiId": "coursecrash@okaxis",
+    "whatsappSupport": "+92 300 8492019",
+    "paymentNotice": "Send the exact fee amount set by admin ($2 Beginner / $5 Advance). Enter your transaction reference or receipt to activate your account.",
+    "autoApproveInstant": true
+  },
+  "transactions": [
+    {
+      "userId": "user_student_alex",
+      "userName": "Alex Chen",
+      "userEmail": "student@coursecrash.io",
+      "courseType": "beginner",
+      "amount": 2,
+      "currency": "USD",
+      "paymentMethod": "card",
+      "gatewayType": "sandbox",
+      "stripeSessionId": "sandbox_sess_1792769651994_1f11faa7",
+      "transactionReference": "SANDBOX_TX_1792769652037_4242",
+      "status": "refunded",
+      "id": "tx_1792769651994_ef125a",
+      "createdAt": "2026-10-23T15:34:11.994Z",
+      "senderAccount": "•••• •••• •••• 4242",
+      "reviewedAt": "2026-10-23T15:34:12.037Z",
+      "paidAt": "2026-10-23T15:34:12.037Z",
+      "adminNotes": "Verified in Sandbox Gateway Test (Card ending in 4242)",
+      "refundedAt": "2026-10-24T14:45:03.090Z",
+      "refundReason": "Student requested refund within 24 hours",
+      "refundAmount": 2,
+      "refundId": "ref_1792853103090_82fe24"
+    },
+    {
+      "userId": "user_student_alex",
+      "userName": "Alex Chen",
+      "userEmail": "student@coursecrash.io",
+      "courseType": "beginner",
+      "amount": 2,
+      "currency": "USD",
+      "paymentMethod": "card",
+      "gatewayType": "sandbox",
+      "stripeSessionId": "sandbox_sess_1792769636952_15c4dd9a",
+      "transactionReference": "ORD_BEGINNER_1792769636952_d1bf",
+      "status": "failed",
+      "id": "tx_1792769636952_6a2c1f",
+      "createdAt": "2026-10-23T15:33:56.952Z",
+      "reviewedAt": "2026-10-23T15:34:02.198Z",
+      "failureReason": "Card was declined by issuing bank (Simulated test failure)"
+    }
+  ],
+  "channels": [
+    {
+      "id": "chan_youtube",
+      "title": "Official YouTube Trading Desk",
+      "platform": "youtube",
+      "url": "https://youtube.com/@coursecrash",
+      "handle": "@coursecrash",
+      "description": "Live market analysis, chart breakdowns, and trading recordings.",
+      "subscribers": "128K Subscribers",
+      "active": true
+    },
+    {
+      "id": "chan_telegram",
+      "title": "VIP Telegram Alerts Channel",
+      "platform": "telegram",
+      "url": "https://t.me/coursecrash_official",
+      "handle": "@coursecrash_official",
+      "description": "Instant alerts for live streams, market moves, and signals.",
+      "subscribers": "45K Members",
+      "active": true
+    },
+    {
+      "id": "chan_instagram",
+      "title": "Official Instagram Community",
+      "platform": "instagram",
+      "url": "https://instagram.com/coursecrash.official",
+      "handle": "@coursecrash.official",
+      "description": "Daily market recaps, trade psychology, and updates.",
+      "subscribers": "92K Followers",
+      "active": true
+    },
+    {
+      "id": "chan_whatsapp",
+      "title": "Student WhatsApp Broadcast Desk",
+      "platform": "whatsapp",
+      "url": "https://chat.whatsapp.com/coursecrash",
+      "handle": "+92 300 8492019",
+      "description": "Direct student community announcements & schedule reminders.",
+      "subscribers": "Direct Support",
+      "active": true
+    }
+  ],
+  "polls": [
+    {
+      "id": "poll_next_lecture",
+      "title": "Which asset should our next live market analysis & lecture cover?",
+      "description": "Cast your vote! The winning topic with the highest votes will be thoroughly analyzed in our upcoming live stream.",
+      "options": [
+        {
+          "id": "opt_btc",
+          "text": "Bitcoin (BTC) — Post-Halving Liquidity Sweep & $75K Target",
+          "votes": 52
+        },
+        {
+          "id": "opt_gold",
+          "text": "Gold (XAUUSD) — Macro Breakout vs. Bitcoin Correlation",
+          "votes": 47
+        },
+        {
+          "id": "opt_eth",
+          "text": "Ethereum (ETH) — L1 Institutional Accumulation & Gas Dynamics",
+          "votes": 23
+        },
+        {
+          "id": "opt_sol",
+          "text": "Solana (SOL) — Futures CVD Absorption & Breakout Levels",
+          "votes": 31
+        }
+      ],
+      "totalVotes": 153,
+      "userVotes": {},
+      "active": true,
+      "analysisDate": "Upcoming Live Session",
+      "createdAt": "2026-10-20T12:52:14.904Z"
+    }
+  ],
+  "sessions": [
+    {
+      "token": "079559e29b54803d08eb0a4e7046b4d009bd9877a11aef854bdd7bc48430360d",
+      "userId": "user_admin",
+      "role": "admin",
+      "expiresAt": 1795445091219
+    }
+  ]
+}
