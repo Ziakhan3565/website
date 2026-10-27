@@ -49,7 +49,7 @@ export const LearningMaterialsView: React.FC<LearningMaterialsViewProps> = ({
               Courses & Learning Materials
             </h1>
             <p className="mt-1 text-xs sm:text-sm text-neutral-400 max-w-2xl">
-              Download institutional trade logs, position size spreadsheets, CVD order flow cheatsheets, and comprehensive strategy playbooks compiled by the Course Crash trading team.
+              Download institutional trade logs, position size spreadsheets, CVD order flow cheatsheets, and comprehensive strategy playbooks compiled by the Learn and Grow trading team.
             </p>
           </div>
 

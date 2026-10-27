@@ -119,19 +119,25 @@ export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen
 
   return (
     <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg bg-[#11121c] border border-[#232538] rounded-3xl shadow-2xl overflow-hidden my-6">
+      <div className="relative w-full max-w-lg bg-[#0c0d16] border-2 border-amber-500/40 rounded-3xl shadow-2xl overflow-hidden my-6">
+        {/* Glow ambient background accents */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+
         {/* Header - ENGLISH ONLY */}
-        <div className="bg-gradient-to-r from-[#181a28] via-[#151624] to-[#121320] border-b border-[#232538] px-6 py-4 flex items-center justify-between">
+        <div className="bg-gradient-to-r from-[#141524] via-[#10111d] to-[#0c0d16] border-b border-amber-500/30 px-6 py-4 flex items-center justify-between relative z-10">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-400">
+            <div className="w-10 h-10 rounded-2xl bg-amber-500/15 border border-amber-500/40 flex items-center justify-center text-amber-400 shadow-sm">
               <Camera className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-bold text-white tracking-tight">
-                Set Profile Picture
+              <h2 className="text-base sm:text-lg font-bold text-white tracking-tight flex items-center gap-2">
+                <span>Set Profile Picture</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                  LEARN & GROW
+                </span>
               </h2>
               <p className="text-xs text-neutral-400">
-                Choose a photo from your device gallery
+                Choose a custom photo from your device gallery
               </p>
             </div>
           </div>
@@ -147,12 +153,12 @@ export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen
         </div>
 
         {/* Content Body */}
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 relative z-10">
           {/* Avatar Live Preview */}
           <div className="flex flex-col items-center justify-center text-center space-y-3">
             <div className="relative group cursor-pointer" onClick={triggerGalleryPicker} title="Click to choose from gallery">
-              <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full p-1 bg-gradient-to-tr from-[#7c3aed] via-[#4f46e5] to-[#10a37f] shadow-2xl shadow-purple-500/25">
-                <div className="w-full h-full rounded-full bg-[#161726] overflow-hidden flex items-center justify-center">
+              <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full p-1 bg-gradient-to-tr from-[#ffe58f] via-[#ffd700] to-[#f59e0b] shadow-2xl shadow-amber-500/30">
+                <div className="w-full h-full rounded-full bg-[#12131f] overflow-hidden flex items-center justify-center border-2 border-black/40">
                   {previewUrl ? (
                     <img
                       src={previewUrl}
@@ -161,7 +167,7 @@ export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen
                       referrerPolicy="no-referrer"
                     />
                   ) : (
-                    <span className="text-4xl font-extrabold text-purple-300">
+                    <span className="text-4xl font-extrabold text-amber-300 font-mono">
                       {(user.name || user.email || 'U').charAt(0).toUpperCase()}
                     </span>
                   )}
@@ -170,14 +176,14 @@ export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen
 
               {/* Hover quick change overlay */}
               <div className="absolute inset-0 rounded-full bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white transition-opacity">
-                <Camera className="w-6 h-6 mb-1 text-purple-300" />
-                <span className="text-[10px] font-bold">Pick Photo</span>
+                <Camera className="w-6 h-6 mb-1 text-amber-300" />
+                <span className="text-[10px] font-bold text-amber-300">Pick Photo</span>
               </div>
             </div>
 
             <div>
               <p className="text-sm font-bold text-white">{user.name || user.email}</p>
-              <p className="text-[11px] text-neutral-400 font-mono">{user.email}</p>
+              <p className="text-[11px] text-amber-400/80 font-mono">{user.email}</p>
             </div>
           </div>
 
@@ -195,24 +201,24 @@ export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen
             <button
               type="button"
               onClick={triggerGalleryPicker}
-              className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-[#7c3aed] via-[#6366f1] to-[#4f46e5] hover:opacity-95 text-white font-bold text-sm flex items-center justify-center gap-2.5 shadow-lg shadow-purple-600/30 transition-all hover:scale-[1.01] cursor-pointer"
+              className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 hover:opacity-95 text-black font-black text-sm flex items-center justify-center gap-2.5 shadow-lg shadow-amber-500/25 transition-all hover:scale-[1.01] cursor-pointer"
             >
-              <Upload className="w-5 h-5" />
+              <Upload className="w-5 h-5 text-black" />
               <span>Choose Photo from Gallery</span>
             </button>
             <p className="text-[11px] text-center text-neutral-400">
-              Select any photo or screenshot from your phone or computer gallery
+              Select any portrait, profile photo, or image from your device storage
             </p>
           </div>
 
           {/* Preset Avatars Library */}
-          <div className="space-y-2 pt-2 border-t border-[#232538]">
+          <div className="space-y-2 pt-2 border-t border-amber-500/20">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-neutral-300 flex items-center gap-1.5">
+              <span className="text-xs font-bold text-neutral-200 flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                <span>Or Choose Trader Avatar:</span>
+                <span>Or Choose Official Trader Avatar:</span>
               </span>
-              <span className="text-[10px] text-neutral-500 font-mono">1-Click Select</span>
+              <span className="text-[10px] text-amber-400 font-mono">1-Click Select</span>
             </div>
 
             <div className="grid grid-cols-6 gap-2">
@@ -225,8 +231,8 @@ export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen
                     onClick={() => handleSelectPreset(preset.url)}
                     className={`relative rounded-xl overflow-hidden aspect-square border-2 transition-all cursor-pointer ${
                       isSelected
-                        ? 'border-purple-400 scale-105 shadow-md shadow-purple-500/40 ring-2 ring-purple-500/30'
-                        : 'border-[#2a2c42] hover:border-purple-400/60 opacity-80 hover:opacity-100'
+                        ? 'border-amber-400 scale-105 shadow-md shadow-amber-500/40 ring-2 ring-amber-400/50'
+                        : 'border-[#222438] hover:border-amber-400/60 opacity-80 hover:opacity-100'
                     }`}
                     title={preset.name}
                   >
@@ -236,8 +242,8 @@ export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen
                       className="w-full h-full object-cover"
                     />
                     {isSelected && (
-                      <div className="absolute inset-0 bg-purple-600/35 flex items-center justify-center">
-                        <CheckCircle2 className="w-4 h-4 text-white" />
+                      <div className="absolute inset-0 bg-amber-500/35 flex items-center justify-center">
+                        <CheckCircle2 className="w-4 h-4 text-black drop-shadow" />
                       </div>
                     )}
                   </button>
@@ -263,7 +269,7 @@ export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen
         </div>
 
         {/* Modal Footer Actions - ENGLISH ONLY */}
-        <div className="bg-[#0e0f17] border-t border-[#232538] px-6 py-4 flex items-center justify-between gap-3">
+        <div className="bg-[#090a12] border-t border-amber-500/20 px-6 py-4 flex items-center justify-between gap-3 relative z-10">
           {user.avatarUrl ? (
             <button
               type="button"
@@ -283,7 +289,7 @@ export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="px-4 py-2 rounded-xl bg-[#1a1b2a] hover:bg-[#24253a] text-neutral-300 text-xs font-semibold transition-colors cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-[#171828] hover:bg-[#202236] text-neutral-300 text-xs font-semibold transition-colors cursor-pointer border border-[#2b2d45]"
             >
               Cancel
             </button>
@@ -292,16 +298,16 @@ export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen
               type="button"
               onClick={handleSave}
               disabled={loading}
-              className="px-6 py-2 rounded-xl bg-gradient-to-r from-[#7c3aed] to-[#4f46e5] hover:opacity-95 text-white text-xs font-bold shadow-md shadow-purple-500/30 transition-all flex items-center gap-1.5 cursor-pointer"
+              className="px-6 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 hover:opacity-95 text-black text-xs font-black shadow-md shadow-amber-500/30 transition-all flex items-center gap-1.5 cursor-pointer"
             >
               {loading ? (
                 <>
-                  <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <div className="w-3.5 h-3.5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
                   <span>Saving...</span>
                 </>
               ) : (
                 <>
-                  <CheckCircle2 className="w-4 h-4" />
+                  <CheckCircle2 className="w-4 h-4 text-black" />
                   <span>Save Profile Picture</span>
                 </>
               )}

@@ -160,8 +160,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-      <div className="relative w-full max-w-md bg-[#111219] border border-[#232533] rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden my-6">
+    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+      <div className="relative w-full max-w-md bg-[#111219] border border-[#232533] rounded-3xl p-4 sm:p-8 shadow-2xl overflow-y-auto max-h-[92vh] my-auto">
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-[#1f202d]">
           <Logo size="sm" showText={true} />
@@ -186,7 +186,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             }}
             className={`py-2 px-3 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
               mode === 'login'
-                ? 'bg-gradient-to-r from-[#7c3aed] to-[#4f46e5] text-white shadow-md'
+                ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-black shadow-md shadow-amber-500/20'
                 : 'text-neutral-400 hover:text-white'
             }`}
           >
@@ -202,7 +202,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             }}
             className={`py-2 px-3 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
               mode === 'register'
-                ? 'bg-gradient-to-r from-[#7c3aed] to-[#4f46e5] text-white shadow-md'
+                ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-black shadow-md shadow-amber-500/20'
                 : 'text-neutral-400 hover:text-white'
             }`}
           >
@@ -380,7 +380,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-full bg-gradient-to-r from-[#7c3aed] to-[#4f46e5] hover:opacity-95 disabled:opacity-50 text-white text-xs sm:text-sm font-bold shadow-lg shadow-purple-500/25 transition-all flex items-center justify-center gap-2 mt-2 uppercase tracking-wider"
+            className="w-full py-3 rounded-full bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 hover:opacity-95 disabled:opacity-50 text-black text-xs sm:text-sm font-black shadow-lg shadow-amber-500/25 transition-all flex items-center justify-center gap-2 mt-2 uppercase tracking-wider cursor-pointer"
           >
             {loading ? (
               <span>Authenticating...</span>

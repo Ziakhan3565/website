@@ -291,3 +291,21 @@ export interface CommunityPoll {
   createdAt: string;
 }
 
+export type StoryTag = 'DAILY BIAS' | 'VIP GAIN' | 'LIVE NOW' | 'ORDER FLOW' | 'ANNOUNCEMENT' | 'ANALYSIS';
+
+export interface StoryItem {
+  id: string;
+  title: string;
+  tag: StoryTag;
+  imageUrl: string;
+  caption: string;
+  authorName: string;
+  authorRole: string;
+  authorAvatar?: string;
+  createdAt: string;
+  linkText?: string;
+  linkView?: string;
+  viewsCount?: number;
+}
+
+

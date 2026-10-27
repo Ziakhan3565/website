@@ -77,12 +77,12 @@ export const TopNavModals: React.FC<TopNavModalsProps> = ({ activeModal, onClose
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-      <div className="relative w-full max-w-lg bg-[#11121a] border border-[#232536] rounded-3xl p-6 sm:p-7 shadow-2xl overflow-hidden my-6">
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+      <div className="relative w-full max-w-lg max-h-[92vh] overflow-y-auto bg-gradient-to-b from-[#141525] via-[#0f101a] to-[#0a0b12] border border-amber-500/40 rounded-3xl p-4 sm:p-7 shadow-2xl my-auto">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-1.5 rounded-full text-neutral-400 hover:text-white hover:bg-[#1a1b26] transition-colors"
+          className="absolute top-5 right-5 p-1.5 rounded-full text-neutral-400 hover:text-white hover:bg-[#1a1b26] transition-colors cursor-pointer"
         >
           <X className="w-5 h-5" />
         </button>
@@ -91,7 +91,7 @@ export const TopNavModals: React.FC<TopNavModalsProps> = ({ activeModal, onClose
         {activeModal === 'channel' && (
           <div className="space-y-5">
             <div>
-              <span className="text-[10px] font-mono uppercase px-2.5 py-1 rounded-full bg-purple-500/15 text-purple-300 border border-purple-500/30 font-bold">
+              <span className="text-[10px] font-mono uppercase px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/40 font-bold">
                 Official Channels
               </span>
               <h3 className="text-xl font-bold text-white tracking-tight mt-2">
@@ -258,7 +258,7 @@ export const TopNavModals: React.FC<TopNavModalsProps> = ({ activeModal, onClose
 
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:opacity-95 text-white text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2"
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 hover:opacity-95 text-black text-xs font-black transition-all shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Send className="w-4 h-4" />
                   <span>Submit Support Request</span>
@@ -272,29 +272,36 @@ export const TopNavModals: React.FC<TopNavModalsProps> = ({ activeModal, onClose
         {activeModal === 'about' && (
           <div className="space-y-4">
             <div>
-              <span className="text-[10px] font-mono uppercase px-2.5 py-1 rounded-full bg-purple-500/15 text-purple-300 border border-purple-500/30 font-bold">
+              <span className="text-[10px] font-mono uppercase px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 font-bold">
                 Platform Philosophy
               </span>
-              <h3 className="text-xl font-bold text-white tracking-tight mt-2">
-                About Course Crash
+              <h3 className="text-xl font-bold text-white tracking-tight mt-2 flex items-center gap-2">
+                <span>About Learn and Grow</span>
               </h3>
             </div>
 
-            <div className="space-y-3 text-xs text-neutral-300 leading-relaxed bg-[#151624] p-4 rounded-2xl border border-[#24263a]">
+            <div className="space-y-3 text-xs text-neutral-300 leading-relaxed bg-[#151624] p-4 rounded-2xl border border-amber-500/25">
+              <div className="flex items-center gap-2.5 pb-2 border-b border-[#23253a]">
+                <img src="/logo.png" alt="Logo" className="w-8 h-8 rounded-lg object-cover border border-amber-400/40" />
+                <div>
+                  <h4 className="text-sm font-bold text-white font-serif" style={{ fontFamily: "'Cinzel', serif" }}>Learn and Grow</h4>
+                  <span className="text-[10px] font-mono text-amber-300">Trading • Education • Success</span>
+                </div>
+              </div>
               <p>
-                <strong className="text-white">Course Crash</strong> is a dedicated quantitative education portal engineered to demystify financial markets and cryptocurrency trading.
+                <strong className="text-white">Learn and Grow</strong> is a dedicated quantitative education portal engineered to demystify financial markets and cryptocurrency trading under the direction of Lead Instructor Zia Khan.
               </p>
               <p>
                 Our curriculum bridges the gap between retail speculation and institutional mechanics. From spot order execution and risk-to-reward discipline to advanced order flow (CVD) and perpetual futures liquidation clustering, we equip students with repeatable, probabilistic frameworks.
               </p>
               <div className="grid grid-cols-2 gap-2 pt-2 text-[11px] font-mono">
-                <div className="p-2.5 rounded-xl bg-[#1b1c2e] border border-[#2b2d45]">
-                  <span className="text-purple-400 font-bold block">10 Foundation Modules</span>
-                  <span className="text-neutral-400">Beginner Track</span>
+                <div className="p-2.5 rounded-xl bg-[#1b1c2e] border border-amber-500/20">
+                  <span className="text-emerald-400 font-bold block">Video Modules</span>
+                  <span className="text-neutral-400">Beginner Track ($2)</span>
                 </div>
-                <div className="p-2.5 rounded-xl bg-[#1b1c2e] border border-[#2b2d45]">
-                  <span className="text-purple-400 font-bold block">Live Desk & Signals</span>
-                  <span className="text-neutral-400">Advanced VIP Pass</span>
+                <div className="p-2.5 rounded-xl bg-[#1b1c2e] border border-amber-500/20">
+                  <span className="text-amber-300 font-bold block">Live Desk & Signals</span>
+                  <span className="text-neutral-400">Advanced VIP Pass ($5)</span>
                 </div>
               </div>
             </div>
@@ -302,7 +309,7 @@ export const TopNavModals: React.FC<TopNavModalsProps> = ({ activeModal, onClose
             <button
               type="button"
               onClick={onClose}
-              className="w-full py-2.5 rounded-xl bg-purple-600/30 hover:bg-purple-600/50 text-purple-200 text-xs font-bold border border-purple-500/40 transition-colors"
+              className="w-full py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 text-xs font-bold border border-amber-500/40 transition-colors"
             >
               Close
             </button>

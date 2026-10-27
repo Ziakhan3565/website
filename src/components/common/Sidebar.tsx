@@ -27,6 +27,8 @@ interface SidebarProps {
   onCloseMobile: () => void;
   hasLiveClassNow: boolean;
   activeSignalsCount: number;
+  hasStories?: boolean;
+  onOpenStory?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -36,6 +38,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onCloseMobile,
   hasLiveClassNow,
   activeSignalsCount,
+  hasStories = false,
+  onOpenStory,
 }) => {
   const { user, isAdmin, logout } = useAuth();
   const [isDPModalOpen, setIsDPModalOpen] = useState(false);
@@ -60,7 +64,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       label: 'Signals',
       icon: Zap,
       badge: `${activeSignalsCount} Active`,
-      badgeColor: 'bg-purple-500/15 text-purple-300 border border-purple-500/30'
+      badgeColor: 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
     },
   ];
 
@@ -89,10 +93,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
           <div className="h-16 flex items-center justify-between px-4 border-b border-[#1f2029] bg-[#0b0c10] shrink-0">
             <div
-              onClick={() => handleNavClick('home')}
+              onClick={() => {
+                if (hasStories && onOpenStory) {
+                  onOpenStory();
+                  onCloseMobile();
+                } else {
+                  handleNavClick(hasLiveClassNow ? 'live' : 'home');
+                }
+              }}
               className="flex items-center cursor-pointer"
+              title={hasStories ? 'Click to Watch Learn & Grow Stories' : 'Learn and Grow'}
             >
-              <Logo size="sm" showText={true} />
+              <Logo size="sm" showText={true} isLive={hasLiveClassNow} hasStories={hasStories} />
             </div>
           </div>
 
@@ -109,18 +121,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <button
                   key={item.id}
                   onClick={() => handleNavClick(item.id)}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
                     isActive
-                      ? 'bg-gradient-to-r from-[#6d28d9] to-[#4f46e5] text-white shadow-md shadow-purple-500/20'
-                      : 'text-neutral-400 hover:text-white hover:bg-[#161722]'
+                      ? 'bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 text-black shadow-lg shadow-amber-500/25 font-black'
+                      : 'text-neutral-400 hover:text-amber-300 hover:bg-[#161724]'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-neutral-400'}`} />
+                    <Icon className={`w-4 h-4 ${isActive ? 'text-black' : 'text-neutral-400'}`} />
                     <span className="whitespace-nowrap">{item.label}</span>
                   </div>
                   {item.badge && (
-                    <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${item.badgeColor || 'bg-[#1f2029] text-neutral-400'}`}>
+                    <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${isActive ? 'bg-black/25 text-black font-black' : item.badgeColor || 'bg-[#1f2029] text-neutral-400'}`}>
                       {item.badge}
                     </span>
                   )}
@@ -214,7 +226,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 className="flex items-center gap-2.5 cursor-pointer min-w-0 flex-1 mr-1"
               >
                 <div className="relative group shrink-0">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#7c3aed] to-[#4f46e5] flex items-center justify-center text-xs font-bold text-white shrink-0 overflow-hidden shadow-sm">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-500 flex items-center justify-center text-xs font-black text-black shrink-0 overflow-hidden shadow-sm">
                     {user.avatarUrl ? (
                       <img src={user.avatarUrl} alt={user.name || 'User'} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                     ) : (
@@ -227,7 +239,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       e.stopPropagation();
                       setIsDPModalOpen(true);
                     }}
-                    className="absolute -bottom-1 -right-1 p-0.5 rounded-full bg-purple-600 hover:bg-purple-500 text-white shadow border border-purple-400/40 opacity-80 group-hover:opacity-100 transition-opacity"
+                    className="absolute -bottom-1 -right-1 p-0.5 rounded-full bg-amber-500 hover:bg-amber-400 text-black shadow border border-amber-300 opacity-85 group-hover:opacity-100 transition-opacity"
                     title="Set Profile Picture from Gallery"
                   >
                     <Camera className="w-2.5 h-2.5" />

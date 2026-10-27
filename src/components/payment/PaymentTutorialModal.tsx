@@ -632,7 +632,7 @@ export const PaymentTutorialModal: React.FC<PaymentTutorialModalProps> = ({
                     </div>
                     <div className="p-2.5 rounded-xl bg-black/40 border border-white/10 flex justify-between items-center">
                       <span className="text-neutral-400">Account Title:</span>
-                      <strong className="text-white">Course Crash Official</strong>
+                      <strong className="text-amber-300">Learn and Grow Official</strong>
                     </div>
                   </div>
 
@@ -652,7 +652,7 @@ export const PaymentTutorialModal: React.FC<PaymentTutorialModalProps> = ({
 
                   <div className="p-3 rounded-2xl bg-[#181d33] border border-cyan-500/30 text-xs space-y-1.5">
                     <p className="text-[11px] text-neutral-200 leading-relaxed">
-                      Payment sent successfully to Course Crash. Transaction ID is:
+                      Payment sent successfully to Learn and Grow. Transaction ID is:
                     </p>
                     <div className="p-2 rounded-xl bg-black/50 border border-cyan-400/40 text-center">
                       <span className="text-sm font-mono font-bold text-cyan-300 tracking-wider">

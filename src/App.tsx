@@ -17,6 +17,15 @@ import { ProfileView } from './components/profile/ProfileView.tsx';
 import { AdminPanel } from './components/admin/AdminPanel.tsx';
 import { AuthModal } from './components/auth/AuthModal.tsx';
 import { CoursePaymentModal } from './components/payment/CoursePaymentModal.tsx';
+import { Footer } from './components/common/Footer.tsx';
+import { LegalModals, type LegalModalType } from './components/common/LegalModals.tsx';
+import { TopNavModals } from './components/navigation/TopNavModals.tsx';
+import { GlobalLiveBar } from './components/common/GlobalLiveBar.tsx';
+import { MobileBottomNav } from './components/navigation/MobileBottomNav.tsx';
+import { PwaInstallBanner } from './components/common/PwaInstallBanner.tsx';
+import { StoryViewerModal } from './components/stories/StoryViewerModal.tsx';
+import { CreateStoryModal } from './components/stories/CreateStoryModal.tsx';
+import { storiesService } from './services/storiesService.ts';
 import { api } from './services/api.ts';
 import type {
   Lesson,
@@ -27,7 +36,8 @@ import type {
   LearningMaterial,
   Announcement,
   SignalStatus,
-  CoursePricingConfig
+  CoursePricingConfig,
+  StoryItem
 } from './types/index.ts';
 
 function MainApp() {
@@ -38,6 +48,13 @@ function MainApp() {
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [paymentPlan, setPaymentPlan] = useState<'beginner' | 'advanced'>('beginner');
   const [paymentAlert, setPaymentAlert] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
+  const [legalModal, setLegalModal] = useState<LegalModalType>(null);
+  const [topNavModal, setTopNavModal] = useState<'channel' | 'service' | 'about' | 'feedback' | null>(null);
+
+  // Stories system state
+  const [stories, setStories] = useState<StoryItem[]>(() => storiesService.getStories());
+  const [activeStoryIdx, setActiveStoryIdx] = useState<number | null>(null);
+  const [createStoryModalOpen, setCreateStoryModalOpen] = useState(false);
 
   // Check URL callback parameters from hosted checkout
   useEffect(() => {
@@ -74,9 +91,9 @@ function MainApp() {
     }
   }, []);
 
-  // Strict access guard: If not logged in, prompt auth modal.
+  // Strict access guard & Auto-onboarding tutorial on login/signup:
   // When admin logs in, switch view directly to admin panel.
-  // If not admin, strictly prevent admin view access.
+  // When student signs up or logs in, open the onboarding tutorial walkthrough automatically on home.
   useEffect(() => {
     if (!user) {
       setAuthModalOpen(true);
@@ -115,16 +132,16 @@ function MainApp() {
     beginnerPrice: 2,
     advancedPrice: 5,
     currency: 'USD',
-    usdtTrc20Address: 'TQ3aXm9yKLZpTRC20OfficialCourseCrashDesk99',
-    usdtBep20Address: '0x71C...b48CourseCrashOfficialWallet',
-    easypaisaTitle: 'Course Crash Official Desk',
+    usdtTrc20Address: 'TQ3aXm9yKLZpTRC20LearnAndGrowDesk99',
+    usdtBep20Address: '0x71C...b48LearnAndGrowOfficialWallet',
+    easypaisaTitle: 'Learn and Grow Official Desk',
     easypaisaNumber: '0300-8492019',
-    jazzcashTitle: 'Course Crash Official Desk',
+    jazzcashTitle: 'Learn and Grow Official Desk',
     jazzcashNumber: '0301-7291048',
     bankName: 'Meezan Bank Ltd / Standard Chartered',
-    bankAccountTitle: 'Course Crash Digital Academy',
+    bankAccountTitle: 'Learn and Grow Trading Academy',
     bankIban: 'PK36MEZN0001092847291048',
-    upiId: 'coursecrash@okaxis',
+    upiId: 'learnandgrow@okaxis',
     whatsappSupport: '+923008492019',
     paymentNotice: 'Send the exact fee amount set by admin. Enter your transaction reference or receipt to activate your account.',
     autoApproveInstant: true,
@@ -154,6 +171,7 @@ function MainApp() {
       setFuturesSignals(futRes.signals);
       setMaterials(matRes.materials);
       setAnnouncements(annRes.announcements);
+      setStories(storiesService.getStories());
       if (priceRes && priceRes.pricing) {
         setPricing(priceRes.pricing);
       }
@@ -226,38 +244,69 @@ function MainApp() {
   };
 
   const handleDeleteLesson = async (id: string) => {
-    if (confirm('Delete this lesson permanently?')) {
+    setLessons(prev => prev.filter(l => l.id !== id));
+    try {
       await api.deleteLesson(id);
       fetchAppData();
+    } catch (e) {
+      console.error(e);
     }
   };
 
   const handleDeleteSpotSignal = async (id: string) => {
-    if (confirm('Delete this spot signal permanently?')) {
+    setSpotSignals(prev => prev.filter(s => s.id !== id));
+    try {
       await api.deleteSpotSignal(id);
       fetchAppData();
+    } catch (e) {
+      console.error(e);
     }
   };
 
   const handleDeleteFuturesSignal = async (id: string) => {
-    if (confirm('Delete this futures signal permanently?')) {
+    setFuturesSignals(prev => prev.filter(s => s.id !== id));
+    try {
       await api.deleteFuturesSignal(id);
       fetchAppData();
+    } catch (e) {
+      console.error(e);
     }
   };
 
   const handleDeleteMaterial = async (id: string) => {
-    if (confirm('Delete this learning material?')) {
+    setMaterials(prev => prev.filter(m => m.id !== id));
+    try {
       await api.deleteMaterial(id);
       fetchAppData();
+    } catch (e) {
+      console.error(e);
     }
   };
 
   const handleDeleteAnnouncement = async (id: string) => {
-    if (confirm('Delete this announcement?')) {
+    setAnnouncements(prev => prev.filter(a => a.id !== id));
+    try {
       await api.deleteAnnouncement(id);
       fetchAppData();
+    } catch (e) {
+      console.error(e);
     }
+  };
+
+  const handleSelectStory = (idx: number) => {
+    setActiveStoryIdx(idx);
+    const story = stories[idx];
+    if (story) storiesService.recordView(story.id);
+  };
+
+  const handleStoryCreated = (storyData: Omit<StoryItem, 'id' | 'createdAt' | 'viewsCount'>) => {
+    storiesService.addStory(storyData);
+    setStories(storiesService.getStories());
+  };
+
+  const handleDeleteStory = (id: string) => {
+    const updated = storiesService.deleteStory(id);
+    setStories(updated);
   };
 
   return (
@@ -270,14 +319,25 @@ function MainApp() {
         onCloseMobile={() => setMobileMenuOpen(false)}
         hasLiveClassNow={hasLiveClassNow}
         activeSignalsCount={activeSignalsCount}
+        hasStories={stories.length > 0}
+        onOpenStory={() => handleSelectStory(0)}
       />
 
       {/* Main Workspace Frame with Rich Ambient Background Mesh */}
-      <div className="flex-1 flex flex-col min-w-0 lg:pl-60 relative bg-gradient-to-b from-[#0b0c13] via-[#09090f] to-[#07070b]">
-        {/* Ambient background light orbs */}
-        <div className="absolute top-0 right-1/4 w-[600px] h-[500px] bg-gradient-to-br from-[#7c3aed]/12 via-[#4f46e5]/8 to-transparent rounded-full blur-[130px] pointer-events-none" />
-        <div className="absolute top-1/3 left-0 w-[500px] h-[450px] bg-gradient-to-tr from-[#06b6d4]/10 via-[#10a37f]/6 to-transparent rounded-full blur-[140px] pointer-events-none" />
-        <div className="absolute bottom-10 right-10 w-[550px] h-[500px] bg-gradient-to-tl from-[#a855f7]/8 via-[#3b82f6]/6 to-transparent rounded-full blur-[150px] pointer-events-none" />
+      <div className="flex-1 flex flex-col min-w-0 lg:pl-60 relative bg-gradient-to-b from-[#0d0e14] via-[#090a0f] to-[#06070a]">
+        {/* Ambient background gold & obsidian light orbs matching logo */}
+        <div className="absolute top-0 right-1/4 w-[600px] h-[500px] bg-gradient-to-br from-amber-500/10 via-yellow-600/6 to-transparent rounded-full blur-[140px] pointer-events-none" />
+        <div className="absolute top-1/3 left-0 w-[500px] h-[450px] bg-gradient-to-tr from-amber-600/8 via-yellow-500/5 to-transparent rounded-full blur-[150px] pointer-events-none" />
+        <div className="absolute bottom-10 right-10 w-[550px] h-[500px] bg-gradient-to-tl from-yellow-500/8 via-amber-700/5 to-transparent rounded-full blur-[160px] pointer-events-none" />
+
+        {/* PWA Install Banner & Offline Network Indicator */}
+        <PwaInstallBanner />
+
+        {/* Global Live Broadcast Bar (Appears on every page when instructor is live) */}
+        <GlobalLiveBar
+          activeLiveClass={liveClasses.find(c => c.status === 'live')}
+          onNavigateToLive={() => setCurrentView('live')}
+        />
 
         <Header
           currentView={currentView}
@@ -287,10 +347,13 @@ function MainApp() {
           onToggleMobileMenu={() => setMobileMenuOpen(!mobileMenuOpen)}
           tickers={tickers}
           isMarketStale={isMarketStale}
+          hasLiveClassNow={hasLiveClassNow}
+          hasStories={stories.length > 0}
+          onOpenStory={() => handleSelectStory(0)}
         />
 
-        {/* Viewport Content */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto relative z-10 space-y-4">
+        {/* Viewport Content with Mobile-First Responsive Spacing */}
+        <main className="flex-1 p-3 sm:p-6 lg:p-8 pb-24 lg:pb-12 max-w-7xl w-full mx-auto relative z-10 space-y-4 min-w-0 overflow-x-hidden">
           {paymentAlert && (
             <div className={`p-4 rounded-2xl border flex items-center justify-between text-xs font-mono shadow-xl animate-fade-in ${
               paymentAlert.type === 'success'
@@ -441,6 +504,22 @@ function MainApp() {
             )
           )}
         </main>
+
+        {/* Global Publishing Footer */}
+        <Footer
+          onNavigate={setCurrentView}
+          onOpenLegal={setLegalModal}
+          onOpenTopNavModal={setTopNavModal}
+          onOpenPayment={handleOpenPayment}
+        />
+
+        {/* Mobile-First Sticky Bottom Navigation Bar (Smartphones & Tablets < 1024px) */}
+        <MobileBottomNav
+          currentView={currentView}
+          onNavigate={setCurrentView}
+          hasLiveClassNow={hasLiveClassNow}
+          activeSignalsCount={activeSignalsCount}
+        />
       </div>
 
       {/* Global Auth Modal */}
@@ -455,6 +534,40 @@ function MainApp() {
         onClose={() => setPaymentModalOpen(false)}
         initialPlan={paymentPlan}
         onSuccess={fetchAppData}
+      />
+
+      {/* Publishing Legal & Compliance Modals (Terms, Privacy, Risk, Refund) */}
+      <LegalModals
+        activeModal={legalModal}
+        onClose={() => setLegalModal(null)}
+      />
+
+      {/* Platform Modals (Channel, Service Desk, About, Feedback) */}
+      <TopNavModals
+        activeModal={topNavModal}
+        onClose={() => setTopNavModal(null)}
+      />
+
+      {/* Story Viewer Fullscreen Modal (Instagram/WhatsApp style) */}
+      {activeStoryIdx !== null && (
+        <StoryViewerModal
+          isOpen={activeStoryIdx !== null}
+          initialIndex={activeStoryIdx}
+          stories={stories}
+          onClose={() => setActiveStoryIdx(null)}
+          onDeleteStory={handleDeleteStory}
+          onNavigateToSection={(view) => {
+            setActiveStoryIdx(null);
+            setCurrentView(view);
+          }}
+        />
+      )}
+
+      {/* Story Creator & Upload Modal */}
+      <CreateStoryModal
+        isOpen={createStoryModalOpen}
+        onClose={() => setCreateStoryModalOpen(false)}
+        onStoryCreated={handleStoryCreated}
       />
     </div>
   );

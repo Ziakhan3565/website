@@ -110,16 +110,20 @@ export const SignalsSectionView: React.FC<SignalsSectionViewProps> = ({
   };
 
   const handleDeleteSpot = async (id: string) => {
-    if (confirm('Delete this spot signal?')) {
+    try {
       await api.deleteSpotSignal(id);
       if (onRefreshSignals) onRefreshSignals();
+    } catch (err: any) {
+      console.error('Failed to delete spot signal:', err);
     }
   };
 
   const handleDeleteFutures = async (id: string) => {
-    if (confirm('Delete this futures signal?')) {
+    try {
       await api.deleteFuturesSignal(id);
       if (onRefreshSignals) onRefreshSignals();
+    } catch (err: any) {
+      console.error('Failed to delete futures signal:', err);
     }
   };
 
@@ -139,11 +143,12 @@ export const SignalsSectionView: React.FC<SignalsSectionViewProps> = ({
   return (
     <div className="space-y-6 max-w-6xl mx-auto pb-16">
       {/* Top Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-3xl bg-[#11121c] border border-[#23253a] shadow-xl">
-        <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/15 border border-purple-500/30 text-purple-300 text-xs font-mono font-bold mb-2">
-            <Activity className="w-3.5 h-3.5 text-purple-400" />
-            <span>INSTITUTIONAL EXECUTION DESK</span>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-[#18150d] via-[#12131f] to-[#090a12] border border-amber-500/40 shadow-2xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="relative z-10">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/15 border border-amber-500/40 text-amber-300 text-xs font-mono font-bold mb-2 shadow-sm">
+            <Activity className="w-3.5 h-3.5 text-amber-400" />
+            <span>LEARN AND GROW · INSTITUTIONAL SIGNALS DESK</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
             Market Signals Desk
@@ -154,41 +159,43 @@ export const SignalsSectionView: React.FC<SignalsSectionViewProps> = ({
         </div>
 
         {!canAccessSignals && (
-          <button
-            type="button"
-            onClick={() => onOpenPayment?.('advanced')}
-            className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-95 text-white text-xs font-bold shadow-lg shadow-purple-500/25 flex items-center gap-2 shrink-0 transition-all"
-          >
-            <Lock className="w-4 h-4" />
-            <span>Unlock VIP Signals (${advancedPrice})</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
+          <div className="relative z-10">
+            <button
+              type="button"
+              onClick={() => onOpenPayment?.('advanced')}
+              className="px-6 py-3 rounded-2xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 hover:opacity-95 text-black text-xs font-black shadow-lg shadow-amber-500/25 flex items-center gap-2 shrink-0 transition-all cursor-pointer"
+            >
+              <Lock className="w-4 h-4" />
+              <span>Unlock VIP Signals (${advancedPrice})</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
         )}
       </div>
 
       {/* TWO CLICKABLE SECTIONS: SPOT vs. FUTURES */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-1.5 rounded-2xl bg-[#0d0e17] border border-[#1f2133]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-1.5 rounded-2xl bg-[#0d0e17] border border-amber-500/30">
         <div className="flex items-center gap-2">
           {/* Section 1: Spot Button */}
           <button
             type="button"
             onClick={() => setActiveTab('spot')}
-            className={`flex-1 sm:flex-none px-6 py-3 rounded-xl text-xs sm:text-sm font-bold font-mono transition-all flex items-center justify-center gap-2.5 ${
+            className={`flex-1 sm:flex-none px-3 sm:px-6 py-2.5 sm:py-3 rounded-xl text-[11px] sm:text-sm font-bold font-mono transition-all flex items-center justify-center gap-1.5 sm:gap-2.5 cursor-pointer ${
               activeTab === 'spot'
-                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/20'
-                : 'text-neutral-400 hover:text-white hover:bg-[#161826]'
+                ? 'bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 text-black shadow-lg shadow-amber-500/25 font-black'
+                : 'text-neutral-400 hover:text-amber-300 hover:bg-[#161826]'
             }`}
           >
-            <Zap className="w-4 h-4 text-emerald-300" />
+            <Zap className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${activeTab === 'spot' ? 'text-black' : 'text-amber-400'}`} />
             <span>SPOT SIGNALS</span>
             <span
-              className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${
+              className={`text-[9px] sm:text-[10px] font-mono px-1.5 sm:px-2 py-0.5 rounded-full ${
                 activeTab === 'spot'
-                  ? 'bg-emerald-950/80 text-emerald-200 border border-emerald-400/40'
+                  ? 'bg-black/30 text-black font-black'
                   : 'bg-[#181a28] text-neutral-400'
               }`}
             >
-              {activeSpotCount} Active
+              {activeSpotCount}
             </span>
           </button>
 
@@ -196,22 +203,22 @@ export const SignalsSectionView: React.FC<SignalsSectionViewProps> = ({
           <button
             type="button"
             onClick={() => setActiveTab('futures')}
-            className={`flex-1 sm:flex-none px-6 py-3 rounded-xl text-xs sm:text-sm font-bold font-mono transition-all flex items-center justify-center gap-2.5 ${
+            className={`flex-1 sm:flex-none px-3 sm:px-6 py-2.5 sm:py-3 rounded-xl text-[11px] sm:text-sm font-bold font-mono transition-all flex items-center justify-center gap-1.5 sm:gap-2.5 cursor-pointer ${
               activeTab === 'futures'
-                ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-500/20'
-                : 'text-neutral-400 hover:text-white hover:bg-[#161826]'
+                ? 'bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 text-black shadow-lg shadow-amber-500/25 font-black'
+                : 'text-neutral-400 hover:text-amber-300 hover:bg-[#161826]'
             }`}
           >
-            <Activity className="w-4 h-4 text-purple-300" />
+            <Activity className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${activeTab === 'futures' ? 'text-black' : 'text-amber-400'}`} />
             <span>FUTURES SIGNALS</span>
             <span
-              className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${
+              className={`text-[9px] sm:text-[10px] font-mono px-1.5 sm:px-2 py-0.5 rounded-full ${
                 activeTab === 'futures'
-                  ? 'bg-purple-950/80 text-purple-200 border border-purple-400/40'
+                  ? 'bg-black/30 text-black font-black'
                   : 'bg-[#181a28] text-neutral-400'
               }`}
             >
-              {activeFuturesCount} Active
+              {activeFuturesCount}
             </span>
           </button>
         </div>

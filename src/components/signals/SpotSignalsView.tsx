@@ -77,7 +77,7 @@ export const SpotSignalsView: React.FC<SpotSignalsViewProps> = ({
               Spot Trading Signals & Position Setups
             </h1>
             <p className="mt-1 text-xs sm:text-sm text-neutral-400 leading-relaxed">
-              Official asset accumulation setups published directly by the Course Crash Trading Desk. Every signal includes verified entry zones, 3 structured take-profit targets, invalidation stop-loss, and multi-timeframe technical reasoning.
+              Official asset accumulation setups published directly by the Learn and Grow Trading Desk. Every signal includes verified entry zones, 3 structured take-profit targets, invalidation stop-loss, and multi-timeframe technical reasoning.
             </p>
           </div>
 

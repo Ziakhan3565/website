@@ -60,16 +60,16 @@ export const CoursePaymentModal: React.FC<CoursePaymentModalProps> = ({
     beginnerPrice: 10,
     advancedPrice: 24,
     currency: 'USD',
-    usdtTrc20Address: 'TQ3aXm9yKLZpTRC20OfficialCourseCrashDesk99',
-    usdtBep20Address: '0x71C...b48CourseCrashOfficialWallet',
-    easypaisaTitle: 'Course Crash Official Desk',
+    usdtTrc20Address: 'TQ3aXm9yKLZpTRC20LearnAndGrowDesk99',
+    usdtBep20Address: '0x71C...b48LearnAndGrowOfficialWallet',
+    easypaisaTitle: 'Learn and Grow Official Desk',
     easypaisaNumber: '0300-8492019',
-    jazzcashTitle: 'Course Crash Official Desk',
+    jazzcashTitle: 'Learn and Grow Official Desk',
     jazzcashNumber: '0301-7291048',
     bankName: 'Meezan Bank Ltd / Standard Chartered',
-    bankAccountTitle: 'Course Crash Digital Academy',
+    bankAccountTitle: 'Learn and Grow Trading Academy',
     bankIban: 'PK36MEZN0001092847291048',
-    upiId: 'coursecrash@okaxis',
+    upiId: 'learnandgrow@okaxis',
     whatsappSupport: '+923008492019',
     paymentNotice: 'Send the exact fee amount set by admin. Enter your transaction reference or receipt to activate your account.',
     autoApproveInstant: true,
@@ -342,16 +342,16 @@ export const CoursePaymentModal: React.FC<CoursePaymentModalProps> = ({
 
   return (
     <>
-      <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
-        <div className="relative w-full max-w-4xl bg-[#0f1017] border border-[#232536] rounded-3xl shadow-2xl overflow-hidden my-6">
+      <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-2.5 sm:p-5 overflow-y-auto">
+        <div className="relative w-full max-w-4xl max-h-[94vh] overflow-y-auto bg-[#0f1017] border border-amber-500/40 rounded-2xl sm:rounded-3xl shadow-2xl my-auto">
           {/* Top Breadcrumbs / Flow Indicator */}
           <div className="bg-[#141520] border-b border-[#232536] px-4 py-2.5 hidden sm:flex items-center justify-center gap-4 text-xs font-mono">
             <span className="text-neutral-500">Student Account</span>
             <span className="text-neutral-600">›</span>
             <span className="text-neutral-500">Course Selection</span>
             <span className="text-neutral-600">›</span>
-            <span className="text-purple-400 font-bold bg-purple-500/15 border border-purple-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-ping" />
+            <span className="text-amber-300 font-bold bg-amber-500/15 border border-amber-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
               Secure Payment Checkout
             </span>
             <span className="text-neutral-600">›</span>
@@ -364,7 +364,7 @@ export const CoursePaymentModal: React.FC<CoursePaymentModalProps> = ({
             <div className="lg:col-span-5 bg-gradient-to-br from-[#121320] via-[#0f1019] to-[#0a0a10] p-6 sm:p-7 border-b lg:border-b-0 lg:border-r border-[#232536] flex flex-col justify-between space-y-6">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase tracking-widest px-2.5 py-1 rounded-full bg-purple-500/15 text-purple-300 border border-purple-500/30 font-bold">
+                  <span className="text-[10px] font-mono uppercase tracking-widest px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/40 font-bold">
                     SYSTEMATIC ACADEMY
                   </span>
 
@@ -376,17 +376,18 @@ export const CoursePaymentModal: React.FC<CoursePaymentModalProps> = ({
                 </div>
 
                 <div>
-                  <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                    Course Crash Digital Academy
+                  <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffe58f] via-[#ffd700] to-[#f59e0b] font-serif">Learn and Grow</span>
+                    <span className="text-sm font-sans font-normal text-neutral-400">Trading Academy</span>
                   </h3>
-                  <p className="text-xs text-neutral-400 mt-1 leading-relaxed">
+                  <p className="text-xs text-neutral-300 mt-1 leading-relaxed">
                     Master professional crypto quantitative strategy, SMC order flow, and institutional risk management with Zia Khan.
                   </p>
                 </div>
 
                 {/* Plan Selector Pills */}
                 <div className="space-y-2 pt-2">
-                  <label className="text-[11px] font-mono uppercase tracking-wider text-neutral-400 block">
+                  <label className="text-[11px] font-mono uppercase tracking-wider text-amber-300 font-bold block">
                     Choose Course Track:
                   </label>
                   <div className="grid grid-cols-2 gap-2">
@@ -396,15 +397,15 @@ export const CoursePaymentModal: React.FC<CoursePaymentModalProps> = ({
                         setSelectedPlan('beginner');
                         setActiveSandboxSession(null);
                       }}
-                      className={`p-3 rounded-2xl border text-left transition-all ${
+                      className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
                         selectedPlan === 'beginner'
-                          ? 'bg-purple-950/40 border-purple-500 shadow-md shadow-purple-500/20 ring-1 ring-purple-500/50'
-                          : 'bg-[#181926] border-[#292b3d] hover:border-[#383b54]'
+                          ? 'bg-amber-500/20 border-amber-400 shadow-md shadow-amber-500/20 ring-1 ring-amber-400'
+                          : 'bg-[#181926] border-[#292b3d] hover:border-amber-400/50'
                       }`}
                     >
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-bold text-white">Beginner Course</span>
-                        <span className="text-xs font-mono font-bold text-purple-400">${pricing.beginnerPrice}</span>
+                        <span className="text-xs font-mono font-bold text-amber-400">${pricing.beginnerPrice}</span>
                       </div>
                       <span className="text-[10px] text-neutral-400 block mt-0.5">Foundations & Risk</span>
                       {hasBeginnerAccess && (
@@ -420,15 +421,15 @@ export const CoursePaymentModal: React.FC<CoursePaymentModalProps> = ({
                         setSelectedPlan('advanced');
                         setActiveSandboxSession(null);
                       }}
-                      className={`p-3 rounded-2xl border text-left transition-all ${
+                      className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
                         selectedPlan === 'advanced'
-                          ? 'bg-purple-950/40 border-purple-500 shadow-md shadow-purple-500/20 ring-1 ring-purple-500/50'
-                          : 'bg-[#181926] border-[#292b3d] hover:border-[#383b54]'
+                          ? 'bg-amber-500/20 border-amber-400 shadow-md shadow-amber-500/20 ring-1 ring-amber-400'
+                          : 'bg-[#181926] border-[#292b3d] hover:border-amber-400/50'
                       }`}
                     >
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-bold text-white">Advanced VIP</span>
-                        <span className="text-xs font-mono font-bold text-purple-400">${pricing.advancedPrice}</span>
+                        <span className="text-xs font-mono font-bold text-amber-400">${pricing.advancedPrice}</span>
                       </div>
                       <span className="text-[10px] text-neutral-400 block mt-0.5">Live Desk & Signals</span>
                       {hasAdvancedAccess && (
@@ -539,9 +540,9 @@ export const CoursePaymentModal: React.FC<CoursePaymentModalProps> = ({
                             setPaymentMode('card');
                             setActiveSandboxSession(null);
                           }}
-                          className={`px-3 py-1 rounded-full font-bold transition-all ${
+                          className={`px-3 py-1 rounded-full font-bold transition-all cursor-pointer ${
                             paymentMode === 'card'
-                              ? 'bg-[#7c3aed] text-white shadow-sm'
+                              ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-black shadow-sm'
                               : 'text-neutral-600 hover:text-neutral-900'
                           }`}
                         >
@@ -553,9 +554,9 @@ export const CoursePaymentModal: React.FC<CoursePaymentModalProps> = ({
                             setPaymentMode('crypto_local');
                             setActiveSandboxSession(null);
                           }}
-                          className={`px-3 py-1 rounded-full font-bold transition-all ${
+                          className={`px-3 py-1 rounded-full font-bold transition-all cursor-pointer ${
                             paymentMode === 'crypto_local'
-                              ? 'bg-[#7c3aed] text-white shadow-sm'
+                              ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-black shadow-sm'
                               : 'text-neutral-600 hover:text-neutral-900'
                           }`}
                         >
@@ -566,7 +567,7 @@ export const CoursePaymentModal: React.FC<CoursePaymentModalProps> = ({
                       <button
                         type="button"
                         onClick={() => openTutorialForCurrentMethod()}
-                        className="text-xs text-[#7c3aed] hover:underline font-bold flex items-center gap-1 cursor-pointer"
+                        className="text-xs text-amber-600 hover:text-amber-700 font-bold flex items-center gap-1 cursor-pointer"
                       >
                         <PlayCircle className="w-3.5 h-3.5" />
                         <span>Watch Tutorial</span>
@@ -574,7 +575,7 @@ export const CoursePaymentModal: React.FC<CoursePaymentModalProps> = ({
                     </div>
 
                     {/* Subscription Details Box */}
-                    <div className="p-4 rounded-2xl bg-[#f5f3ff] border border-[#e4dcff] flex items-center justify-between mb-5">
+                    <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between mb-5">
                       <div>
                         <span className="text-xs font-bold text-neutral-800 block">
                           {selectedPlan === 'beginner' ? 'Beginner Trading Crash Course' : 'Advanced Quant VIP Access & Signals'}
@@ -585,7 +586,7 @@ export const CoursePaymentModal: React.FC<CoursePaymentModalProps> = ({
                       </div>
 
                       <div className="text-right">
-                        <span className="text-2xl font-black text-[#7c3aed] font-mono">
+                        <span className="text-2xl font-black text-amber-600 font-mono">
                           ${currentPrice}
                         </span>
                         <span className="text-xs font-bold text-neutral-500 ml-0.5">USD</span>
@@ -622,7 +623,7 @@ export const CoursePaymentModal: React.FC<CoursePaymentModalProps> = ({
                           <div className="space-y-4">
                             <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-200 space-y-2 text-xs">
                               <div className="flex items-center gap-2 font-bold text-neutral-800 text-sm">
-                                <CreditCard className="w-4 h-4 text-[#7c3aed]" />
+                                <CreditCard className="w-4 h-4 text-amber-500" />
                                 <span>Global Card Checkout</span>
                               </div>
                               <p className="text-neutral-600 leading-relaxed">
@@ -640,7 +641,7 @@ export const CoursePaymentModal: React.FC<CoursePaymentModalProps> = ({
                               type="button"
                               onClick={handleInitiateCardCheckout}
                               disabled={loading}
-                              className="w-full py-3.5 px-5 rounded-2xl bg-[#7c3aed] hover:bg-[#6d28d9] disabled:opacity-50 text-white text-sm font-bold shadow-lg shadow-purple-500/25 transition-all flex items-center justify-center gap-2 uppercase tracking-wide cursor-pointer"
+                              className="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 hover:opacity-95 disabled:opacity-50 text-black text-sm font-black shadow-lg shadow-amber-500/25 transition-all flex items-center justify-center gap-2 uppercase tracking-wide cursor-pointer"
                             >
                               {loading ? (
                                 <span>Initializing Gateway...</span>
@@ -924,7 +925,7 @@ export const CoursePaymentModal: React.FC<CoursePaymentModalProps> = ({
                         <button
                           type="submit"
                           disabled={loading}
-                          className="w-full py-3.5 px-5 rounded-2xl bg-[#7c3aed] hover:bg-[#6d28d9] disabled:opacity-50 text-white text-xs font-bold shadow-lg shadow-purple-500/25 transition-all flex items-center justify-center gap-2 uppercase tracking-wide cursor-pointer"
+                          className="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 hover:opacity-95 disabled:opacity-50 text-black text-xs font-black shadow-lg shadow-amber-500/25 transition-all flex items-center justify-center gap-2 uppercase tracking-wide cursor-pointer"
                         >
                           {loading ? (
                             <span>Submitting Verification...</span>
@@ -941,7 +942,7 @@ export const CoursePaymentModal: React.FC<CoursePaymentModalProps> = ({
               {/* Bottom Footer */}
               <div className="pt-4 border-t border-neutral-200 flex items-center justify-between text-neutral-500 text-xs">
                 <div className="flex items-center gap-1.5 font-medium">
-                  <ShieldCheck className="w-4 h-4 text-[#7c3aed]" />
+                  <ShieldCheck className="w-4 h-4 text-amber-500" />
                   <span>256-bit Encrypted Backend Verification</span>
                 </div>
                 <div className="flex items-center gap-1 font-medium">

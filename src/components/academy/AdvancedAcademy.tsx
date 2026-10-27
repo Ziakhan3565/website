@@ -180,9 +180,11 @@ export const AdvancedAcademy: React.FC<AdvancedAcademyProps> = ({
   };
 
   const handleDelete = async (id: string, title: string) => {
-    if (confirm(`Delete advanced video "${title}" permanently?`)) {
+    try {
       await api.deleteLesson(id);
       if (onRefreshData) onRefreshData();
+    } catch (err: any) {
+      console.error('Failed to delete advance lesson:', err);
     }
   };
 
@@ -215,35 +217,37 @@ export const AdvancedAcademy: React.FC<AdvancedAcademyProps> = ({
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto pb-16">
-      {/* Header Banner */}
-      <div className="rounded-3xl bg-[#12111d] border border-[#26243d] p-6 lg:p-8 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/15 border border-purple-500/30 text-purple-300 text-xs font-mono font-bold mb-2">
-            <Zap className="w-3.5 h-3.5 text-purple-400" />
-            <span>ADVANCED QUANT VIP · VIDEO MASTERCLASS</span>
+      {/* Header Banner with Learn & Grow Brand Styling */}
+      <div className="rounded-3xl bg-gradient-to-br from-[#18150d] via-[#12131f] to-[#090a12] border border-amber-500/40 p-6 lg:p-8 shadow-2xl flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative z-10">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/15 border border-amber-500/40 text-amber-300 text-xs font-mono font-bold mb-2 shadow-sm">
+            <Zap className="w-3.5 h-3.5 text-amber-400" />
+            <span>LEARN AND GROW · ADVANCED QUANT VIP ACADEMY</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
             Advance Video Curriculum
           </h1>
-          <p className="text-xs sm:text-sm text-neutral-400 mt-1 max-w-2xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-neutral-300 mt-1 max-w-2xl leading-relaxed">
             Quantitative order flow analytics, Cumulative Volume Delta (CVD) absorption, perpetual futures leverage, and institutional liquidation maps.
           </p>
         </div>
 
         {/* Progress & Upload Button */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
-          <div className="p-3.5 rounded-2xl bg-[#191829] border border-[#2c2a44] min-w-[180px]">
+        <div className="relative z-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
+          <div className="p-3.5 rounded-2xl bg-[#141525]/90 border border-amber-500/30 min-w-[180px] shadow-lg">
             <div className="flex items-center justify-between text-xs mb-1.5">
               <span className="font-semibold text-neutral-300">Your Progress</span>
-              <span className="font-mono text-purple-400 font-bold">{progressPercent}%</span>
+              <span className="font-mono text-amber-400 font-bold">{progressPercent}%</span>
             </div>
-            <div className="w-full h-2 rounded-full bg-[#11101c] overflow-hidden">
+            <div className="w-full h-2 rounded-full bg-[#0d0e17] overflow-hidden border border-white/5">
               <div
-                className="h-full bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full transition-all duration-500"
+                className="h-full bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 rounded-full transition-all duration-500"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
-            <span className="text-[10px] font-mono text-neutral-500 block mt-1.5 text-right">
+            <span className="text-[10px] font-mono text-neutral-400 block mt-1.5 text-right">
               {completedCount} / {lessons.length} Completed
             </span>
           </div>
@@ -252,7 +256,7 @@ export const AdvancedAcademy: React.FC<AdvancedAcademyProps> = ({
             <button
               type="button"
               onClick={handleOpenAddModal}
-              className="px-5 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-95 text-white text-xs font-bold font-mono shadow-lg shadow-purple-500/20 flex items-center justify-center gap-2 transition-all"
+              className="px-5 py-3 rounded-2xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 hover:opacity-95 text-black text-xs font-black font-mono shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 transition-all cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>+ Upload Video</span>
@@ -263,9 +267,9 @@ export const AdvancedAcademy: React.FC<AdvancedAcademyProps> = ({
 
       {/* Enrollment Callout Banner if locked */}
       {!canAccessAdvanced && (
-        <div className="rounded-2xl bg-gradient-to-r from-purple-950/40 via-[#151325] to-indigo-950/30 border border-purple-500/40 p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl">
+        <div className="rounded-2xl bg-gradient-to-r from-amber-950/40 via-[#151325] to-yellow-950/30 border border-amber-500/40 p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl">
           <div>
-            <div className="flex items-center gap-2 text-xs font-mono uppercase text-purple-400 font-bold">
+            <div className="flex items-center gap-2 text-xs font-mono uppercase text-amber-400 font-bold">
               <Lock className="w-4 h-4" />
               <span>VIP Masterclass Pass Required</span>
             </div>
@@ -279,7 +283,7 @@ export const AdvancedAcademy: React.FC<AdvancedAcademyProps> = ({
           <button
             type="button"
             onClick={() => onOpenPayment?.('advanced')}
-            className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-95 text-white text-xs font-bold shadow-md shadow-purple-500/20 flex items-center gap-2 shrink-0 transition-all"
+            className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 hover:opacity-95 text-black text-xs font-black shadow-lg shadow-amber-500/25 flex items-center gap-2 shrink-0 transition-all cursor-pointer"
           >
             <Lock className="w-4 h-4" />
             <span>Unlock VIP • ${advancedPrice} USD</span>
@@ -291,12 +295,12 @@ export const AdvancedAcademy: React.FC<AdvancedAcademyProps> = ({
       {/* VIDEOS LIST (ONLY VIDEOS UPLOADED BY ADMIN) */}
       <div className="space-y-4">
         <div className="flex items-center justify-between px-1">
-          <h2 className="text-xs font-mono uppercase tracking-wider text-neutral-400 font-bold flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-purple-400" />
+          <h2 className="text-xs font-mono uppercase tracking-wider text-amber-300 font-bold flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-amber-400" />
             Uploaded Advance Videos ({lessons.length})
           </h2>
           {isAdmin && (
-            <span className="text-[11px] font-mono text-purple-400">
+            <span className="text-[11px] font-mono text-amber-400">
               Admin Mode: You have full authority to upload, edit & delete advance videos
             </span>
           )}
@@ -312,10 +316,10 @@ export const AdvancedAcademy: React.FC<AdvancedAcademyProps> = ({
                 key={lesson.id}
                 className={`group rounded-2xl bg-[#0f1019] border transition-all duration-200 flex flex-col justify-between overflow-hidden shadow-lg ${
                   isCompleted
-                    ? 'border-purple-500/40 shadow-purple-950/20'
+                    ? 'border-amber-500/50 shadow-amber-950/20'
                     : isLocked
                     ? 'border-[#202235] opacity-90'
-                    : 'border-[#23253a] hover:border-purple-500/50'
+                    : 'border-[#23253a] hover:border-amber-400'
                 }`}
               >
                 {/* Video Preview / Card Top */}
@@ -334,16 +338,16 @@ export const AdvancedAcademy: React.FC<AdvancedAcademyProps> = ({
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20 z-10" />
                     <div className="absolute inset-0 flex items-center justify-center z-20">
                       {isLocked ? (
-                        <div className="w-12 h-12 rounded-full bg-black/70 border border-purple-500/40 flex items-center justify-center text-purple-400">
+                        <div className="w-12 h-12 rounded-full bg-black/70 border border-amber-500/40 flex items-center justify-center text-amber-400">
                           <Lock className="w-5 h-5" />
                         </div>
                       ) : (
                         <button
                           type="button"
                           onClick={() => setActiveVideo(lesson)}
-                          className="w-12 h-12 rounded-full bg-purple-600/90 hover:bg-purple-500 text-white flex items-center justify-center shadow-lg shadow-purple-500/30 transition-all hover:scale-110"
+                          className="w-12 h-12 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-black flex items-center justify-center shadow-lg shadow-amber-500/30 transition-all hover:scale-110 cursor-pointer"
                         >
-                          <Play className="w-5 h-5 ml-0.5 fill-white" />
+                          <Play className="w-5 h-5 ml-0.5 fill-black" />
                         </button>
                       )}
                     </div>
@@ -358,7 +362,7 @@ export const AdvancedAcademy: React.FC<AdvancedAcademyProps> = ({
                     {/* Duration Badge */}
                     <div className="absolute bottom-3 right-3 z-20">
                       <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-black/80 text-neutral-300 border border-white/10 flex items-center gap-1">
-                        <Clock className="w-3 h-3 text-purple-400" />
+                        <Clock className="w-3 h-3 text-amber-400" />
                         {lesson.durationMinutes || 30}m
                       </span>
                     </div>
@@ -367,25 +371,25 @@ export const AdvancedAcademy: React.FC<AdvancedAcademyProps> = ({
                   {/* Card Content */}
                   <div className="p-5 space-y-2">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 font-bold">
                         {lesson.category || 'Quantitative Trading'}
                       </span>
 
                       <button
                         type="button"
                         onClick={() => toggleLessonProgress(lesson.id)}
-                        className="text-neutral-500 hover:text-purple-400 transition-colors p-0.5"
+                        className="text-neutral-500 hover:text-amber-400 transition-colors p-0.5 cursor-pointer"
                         title={isCompleted ? 'Completed' : 'Mark as completed'}
                       >
                         {isCompleted ? (
-                          <CheckCircle2 className="w-4 h-4 text-purple-400" />
+                          <CheckCircle2 className="w-4 h-4 text-amber-400" />
                         ) : (
                           <Circle className="w-4 h-4 text-neutral-600" />
                         )}
                       </button>
                     </div>
 
-                    <h3 className="text-sm font-bold text-white group-hover:text-purple-300 transition-colors line-clamp-2">
+                    <h3 className="text-sm font-bold text-white group-hover:text-amber-300 transition-colors line-clamp-2">
                       {lesson.title}
                     </h3>
 
@@ -401,7 +405,7 @@ export const AdvancedAcademy: React.FC<AdvancedAcademyProps> = ({
                     <button
                       type="button"
                       onClick={() => onOpenPayment?.('advanced')}
-                      className="w-full py-2 px-3 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 text-purple-300 border border-purple-500/30 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                      className="w-full py-2 px-3 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                     >
                       <Lock className="w-3.5 h-3.5" />
                       <span>Unlock VIP Pass (${advancedPrice})</span>
@@ -410,9 +414,9 @@ export const AdvancedAcademy: React.FC<AdvancedAcademyProps> = ({
                     <button
                       type="button"
                       onClick={() => setActiveVideo(lesson)}
-                      className="w-full py-2 px-3 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/30 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                      className="w-full py-2 px-3 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                     >
-                      <Play className="w-3.5 h-3.5 fill-purple-300" />
+                      <Play className="w-3.5 h-3.5 fill-amber-300" />
                       <span>Watch Masterclass</span>
                     </button>
                   )}
@@ -476,11 +480,11 @@ export const AdvancedAcademy: React.FC<AdvancedAcademyProps> = ({
             if (e.target === e.currentTarget) setActiveVideo(null);
           }}
         >
-          <div className="relative w-full max-w-2xl lg:max-w-3xl max-h-[90vh] bg-[#10111a] border border-[#23253b] rounded-2xl sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden my-auto">
+          <div className="relative w-full max-w-2xl lg:max-w-3xl max-h-[90vh] bg-[#10111a] border border-amber-500/40 rounded-2xl sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden my-auto">
             {/* Header */}
             <div className="px-4 py-3 sm:px-5 sm:py-3.5 border-b border-[#202235] flex items-center justify-between gap-3 bg-[#121422] shrink-0">
               <div className="min-w-0 pr-2">
-                <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-purple-500/15 text-purple-300 border border-purple-500/30 font-bold inline-block">
+                <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30 font-bold inline-block">
                   Advance VIP Masterclass
                 </span>
                 <h3 className="text-xs sm:text-sm font-bold text-white mt-1 truncate">
@@ -531,7 +535,7 @@ export const AdvancedAcademy: React.FC<AdvancedAcademyProps> = ({
             <div className="p-3.5 sm:p-4 space-y-2.5 bg-[#0d0e17] border-t border-[#1d1f2e] overflow-y-auto max-h-[26vh] shrink">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                 <span className="text-xs font-mono text-neutral-400 flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-purple-400" />
+                  <Clock className="w-3.5 h-3.5 text-amber-400" />
                   <span>Duration: {activeVideo.durationMinutes || 30} minutes</span>
                 </span>
 
@@ -539,9 +543,9 @@ export const AdvancedAcademy: React.FC<AdvancedAcademyProps> = ({
                   <button
                     type="button"
                     onClick={() => toggleLessonProgress(activeVideo.id)}
-                    className="px-3.5 py-1.5 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 text-xs font-bold border border-purple-500/40 flex items-center gap-1.5 transition-colors cursor-pointer"
+                    className="px-3.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-xs font-bold border border-amber-500/40 flex items-center gap-1.5 transition-colors cursor-pointer"
                   >
-                    <CheckCircle2 className="w-4 h-4" />
+                    <CheckCircle2 className="w-4 h-4 text-amber-400" />
                     <span>
                       {user?.completedLessons?.includes(activeVideo.id) ? 'Completed' : 'Mark Completed'}
                     </span>

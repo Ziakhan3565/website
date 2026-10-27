@@ -11,7 +11,8 @@ import {
   HelpCircle,
   MessageSquare,
   GraduationCap,
-  Camera
+  Camera,
+  Play
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.tsx';
 import type { MarketTicker } from '../../types/index.ts';
@@ -27,6 +28,9 @@ interface HeaderProps {
   onToggleMobileMenu: () => void;
   tickers: MarketTicker[];
   isMarketStale: boolean;
+  hasLiveClassNow?: boolean;
+  hasStories?: boolean;
+  onOpenStory?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -35,17 +39,29 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAuth,
   mobileMenuOpen,
   onToggleMobileMenu,
+  hasLiveClassNow = false,
+  hasStories = false,
+  onOpenStory,
 }) => {
   const { user, isAdmin, isPremium, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isDPModalOpen, setIsDPModalOpen] = useState(false);
   const [activeModal, setActiveModal] = useState<'channel' | 'service' | 'about' | 'feedback' | null>(null);
 
+  const handleLogoClick = () => {
+    // If stories exist and user clicks Learn & Grow Logo, show the story as requested!
+    if (hasStories && onOpenStory) {
+      onOpenStory();
+    } else {
+      onNavigate(hasLiveClassNow ? 'live' : 'home');
+    }
+  };
+
   return (
     <>
       <header className="sticky top-0 z-40 bg-[#0b0c10]/95 backdrop-blur-md border-b border-[#1f2029] px-4 lg:px-8 py-3">
         <div className="flex items-center justify-between gap-4 max-w-7xl mx-auto">
-          {/* Left: Brand Logo */}
+          {/* Left: Brand Logo with story ring and live badge */}
           <div className="flex items-center gap-3">
             <button
               onClick={onToggleMobileMenu}
@@ -54,26 +70,30 @@ export const Header: React.FC<HeaderProps> = ({
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
-            <div onClick={() => onNavigate('home')} className="cursor-pointer">
-              <Logo size="md" showText={true} />
+            <div
+              onClick={handleLogoClick}
+              className="cursor-pointer"
+              title={hasStories ? 'Click Learn & Grow Logo to Watch Stories' : 'Learn and Grow'}
+            >
+              <Logo size="md" showText={true} isLive={hasLiveClassNow} hasStories={hasStories} />
             </div>
           </div>
 
           {/* Center: Exactly 4 Tabs matching user's blueprint sketch: Channel | Service | About | Feedback */}
-          <nav className="hidden md:flex items-center bg-[#15161e] border border-[#232533] rounded-full p-1 shadow-inner">
+          <nav className="hidden md:flex items-center bg-[#11121c] border border-amber-500/20 rounded-full p-1 shadow-inner">
             <button
               type="button"
               onClick={() => setActiveModal('channel')}
-              className="px-4 py-1.5 rounded-full text-xs font-semibold text-neutral-300 hover:text-white hover:bg-[#1e202d] transition-all flex items-center gap-1.5"
+              className="px-4 py-1.5 rounded-full text-xs font-semibold text-neutral-300 hover:text-white hover:bg-[#1a1b28] transition-all flex items-center gap-1.5"
             >
-              <Share2 className="w-3.5 h-3.5 text-purple-400" />
+              <Share2 className="w-3.5 h-3.5 text-amber-400" />
               <span>Channel</span>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveModal('service')}
-              className="px-4 py-1.5 rounded-full text-xs font-semibold text-neutral-300 hover:text-white hover:bg-[#1e202d] transition-all flex items-center gap-1.5"
+              className="px-4 py-1.5 rounded-full text-xs font-semibold text-neutral-300 hover:text-white hover:bg-[#1a1b28] transition-all flex items-center gap-1.5"
             >
               <Headphones className="w-3.5 h-3.5 text-cyan-400" />
               <span>Service</span>
@@ -82,7 +102,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               type="button"
               onClick={() => setActiveModal('about')}
-              className="px-4 py-1.5 rounded-full text-xs font-semibold text-neutral-300 hover:text-white hover:bg-[#1e202d] transition-all flex items-center gap-1.5"
+              className="px-4 py-1.5 rounded-full text-xs font-semibold text-neutral-300 hover:text-white hover:bg-[#1a1b28] transition-all flex items-center gap-1.5"
             >
               <HelpCircle className="w-3.5 h-3.5 text-amber-400" />
               <span>About</span>
@@ -91,21 +111,20 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               type="button"
               onClick={() => setActiveModal('feedback')}
-              className="px-4 py-1.5 rounded-full text-xs font-semibold text-neutral-300 hover:text-white hover:bg-[#1e202d] transition-all flex items-center gap-1.5"
+              className="px-4 py-1.5 rounded-full text-xs font-semibold text-neutral-300 hover:text-white hover:bg-[#1a1b28] transition-all flex items-center gap-1.5"
             >
               <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Feedback</span>
             </button>
           </nav>
 
-          {/* Right Actions: Login / Register (Mobile App removed per user instruction) */}
-          <div className="flex items-center gap-2.5">
+          {/* Right Actions: Login / Register */}
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
             {!user ? (
               <>
                 <button
                   type="button"
                   onClick={() => onOpenAuth('login')}
-                  className="px-4 py-2 rounded-full border border-neutral-600 hover:border-white text-white hover:bg-white/5 text-xs font-bold transition-all uppercase tracking-wide"
+                  className="px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full border border-neutral-600 hover:border-amber-400 text-white hover:bg-white/5 text-[11px] sm:text-xs font-bold transition-all uppercase tracking-wide cursor-pointer"
                 >
                   Login
                 </button>
@@ -113,7 +132,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <button
                   type="button"
                   onClick={() => onOpenAuth('register')}
-                  className="px-4 py-2 rounded-full bg-gradient-to-r from-[#7c3aed] to-[#4f46e5] hover:opacity-95 text-white text-xs font-bold shadow-md shadow-purple-500/25 transition-all uppercase tracking-wide"
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 hover:opacity-95 text-black text-[11px] sm:text-xs font-black shadow-md shadow-amber-500/25 transition-all uppercase tracking-wide cursor-pointer"
                 >
                   Sign Up
                 </button>
@@ -122,9 +141,9 @@ export const Header: React.FC<HeaderProps> = ({
               <div className="relative">
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-[#15161e] border border-[#232533] hover:border-purple-500/50 transition-colors"
+                  className="flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-[#15161e] border border-amber-500/25 hover:border-amber-400/50 transition-colors"
                 >
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#7c3aed] to-[#4f46e5] flex items-center justify-center text-xs font-bold text-white shadow-sm overflow-hidden shrink-0">
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-600 flex items-center justify-center text-xs font-bold text-black shadow-sm overflow-hidden shrink-0">
                     {user.avatarUrl ? (
                       <img src={user.avatarUrl} alt={user.name || 'User'} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                     ) : (

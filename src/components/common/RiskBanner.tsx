@@ -21,11 +21,11 @@ export const RiskBanner: React.FC<{ compact?: boolean }> = ({ compact = false })
           <AlertTriangle className="w-4 h-4 text-amber-400" />
         </div>
         <div>
-          <h4 className="text-xs font-semibold text-neutral-200 uppercase tracking-wider font-mono">
-            Crash Course Risk Disclosure & Educational Notice
+          <h4 className="text-xs font-semibold text-amber-300 uppercase tracking-wider font-mono">
+            Learn and Grow Risk Disclosure & Educational Notice
           </h4>
-          <p className="text-xs text-neutral-400 mt-1 leading-relaxed">
-            All curriculum lessons, market data, and signals provided on <span className="text-[#10a37f] font-semibold">Course Crash</span> are published strictly for educational and training purposes. Cryptocurrency derivatives and perpetual contracts carry a high level of risk and may result in total capital loss. High leverage can work against you as well as for you. Never trade with capital you cannot afford to lose.
+          <p className="text-xs text-neutral-300 mt-1 leading-relaxed">
+            All curriculum lessons, market data, and signals provided on <span className="text-amber-400 font-semibold font-serif">Learn and Grow</span> are published strictly for educational and training purposes. Cryptocurrency derivatives and perpetual contracts carry a high level of risk and may result in total capital loss. High leverage can work against you as well as for you. Never trade with capital you cannot afford to lose.
           </p>
           <div className="mt-3 flex items-center gap-4 text-[11px] font-mono text-neutral-500">
             <span className="flex items-center gap-1 text-[#10a37f]">

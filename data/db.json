@@ -120,27 +120,27 @@
   "announcements": [
     {
       "id": "ann_1",
-      "title": "Welcome to Course Crash Official Platform",
+      "title": "Welcome to Learn and Grow Official Trading Platform",
       "content": "Our quantitative video lessons and real-time execution desks are now live. Admin Zia Khan publishes daily updates.",
       "priority": "Normal",
-      "date": "2026-10-20",
-      "author": "Course Crash Desk"
+      "date": "2026-10-25",
+      "author": "Learn and Grow Desk"
     }
   ],
   "pricingConfig": {
     "beginnerPrice": 2,
     "advancedPrice": 5,
     "currency": "USD",
-    "usdtTrc20Address": "TQ3aXm9yKLZpTRC20OfficialCourseCrashDesk99",
+    "usdtTrc20Address": "TQ3aXm9yKLZpTRC20LearnAndGrowDesk99",
     "usdtBep20Address": "0x71C56897b209E780f2d91B0c0B345672A1B1C892",
-    "easypaisaTitle": "Course Crash Official Desk",
+    "easypaisaTitle": "Learn and Grow Official Desk",
     "easypaisaNumber": "0300-8492019",
-    "jazzcashTitle": "Course Crash Official Desk",
+    "jazzcashTitle": "Learn and Grow Official Desk",
     "jazzcashNumber": "0301-7291048",
     "bankName": "Meezan Bank Ltd / Standard Chartered",
-    "bankAccountTitle": "Course Crash Digital Academy",
+    "bankAccountTitle": "Learn and Grow Trading Academy",
     "bankIban": "PK36MEZN0001092847291048",
-    "upiId": "coursecrash@okaxis",
+    "upiId": "learnandgrow@okaxis",
     "whatsappSupport": "+92 300 8492019",
     "paymentNotice": "Send the exact fee amount set by admin ($2 Beginner / $5 Advance). Enter your transaction reference or receipt to activate your account.",
     "autoApproveInstant": true

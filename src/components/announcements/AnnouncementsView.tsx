@@ -37,7 +37,7 @@ export const AnnouncementsView: React.FC<AnnouncementsViewProps> = ({
               Platform Announcements & Market Briefs
             </h1>
             <p className="mt-1 text-xs sm:text-sm text-neutral-400 max-w-2xl">
-              Stay synchronized with live class schedule adjustments, market volatility warnings, and regulatory notices directly from the Course Crash trading team.
+              Stay synchronized with live class schedule adjustments, market volatility warnings, and regulatory notices directly from the Learn and Grow trading team.
             </p>
           </div>
 

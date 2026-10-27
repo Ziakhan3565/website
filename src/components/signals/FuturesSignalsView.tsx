@@ -70,7 +70,7 @@ export const FuturesSignalsView: React.FC<FuturesSignalsViewProps> = ({
           <strong className="text-rose-300 font-mono uppercase block mb-0.5">
             Mandatory Futures & Leverage Risk Warning:
           </strong>
-          Cryptocurrency perpetual futures and leveraged contracts are speculative instruments involving substantial risk of immediate capital liquidation. Leverage amplifies both gains and losses. Course Crash mandates strictly using <span className="underline font-semibold">Isolated Margin</span> and never risking more than 1% to 2% of total equity per setup.
+          Cryptocurrency perpetual futures and leveraged contracts are speculative instruments involving substantial risk of immediate capital liquidation. Leverage amplifies both gains and losses. Learn and Grow mandates strictly using <span className="underline font-semibold">Isolated Margin</span> and never risking more than 1% to 2% of total equity per setup.
         </div>
       </div>
 
@@ -130,7 +130,7 @@ export const FuturesSignalsView: React.FC<FuturesSignalsViewProps> = ({
               <span>Free with Advanced VIP Pass</span>
             </div>
             <p className="text-xs text-neutral-300 mt-1">
-              Perpetual futures setups and leverage risk calculations are 100% free for students who have unlocked the Advanced Course Crash.
+              Perpetual futures setups and leverage risk calculations are 100% free for students who have unlocked the Advanced Learn and Grow VIP Track.
             </p>
           </div>
           <button

@@ -3,51 +3,99 @@ import React from 'react';
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
   showText?: boolean;
+  showTagline?: boolean;
+  className?: string;
+  isLive?: boolean;
+  hasStories?: boolean;
 }
 
 export const Logo: React.FC<LogoProps> = ({
   size = 'md',
   showText = true,
+  showTagline = true,
+  className = '',
+  isLive = false,
+  hasStories = false,
 }) => {
-  const iconDimensions = {
-    sm: { box: 32, svg: 22, text: 'text-base', sub: 'text-[9px]' },
-    md: { box: 40, svg: 28, text: 'text-lg', sub: 'text-[10px]' },
-    lg: { box: 48, svg: 34, text: 'text-xl', sub: 'text-xs' },
-    xl: { box: 58, svg: 42, text: 'text-2xl', sub: 'text-sm' },
+  const dimensions = {
+    sm: { img: 34, title: 'text-sm', sub: 'text-[8px]' },
+    md: { img: 42, title: 'text-base sm:text-lg', sub: 'text-[9px] sm:text-[10px]' },
+    lg: { img: 54, title: 'text-xl sm:text-2xl', sub: 'text-[10px] sm:text-[11px]' },
+    xl: { img: 72, title: 'text-2xl sm:text-3xl', sub: 'text-xs' },
   }[size];
 
   return (
-    <div className="flex items-center gap-3 select-none group cursor-pointer">
-      {/* Brand Icon Matching Web 3.0 Platform */}
+    <div
+      className={`flex items-center gap-2.5 sm:gap-3 select-none group cursor-pointer relative ${className}`}
+      title={hasStories ? 'Click Learn & Grow Logo to Watch Stories' : 'Learn and Grow'}
+    >
+      {/* Official Gold Monogram Emblem Container with Story Ring Support */}
       <div
-        className="relative flex items-center justify-center rounded-xl bg-gradient-to-br from-[#7c3aed] to-[#4f46e5] text-white shadow-md shadow-purple-500/25 group-hover:shadow-purple-500/40 transition-all duration-300"
-        style={{ width: iconDimensions.box, height: iconDimensions.box }}
+        className={`relative shrink-0 rounded-2xl p-0.5 transition-all duration-300 ${
+          isLive
+            ? 'bg-gradient-to-br from-rose-500 via-amber-400 to-red-600 shadow-xl shadow-rose-500/40 animate-pulse'
+            : hasStories
+            ? 'bg-gradient-to-tr from-[#ffd700] via-[#f59e0b] to-[#d97706] shadow-lg shadow-amber-500/35 ring-2 ring-amber-400/60 group-hover:scale-105 group-hover:shadow-amber-500/60'
+            : 'bg-gradient-to-br from-[#ffd700] via-[#f59e0b] to-[#b45309] shadow-lg shadow-amber-500/20 group-hover:shadow-amber-500/40 group-hover:scale-105'
+        }`}
+        style={{ width: dimensions.img, height: dimensions.img }}
       >
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="w-5 h-5 text-white"
-        >
-          {/* Futuristic Web 3 / Hand Peace glyph */}
-          <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0" />
-          <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2" />
-          <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8" />
-          <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" />
-        </svg>
+        <div className="w-full h-full rounded-[14px] overflow-hidden bg-black flex items-center justify-center border border-amber-400/40">
+          <img
+            src="/logo.png"
+            alt="Learn and Grow Logo"
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              // Fallback to stylized gold LG monogram if image loading is delayed
+              (e.target as HTMLElement).style.display = 'none';
+            }}
+          />
+        </div>
+
+        {/* Pulsing Live indicator badge on the Logo emblem */}
+        {isLive && (
+          <div className="absolute -top-1.5 -right-1.5 px-1.5 py-0.5 rounded-full bg-rose-600 border border-white/40 text-white font-mono font-black text-[8px] uppercase tracking-wider shadow-lg flex items-center gap-1 z-20">
+            <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+            <span>LIVE</span>
+          </div>
+        )}
+
+        {/* Story indicator pill badge when stories exist and not live */}
+        {!isLive && hasStories && (
+          <div className="absolute -bottom-1 -right-1 px-1.5 py-0.2 rounded-full bg-amber-400 border border-black text-black font-mono font-black text-[7px] uppercase tracking-wider shadow-md z-20 flex items-center gap-0.5 animate-bounce">
+            <span>STORY</span>
+          </div>
+        )}
       </div>
 
       {showText && (
-        <div className="flex flex-col">
-          <span className={`font-extrabold tracking-tight text-white group-hover:text-purple-400 transition-colors font-sans leading-none ${iconDimensions.text}`}>
-            Zia Khan
-          </span>
-          <span className={`font-mono uppercase font-bold text-neutral-400 tracking-wider mt-1 ${iconDimensions.sub}`}>
-            LET'S GET INTO WEB 3.0
-          </span>
+        <div className="flex flex-col min-w-0">
+          <div className="flex items-center gap-1.5">
+            <span
+              className={`font-black tracking-tight leading-none uppercase font-serif bg-gradient-to-r from-[#fffbeb] via-[#fcd34d] to-[#d97706] bg-clip-text text-transparent group-hover:brightness-110 transition-all text-xs sm:text-base ${dimensions.title}`}
+              style={{ fontFamily: "'Cinzel', serif, system-ui" }}
+            >
+              Learn and Grow
+            </span>
+            {isLive && (
+              <span className="px-1.5 py-0.5 rounded bg-rose-600/80 text-[8px] sm:text-[9px] font-mono font-black text-white border border-rose-400/40 animate-pulse uppercase shrink-0">
+                ON AIR
+              </span>
+            )}
+            {!isLive && hasStories && (
+              <span className="px-1.5 py-0.2 rounded bg-amber-500/20 text-[8px] sm:text-[9px] font-mono font-bold text-amber-300 border border-amber-500/40 uppercase shrink-0">
+                Story
+              </span>
+            )}
+          </div>
+
+          {showTagline && (
+            <div className="hidden xs:flex sm:flex items-center gap-1 mt-0.5">
+              <span className={`font-mono uppercase font-bold text-amber-300/80 tracking-widest leading-none text-[8px] sm:text-[9px] ${dimensions.sub}`}>
+                Trading • Education • Success
+              </span>
+            </div>
+          )}
         </div>
       )}
     </div>

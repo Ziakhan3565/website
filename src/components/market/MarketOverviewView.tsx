@@ -96,7 +96,7 @@ export const MarketOverviewView: React.FC<MarketOverviewViewProps> = ({
               Live Cryptocurrency Market Overview
             </h1>
             <p className="mt-1 text-xs sm:text-sm text-neutral-400 max-w-2xl">
-              Real-time exchange prices, 24-hour volume delta, high/low ranges, and perpetual funding rates directly from Binance. Independent of Course Crash internal trading signals.
+              Real-time exchange prices, 24-hour volume delta, high/low ranges, and perpetual funding rates directly from Binance. Independent of Learn and Grow internal trading signals.
             </p>
           </div>
 
@@ -178,7 +178,7 @@ export const MarketOverviewView: React.FC<MarketOverviewViewProps> = ({
       {/* Market Tickers Data Table */}
       <div className="rounded-xl bg-[#171717] border border-[#2a2a2a] overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full min-w-[650px] text-left border-collapse">
             <thead>
               <tr className="border-b border-[#262626] bg-[#141414] text-[11px] font-mono uppercase text-neutral-400">
                 <th className="py-3 px-4">Asset</th>
