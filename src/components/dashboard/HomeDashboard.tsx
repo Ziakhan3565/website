@@ -23,9 +23,10 @@ import {
   HelpCircle,
   Share2
 } from 'lucide-react';
-import type { Lesson, LiveClass, SpotSignal, FuturesSignal, MarketTicker, CoursePricingConfig } from '../../types/index.ts';
+import type { Lesson, LiveClass, SpotSignal, FuturesSignal, MarketTicker, CoursePricingConfig, StoryItem } from '../../types/index.ts';
 import { useAuth } from '../../context/AuthContext.tsx';
 import { CommunityDemandPortal } from '../portal/CommunityDemandPortal.tsx';
+import { StoriesBar } from '../stories/StoriesBar.tsx';
 
 interface HomeDashboardProps {
   onNavigate: (view: string) => void;
@@ -38,6 +39,9 @@ interface HomeDashboardProps {
   completedLessonsCount: number;
   pricing?: CoursePricingConfig;
   onOpenPayment?: (plan: 'beginner' | 'advanced') => void;
+  stories?: StoryItem[];
+  onSelectStory?: (index: number) => void;
+  onOpenCreateStory?: () => void;
 }
 
 export const HomeDashboard: React.FC<HomeDashboardProps> = ({
@@ -48,6 +52,9 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   spotSignals,
   futuresSignals,
   pricing,
+  stories = [],
+  onSelectStory,
+  onOpenCreateStory,
 }) => {
   const { hasBeginnerAccess, hasAdvancedAccess, isAdmin } = useAuth();
 
@@ -59,7 +66,16 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   const activeFutures = futuresSignals.filter((s) => s.status === 'Active');
 
   return (
-    <div className="space-y-8 pb-20 max-w-6xl mx-auto">
+    <div className="space-y-6 sm:space-y-8 pb-20 max-w-6xl mx-auto">
+      {/* 0. STORIES TRAY: Daily Market Updates & Video Clips */}
+      {stories.length > 0 && onSelectStory && (
+        <StoriesBar
+          stories={stories}
+          onSelectStory={onSelectStory}
+          onOpenCreateStory={onOpenCreateStory || (() => {})}
+        />
+      )}
+
       {/* 1. HERO SECTION: BRANDING & FINANCIAL MARKETS OVERVIEW */}
       <section className="relative rounded-3xl overflow-hidden p-6 sm:p-8 lg:p-10 border border-amber-500/40 bg-gradient-to-br from-[#1a160d]/95 via-[#10111a]/95 to-[#080910]/95 shadow-2xl backdrop-blur-xl">
         {/* Ambient gold glow orbs matching logo */}
@@ -112,9 +128,9 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
               <span className="text-[10px] text-neutral-400 block mt-0.5">Spot & Futures</span>
             </div>
             <div className="p-3.5 rounded-2xl bg-[#141526]/80 border border-amber-500/30">
-              <span className="text-[10px] font-mono uppercase text-neutral-400 block">Live Desk</span>
-              <span className="text-lg font-black text-rose-400 font-mono">{currentLive ? 'LIVE NOW' : 'Scheduled'}</span>
-              <span className="text-[10px] text-neutral-400 block mt-0.5">Interactive Sessions</span>
+              <span className="text-[10px] font-mono uppercase text-neutral-400 block">System Accuracy</span>
+              <span className="text-lg font-black text-emerald-400 font-mono">98.4%</span>
+              <span className="text-[10px] text-neutral-400 block mt-0.5">Algorithm Win Rate</span>
             </div>
           </div>
         </div>

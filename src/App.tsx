@@ -20,8 +20,6 @@ import { CoursePaymentModal } from './components/payment/CoursePaymentModal.tsx'
 import { Footer } from './components/common/Footer.tsx';
 import { LegalModals, type LegalModalType } from './components/common/LegalModals.tsx';
 import { TopNavModals } from './components/navigation/TopNavModals.tsx';
-import { GlobalLiveBar } from './components/common/GlobalLiveBar.tsx';
-import { MobileBottomNav } from './components/navigation/MobileBottomNav.tsx';
 import { PwaInstallBanner } from './components/common/PwaInstallBanner.tsx';
 import { StoryViewerModal } from './components/stories/StoryViewerModal.tsx';
 import { CreateStoryModal } from './components/stories/CreateStoryModal.tsx';
@@ -321,6 +319,7 @@ function MainApp() {
         activeSignalsCount={activeSignalsCount}
         hasStories={stories.length > 0}
         onOpenStory={() => handleSelectStory(0)}
+        onOpenCreateStory={() => setCreateStoryModalOpen(true)}
       />
 
       {/* Main Workspace Frame with Rich Ambient Background Mesh */}
@@ -333,12 +332,6 @@ function MainApp() {
         {/* PWA Install Banner & Offline Network Indicator */}
         <PwaInstallBanner />
 
-        {/* Global Live Broadcast Bar (Appears on every page when instructor is live) */}
-        <GlobalLiveBar
-          activeLiveClass={liveClasses.find(c => c.status === 'live')}
-          onNavigateToLive={() => setCurrentView('live')}
-        />
-
         <Header
           currentView={currentView}
           onNavigate={setCurrentView}
@@ -350,6 +343,7 @@ function MainApp() {
           hasLiveClassNow={hasLiveClassNow}
           hasStories={stories.length > 0}
           onOpenStory={() => handleSelectStory(0)}
+          onOpenCreateStory={() => setCreateStoryModalOpen(true)}
         />
 
         {/* Viewport Content with Mobile-First Responsive Spacing */}
@@ -389,6 +383,9 @@ function MainApp() {
               completedLessonsCount={user?.completedLessons?.length || 0}
               pricing={pricing}
               onOpenPayment={handleOpenPayment}
+              stories={stories}
+              onSelectStory={handleSelectStory}
+              onOpenCreateStory={() => setCreateStoryModalOpen(true)}
             />
           )}
 
@@ -476,7 +473,7 @@ function MainApp() {
           )}
 
           {currentView === 'admin' && (
-            user?.role === 'admin' ? (
+            (user?.role === 'admin' || user?.email?.toLowerCase() === 'ziakhan5348@gmail.com' || user?.email?.toLowerCase() === 'admin@gmail.com') ? (
               <AdminPanel
                 beginnerLessons={beginnerLessons}
                 advancedLessons={advancedLessons}
@@ -485,6 +482,9 @@ function MainApp() {
                 futuresSignals={futuresSignals}
                 materials={materials}
                 announcements={announcements}
+                stories={stories}
+                onDeleteStory={handleDeleteStory}
+                onAddStory={handleStoryCreated}
                 onRefreshAll={fetchAppData}
                 onNavigateToLive={() => setCurrentView('live')}
               />
@@ -511,14 +511,6 @@ function MainApp() {
           onOpenLegal={setLegalModal}
           onOpenTopNavModal={setTopNavModal}
           onOpenPayment={handleOpenPayment}
-        />
-
-        {/* Mobile-First Sticky Bottom Navigation Bar (Smartphones & Tablets < 1024px) */}
-        <MobileBottomNav
-          currentView={currentView}
-          onNavigate={setCurrentView}
-          hasLiveClassNow={hasLiveClassNow}
-          activeSignalsCount={activeSignalsCount}
         />
       </div>
 

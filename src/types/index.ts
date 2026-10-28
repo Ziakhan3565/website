@@ -298,6 +298,8 @@ export interface StoryItem {
   title: string;
   tag: StoryTag;
   imageUrl: string;
+  mediaType?: 'image' | 'video';
+  videoUrl?: string;
   caption: string;
   authorName: string;
   authorRole: string;

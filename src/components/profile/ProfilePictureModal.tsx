@@ -273,9 +273,18 @@ export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen
           {user.avatarUrl ? (
             <button
               type="button"
-              onClick={handleRemoveAvatar}
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                handleRemoveAvatar();
+              }}
+              onTouchEnd={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                handleRemoveAvatar();
+              }}
               disabled={loading}
-              className="px-3.5 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="px-3.5 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 active:scale-95 text-rose-400 border border-rose-500/30 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
             >
               <Trash2 className="w-3.5 h-3.5" />
               <span>Remove Photo</span>

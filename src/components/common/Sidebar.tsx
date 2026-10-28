@@ -29,6 +29,7 @@ interface SidebarProps {
   activeSignalsCount: number;
   hasStories?: boolean;
   onOpenStory?: () => void;
+  onOpenCreateStory?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -40,6 +41,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   activeSignalsCount,
   hasStories = false,
   onOpenStory,
+  onOpenCreateStory,
 }) => {
   const { user, isAdmin, logout } = useAuth();
   const [isDPModalOpen, setIsDPModalOpen] = useState(false);
@@ -97,12 +99,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 if (hasStories && onOpenStory) {
                   onOpenStory();
                   onCloseMobile();
+                } else if (isAdmin && onOpenCreateStory) {
+                  onOpenCreateStory();
+                  onCloseMobile();
                 } else {
                   handleNavClick(hasLiveClassNow ? 'live' : 'home');
                 }
               }}
               className="flex items-center cursor-pointer"
-              title={hasStories ? 'Click to Watch Learn & Grow Stories' : 'Learn and Grow'}
+              title={isAdmin ? 'Click Logo to Post or Watch Stories' : hasStories ? 'Click to Watch Learn & Grow Stories' : 'Learn and Grow'}
             >
               <Logo size="sm" showText={true} isLive={hasLiveClassNow} hasStories={hasStories} />
             </div>

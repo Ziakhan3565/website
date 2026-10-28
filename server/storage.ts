@@ -124,7 +124,7 @@ function getInitialData(): DatabaseSchema {
         instructorAvatar: '/src/assets/images/instructor_lead_avatar_1792164740686.jpg',
         scheduledAt: new Date(Date.now() + 1800000).toISOString(),
         durationMinutes: 60,
-        status: 'live',
+        status: 'scheduled',
         platform: 'YouTube Live',
         streamUrl: 'https://www.youtube.com/embed/live_stream?channel=UC4R8DWoMoI7CAwX8_BQQ50A',
         meetingLink: 'https://meet.google.com/zia-live-desk',

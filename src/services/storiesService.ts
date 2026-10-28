@@ -33,16 +33,16 @@ export const INITIAL_STORIES: StoryItem[] = [
   },
   {
     id: 'story-3',
-    title: 'Live Desk: New York Open Execution Session',
-    tag: 'LIVE NOW',
+    title: 'NY Session: Order Book Heatmap & CVD Absorption',
+    tag: 'ANALYSIS',
     imageUrl: 'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=1080&q=80',
-    caption: 'Zia Khan is streaming live right now on the main trading desk. Open Q&A and real-time order book heatmaps.',
+    caption: 'Zia Khan analyzing market structure on the quantitative trading desk. Real-time CVD tracking and liquidity sweeps.',
     authorName: 'Zia Khan',
     authorRole: 'Instructor & Desk Lead',
     authorAvatar: '/logo.png',
     createdAt: new Date(Date.now() - 1000 * 60 * 15).toISOString(), // 15m ago
-    linkText: 'Join Live Stream Now',
-    linkView: 'live',
+    linkText: 'View Signals Terminal',
+    linkView: 'signals',
     viewsCount: 780,
   },
   {

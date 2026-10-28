@@ -435,7 +435,16 @@ export const AdvancedAcademy: React.FC<AdvancedAcademyProps> = ({
                       </button>
                       <button
                         type="button"
-                        onClick={() => handleDelete(lesson.id, lesson.title)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          handleDelete(lesson.id, lesson.title);
+                        }}
+                        onTouchEnd={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          handleDelete(lesson.id, lesson.title);
+                        }}
                         className="px-2.5 py-1.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 active:scale-95 text-rose-400 hover:text-rose-300 border border-rose-500/30 text-xs font-mono font-bold flex items-center gap-1 transition-all shadow-sm cursor-pointer"
                         title="Delete video permanently"
                       >

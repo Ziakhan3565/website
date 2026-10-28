@@ -372,7 +372,16 @@ export const SignalsSectionView: React.FC<SignalsSectionViewProps> = ({
 
                       <button
                         type="button"
-                        onClick={() => handleDeleteSpot(sig.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          handleDeleteSpot(sig.id);
+                        }}
+                        onTouchEnd={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          handleDeleteSpot(sig.id);
+                        }}
                         className="px-2.5 py-1 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 active:scale-95 text-rose-400 hover:text-rose-300 border border-rose-500/30 text-xs font-mono font-bold flex items-center gap-1 transition-all shadow-sm cursor-pointer shrink-0"
                         title="Delete Spot Signal Permanently"
                       >
@@ -549,7 +558,16 @@ export const SignalsSectionView: React.FC<SignalsSectionViewProps> = ({
 
                         <button
                           type="button"
-                          onClick={() => handleDeleteFutures(sig.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            handleDeleteFutures(sig.id);
+                          }}
+                          onTouchEnd={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            handleDeleteFutures(sig.id);
+                          }}
                           className="px-2.5 py-1 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 active:scale-95 text-rose-400 hover:text-rose-300 border border-rose-500/30 text-xs font-mono font-bold flex items-center gap-1 transition-all shadow-sm cursor-pointer shrink-0"
                           title="Delete Futures Signal Permanently"
                         >

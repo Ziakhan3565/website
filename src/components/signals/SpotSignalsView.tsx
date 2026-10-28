@@ -236,8 +236,18 @@ export const SpotSignalsView: React.FC<SpotSignalsViewProps> = ({
                       )}
                       {onDeleteSignal && (
                         <button
-                          onClick={() => onDeleteSignal(sig.id)}
-                          className="p-1 text-rose-400 hover:text-rose-300"
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            onDeleteSignal(sig.id);
+                          }}
+                          onTouchEnd={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            onDeleteSignal(sig.id);
+                          }}
+                          className="p-1 text-rose-400 hover:text-rose-300 active:scale-95 cursor-pointer"
                           title="Delete Signal"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
