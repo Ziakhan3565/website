@@ -21,9 +21,6 @@ import { Footer } from './components/common/Footer.tsx';
 import { LegalModals, type LegalModalType } from './components/common/LegalModals.tsx';
 import { TopNavModals } from './components/navigation/TopNavModals.tsx';
 import { PwaInstallBanner } from './components/common/PwaInstallBanner.tsx';
-import { StoryViewerModal } from './components/stories/StoryViewerModal.tsx';
-import { CreateStoryModal } from './components/stories/CreateStoryModal.tsx';
-import { storiesService } from './services/storiesService.ts';
 import { api } from './services/api.ts';
 import type {
   Lesson,
@@ -34,8 +31,7 @@ import type {
   LearningMaterial,
   Announcement,
   SignalStatus,
-  CoursePricingConfig,
-  StoryItem
+  CoursePricingConfig
 } from './types/index.ts';
 
 function MainApp() {
@@ -48,11 +44,6 @@ function MainApp() {
   const [paymentAlert, setPaymentAlert] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
   const [legalModal, setLegalModal] = useState<LegalModalType>(null);
   const [topNavModal, setTopNavModal] = useState<'channel' | 'service' | 'about' | 'feedback' | null>(null);
-
-  // Stories system state
-  const [stories, setStories] = useState<StoryItem[]>(() => storiesService.getStories());
-  const [activeStoryIdx, setActiveStoryIdx] = useState<number | null>(null);
-  const [createStoryModalOpen, setCreateStoryModalOpen] = useState(false);
 
   // Check URL callback parameters from hosted checkout
   useEffect(() => {
@@ -169,7 +160,6 @@ function MainApp() {
       setFuturesSignals(futRes.signals);
       setMaterials(matRes.materials);
       setAnnouncements(annRes.announcements);
-      setStories(storiesService.getStories());
       if (priceRes && priceRes.pricing) {
         setPricing(priceRes.pricing);
       }
@@ -291,22 +281,6 @@ function MainApp() {
     }
   };
 
-  const handleSelectStory = (idx: number) => {
-    setActiveStoryIdx(idx);
-    const story = stories[idx];
-    if (story) storiesService.recordView(story.id);
-  };
-
-  const handleStoryCreated = (storyData: Omit<StoryItem, 'id' | 'createdAt' | 'viewsCount'>) => {
-    storiesService.addStory(storyData);
-    setStories(storiesService.getStories());
-  };
-
-  const handleDeleteStory = (id: string) => {
-    const updated = storiesService.deleteStory(id);
-    setStories(updated);
-  };
-
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-[#ececec] flex">
       {/* Sidebar */}
@@ -317,9 +291,6 @@ function MainApp() {
         onCloseMobile={() => setMobileMenuOpen(false)}
         hasLiveClassNow={hasLiveClassNow}
         activeSignalsCount={activeSignalsCount}
-        hasStories={stories.length > 0}
-        onOpenStory={() => handleSelectStory(0)}
-        onOpenCreateStory={() => setCreateStoryModalOpen(true)}
       />
 
       {/* Main Workspace Frame with Rich Ambient Background Mesh */}
@@ -341,9 +312,6 @@ function MainApp() {
           tickers={tickers}
           isMarketStale={isMarketStale}
           hasLiveClassNow={hasLiveClassNow}
-          hasStories={stories.length > 0}
-          onOpenStory={() => handleSelectStory(0)}
-          onOpenCreateStory={() => setCreateStoryModalOpen(true)}
         />
 
         {/* Viewport Content with Mobile-First Responsive Spacing */}
@@ -383,9 +351,6 @@ function MainApp() {
               completedLessonsCount={user?.completedLessons?.length || 0}
               pricing={pricing}
               onOpenPayment={handleOpenPayment}
-              stories={stories}
-              onSelectStory={handleSelectStory}
-              onOpenCreateStory={() => setCreateStoryModalOpen(true)}
             />
           )}
 
@@ -482,9 +447,6 @@ function MainApp() {
                 futuresSignals={futuresSignals}
                 materials={materials}
                 announcements={announcements}
-                stories={stories}
-                onDeleteStory={handleDeleteStory}
-                onAddStory={handleStoryCreated}
                 onRefreshAll={fetchAppData}
                 onNavigateToLive={() => setCurrentView('live')}
               />
@@ -538,28 +500,6 @@ function MainApp() {
       <TopNavModals
         activeModal={topNavModal}
         onClose={() => setTopNavModal(null)}
-      />
-
-      {/* Story Viewer Fullscreen Modal (Instagram/WhatsApp style) */}
-      {activeStoryIdx !== null && (
-        <StoryViewerModal
-          isOpen={activeStoryIdx !== null}
-          initialIndex={activeStoryIdx}
-          stories={stories}
-          onClose={() => setActiveStoryIdx(null)}
-          onDeleteStory={handleDeleteStory}
-          onNavigateToSection={(view) => {
-            setActiveStoryIdx(null);
-            setCurrentView(view);
-          }}
-        />
-      )}
-
-      {/* Story Creator & Upload Modal */}
-      <CreateStoryModal
-        isOpen={createStoryModalOpen}
-        onClose={() => setCreateStoryModalOpen(false)}
-        onStoryCreated={handleStoryCreated}
       />
     </div>
   );

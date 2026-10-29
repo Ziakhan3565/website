@@ -9,16 +9,11 @@ import {
   ShieldAlert,
   ArrowUpRight,
   LogOut,
-  Camera,
-  Share2,
-  Headphones,
-  HelpCircle,
-  MessageSquare
+  Camera
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.tsx';
 import { Logo } from './Logo.tsx';
 import { ProfilePictureModal } from '../profile/ProfilePictureModal.tsx';
-import { TopNavModals } from '../navigation/TopNavModals.tsx';
 
 interface SidebarProps {
   currentView: string;
@@ -27,9 +22,6 @@ interface SidebarProps {
   onCloseMobile: () => void;
   hasLiveClassNow: boolean;
   activeSignalsCount: number;
-  hasStories?: boolean;
-  onOpenStory?: () => void;
-  onOpenCreateStory?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -39,13 +31,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onCloseMobile,
   hasLiveClassNow,
   activeSignalsCount,
-  hasStories = false,
-  onOpenStory,
-  onOpenCreateStory,
 }) => {
   const { user, isAdmin, logout } = useAuth();
   const [isDPModalOpen, setIsDPModalOpen] = useState(false);
-  const [activeModal, setActiveModal] = useState<'channel' | 'service' | 'about' | 'feedback' | null>(null);
 
   // Exactly matching the user's hand-drawn architecture sketch:
   // Profile | Home | Beginner | Advance | Live | Signals
@@ -96,20 +84,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div className="h-16 flex items-center justify-between px-4 border-b border-[#1f2029] bg-[#0b0c10] shrink-0">
             <div
               onClick={() => {
-                if (hasStories && onOpenStory) {
-                  onOpenStory();
-                  onCloseMobile();
-                } else if (isAdmin && onOpenCreateStory) {
-                  onOpenCreateStory();
-                  onCloseMobile();
-                } else {
-                  handleNavClick(hasLiveClassNow ? 'live' : 'home');
-                }
+                handleNavClick('home');
               }}
               className="flex items-center cursor-pointer"
-              title={isAdmin ? 'Click Logo to Post or Watch Stories' : hasStories ? 'Click to Watch Learn & Grow Stories' : 'Learn and Grow'}
+              title="Learn and Grow"
             >
-              <Logo size="sm" showText={true} isLive={hasLiveClassNow} hasStories={hasStories} />
+              <Logo size="sm" showText={true} isLive={hasLiveClassNow} />
             </div>
           </div>
 
@@ -163,62 +143,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </button>
               </div>
             )}
-
-            {/* Mobile & Tablet Top Nav Menu Items: Channel, Service, About, Feedback */}
-            <div className="pt-3 mt-3 border-t border-[#1f2029] md:hidden">
-              <div className="px-3 pb-2 text-[10px] font-mono uppercase tracking-wider text-neutral-500 font-semibold">
-                Desk & Community
-              </div>
-              <div className="grid grid-cols-2 gap-1.5 px-1">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveModal('channel');
-                    onCloseMobile();
-                  }}
-                  className="flex items-center gap-2 p-2 rounded-xl text-neutral-400 hover:text-white hover:bg-[#161722] text-xs font-semibold transition-colors"
-                >
-                  <Share2 className="w-3.5 h-3.5 text-purple-400" />
-                  <span>Channel</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveModal('service');
-                    onCloseMobile();
-                  }}
-                  className="flex items-center gap-2 p-2 rounded-xl text-neutral-400 hover:text-white hover:bg-[#161722] text-xs font-semibold transition-colors"
-                >
-                  <Headphones className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>Service</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveModal('about');
-                    onCloseMobile();
-                  }}
-                  className="flex items-center gap-2 p-2 rounded-xl text-neutral-400 hover:text-white hover:bg-[#161722] text-xs font-semibold transition-colors"
-                >
-                  <HelpCircle className="w-3.5 h-3.5 text-amber-400" />
-                  <span>About</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveModal('feedback');
-                    onCloseMobile();
-                  }}
-                  className="flex items-center gap-2 p-2 rounded-xl text-neutral-400 hover:text-white hover:bg-[#161722] text-xs font-semibold transition-colors"
-                >
-                  <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Feedback</span>
-                </button>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -278,12 +202,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <ProfilePictureModal
         isOpen={isDPModalOpen}
         onClose={() => setIsDPModalOpen(false)}
-      />
-
-      {/* Top Navigation Modals on Mobile & Tablet */}
-      <TopNavModals
-        activeModal={activeModal}
-        onClose={() => setActiveModal(null)}
       />
     </>
   );

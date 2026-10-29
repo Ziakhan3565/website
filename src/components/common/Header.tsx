@@ -11,9 +11,7 @@ import {
   HelpCircle,
   MessageSquare,
   GraduationCap,
-  Camera,
-  Play,
-  Sparkles
+  Camera
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.tsx';
 import type { MarketTicker } from '../../types/index.ts';
@@ -30,9 +28,6 @@ interface HeaderProps {
   tickers: MarketTicker[];
   isMarketStale: boolean;
   hasLiveClassNow?: boolean;
-  hasStories?: boolean;
-  onOpenStory?: () => void;
-  onOpenCreateStory?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -42,39 +37,21 @@ export const Header: React.FC<HeaderProps> = ({
   mobileMenuOpen,
   onToggleMobileMenu,
   hasLiveClassNow = false,
-  hasStories = false,
-  onOpenStory,
-  onOpenCreateStory,
 }) => {
   const { user, isAdmin, isPremium, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [adminStoryMenuOpen, setAdminStoryMenuOpen] = useState(false);
   const [isDPModalOpen, setIsDPModalOpen] = useState(false);
   const [activeModal, setActiveModal] = useState<'channel' | 'service' | 'about' | 'feedback' | null>(null);
 
   const handleLogoClick = () => {
-    if (isAdmin && onOpenCreateStory) {
-      if (hasStories) {
-        setAdminStoryMenuOpen(!adminStoryMenuOpen);
-      } else {
-        onOpenCreateStory();
-      }
-      return;
-    }
-
-    // For students: If stories exist, open story
-    if (hasStories && onOpenStory) {
-      onOpenStory();
-    } else {
-      onNavigate(hasLiveClassNow ? 'live' : 'home');
-    }
+    onNavigate('home');
   };
 
   return (
     <>
       <header className="sticky top-0 z-40 bg-[#0b0c10]/95 backdrop-blur-md border-b border-[#1f2029] px-4 lg:px-8 py-3">
         <div className="flex items-center justify-between gap-4 max-w-7xl mx-auto">
-          {/* Left: Brand Logo with story ring and live badge */}
+          {/* Left: Brand Logo */}
           <div className="flex items-center gap-3">
             <button
               onClick={onToggleMobileMenu}
@@ -83,101 +60,14 @@ export const Header: React.FC<HeaderProps> = ({
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
-            <div className="relative">
-              <div
-                onClick={handleLogoClick}
-                className="cursor-pointer"
-                title={isAdmin ? 'Click Logo to Post or Watch Stories' : hasStories ? 'Click Learn & Grow Logo to Watch Stories' : 'Learn and Grow'}
-              >
-                <Logo size="md" showText={true} isLive={hasLiveClassNow} hasStories={hasStories} />
-              </div>
-
-              {/* Admin Story Popover */}
-              {adminStoryMenuOpen && isAdmin && (
-                <div className="absolute top-full left-0 mt-2 w-56 rounded-2xl bg-[#121320] border-2 border-amber-500/50 shadow-2xl p-2 z-50 animate-fade-in space-y-1">
-                  <div className="px-3 py-1.5 border-b border-white/10 text-[10px] font-mono text-amber-300 font-bold uppercase">
-                    Admin Story Actions
-                  </div>
-                  {hasStories && onOpenStory && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setAdminStoryMenuOpen(false);
-                        onOpenStory();
-                      }}
-                      className="w-full text-left px-3 py-2 rounded-xl text-xs text-white hover:bg-[#1c1d30] flex items-center gap-2 cursor-pointer font-bold"
-                    >
-                      <Play className="w-3.5 h-3.5 text-amber-400" />
-                      <span>Watch Stories</span>
-                    </button>
-                  )}
-                  {onOpenCreateStory && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setAdminStoryMenuOpen(false);
-                        onOpenCreateStory();
-                      }}
-                      className="w-full text-left px-3 py-2 rounded-xl text-xs text-amber-300 hover:text-black hover:bg-gradient-to-r hover:from-amber-500 hover:to-yellow-400 flex items-center gap-2 cursor-pointer font-bold transition-all"
-                    >
-                      <Sparkles className="w-3.5 h-3.5" />
-                      <span>+ Post Story (Pic / Video)</span>
-                    </button>
-                  )}
-                </div>
-              )}
+            <div
+              onClick={handleLogoClick}
+              className="cursor-pointer"
+              title="Learn and Grow"
+            >
+              <Logo size="md" showText={true} isLive={hasLiveClassNow} />
             </div>
-
-            {isAdmin && onOpenCreateStory && (
-              <button
-                type="button"
-                onClick={onOpenCreateStory}
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 hover:brightness-110 text-black text-[11px] font-black uppercase tracking-wider shadow-md shadow-amber-500/20 cursor-pointer active:scale-95 transition-transform"
-                title="Post a story (Picture or Video)"
-              >
-                <Sparkles className="w-3 h-3 text-black stroke-[3]" />
-                <span>+ Story</span>
-              </button>
-            )}
           </div>
-
-          {/* Center: Exactly 4 Tabs matching user's blueprint sketch: Channel | Service | About | Feedback */}
-          <nav className="hidden md:flex items-center bg-[#11121c] border border-amber-500/20 rounded-full p-1 shadow-inner">
-            <button
-              type="button"
-              onClick={() => setActiveModal('channel')}
-              className="px-4 py-1.5 rounded-full text-xs font-semibold text-neutral-300 hover:text-white hover:bg-[#1a1b28] transition-all flex items-center gap-1.5"
-            >
-              <Share2 className="w-3.5 h-3.5 text-amber-400" />
-              <span>Channel</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveModal('service')}
-              className="px-4 py-1.5 rounded-full text-xs font-semibold text-neutral-300 hover:text-white hover:bg-[#1a1b28] transition-all flex items-center gap-1.5"
-            >
-              <Headphones className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Service</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveModal('about')}
-              className="px-4 py-1.5 rounded-full text-xs font-semibold text-neutral-300 hover:text-white hover:bg-[#1a1b28] transition-all flex items-center gap-1.5"
-            >
-              <HelpCircle className="w-3.5 h-3.5 text-amber-400" />
-              <span>About</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveModal('feedback')}
-              className="px-4 py-1.5 rounded-full text-xs font-semibold text-neutral-300 hover:text-white hover:bg-[#1a1b28] transition-all flex items-center gap-1.5"
-            >
-              <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
-            </button>
-          </nav>
 
           {/* Right Actions: Login / Register */}
           <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">

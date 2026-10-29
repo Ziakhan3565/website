@@ -6,7 +6,6 @@ interface LogoProps {
   showTagline?: boolean;
   className?: string;
   isLive?: boolean;
-  hasStories?: boolean;
 }
 
 export const Logo: React.FC<LogoProps> = ({
@@ -15,7 +14,6 @@ export const Logo: React.FC<LogoProps> = ({
   showTagline = true,
   className = '',
   isLive = false,
-  hasStories = false,
 }) => {
   const dimensions = {
     sm: { img: 34, title: 'text-sm', sub: 'text-[8px]' },
@@ -27,15 +25,13 @@ export const Logo: React.FC<LogoProps> = ({
   return (
     <div
       className={`flex items-center gap-2.5 sm:gap-3 select-none group cursor-pointer relative ${className}`}
-      title={hasStories ? 'Click Learn & Grow Logo to Watch Stories' : 'Learn and Grow'}
+      title="Learn and Grow"
     >
-      {/* Official Gold Monogram Emblem Container with Story Ring Support */}
+      {/* Official Gold Monogram Emblem Container */}
       <div
         className={`relative shrink-0 rounded-2xl p-0.5 transition-all duration-300 ${
           isLive
             ? 'bg-gradient-to-br from-rose-500 via-amber-400 to-red-600 shadow-xl shadow-rose-500/40 animate-pulse'
-            : hasStories
-            ? 'bg-gradient-to-tr from-[#ffd700] via-[#f59e0b] to-[#d97706] shadow-lg shadow-amber-500/35 ring-2 ring-amber-400/60 group-hover:scale-105 group-hover:shadow-amber-500/60'
             : 'bg-gradient-to-br from-[#ffd700] via-[#f59e0b] to-[#b45309] shadow-lg shadow-amber-500/20 group-hover:shadow-amber-500/40 group-hover:scale-105'
         }`}
         style={{ width: dimensions.img, height: dimensions.img }}
@@ -59,13 +55,6 @@ export const Logo: React.FC<LogoProps> = ({
             <span>LIVE</span>
           </div>
         )}
-
-        {/* Story indicator pill badge when stories exist and not live */}
-        {!isLive && hasStories && (
-          <div className="absolute -bottom-1 -right-1 px-1.5 py-0.2 rounded-full bg-amber-400 border border-black text-black font-mono font-black text-[7px] uppercase tracking-wider shadow-md z-20 flex items-center gap-0.5 animate-bounce">
-            <span>STORY</span>
-          </div>
-        )}
       </div>
 
       {showText && (
@@ -80,11 +69,6 @@ export const Logo: React.FC<LogoProps> = ({
             {isLive && (
               <span className="px-1.5 py-0.5 rounded bg-rose-600/80 text-[8px] sm:text-[9px] font-mono font-black text-white border border-rose-400/40 animate-pulse uppercase shrink-0">
                 ON AIR
-              </span>
-            )}
-            {!isLive && hasStories && (
-              <span className="px-1.5 py-0.2 rounded bg-amber-500/20 text-[8px] sm:text-[9px] font-mono font-bold text-amber-300 border border-amber-500/40 uppercase shrink-0">
-                Story
               </span>
             )}
           </div>

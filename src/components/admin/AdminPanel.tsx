@@ -63,8 +63,7 @@ import type {
   PaymentTransaction,
   SocialChannel,
   CommunityPoll,
-  PaymentGatewayInfo,
-  StoryItem
+  PaymentGatewayInfo
 } from '../../types/index.ts';
 import { api } from '../../services/api.ts';
 import {
@@ -75,8 +74,6 @@ import {
   extractYouTubeId
 } from '../../utils/videoUtils.ts';
 import { UploadProgressModal, type UploadProgressState } from '../common/UploadProgressModal.tsx';
-import { CreateStoryModal } from '../stories/CreateStoryModal.tsx';
-import { storiesService } from '../../services/storiesService.ts';
 
 interface AdminPanelProps {
   beginnerLessons: Lesson[];
@@ -86,9 +83,6 @@ interface AdminPanelProps {
   futuresSignals: FuturesSignal[];
   materials: LearningMaterial[];
   announcements: Announcement[];
-  stories?: StoryItem[];
-  onDeleteStory?: (id: string) => void;
-  onAddStory?: (data: Omit<StoryItem, 'id' | 'createdAt' | 'viewsCount'>) => void;
   onRefreshAll: () => void;
   onNavigateToLive?: () => void;
 }
@@ -101,34 +95,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   futuresSignals,
   materials,
   announcements,
-  stories,
-  onDeleteStory,
-  onAddStory,
   onRefreshAll,
   onNavigateToLive,
 }) => {
   const { user, isAdmin, switchDemoAccount } = useAuth();
   const [activeTab, setActiveTab] = useState<
-    'beginner_lessons' | 'advanced_lessons' | 'spot' | 'futures' | 'pricing' | 'live' | 'stories' | 'polls' | 'channels' | 'materials' | 'announcements' | 'students'
+    'beginner_lessons' | 'advanced_lessons' | 'spot' | 'futures' | 'pricing' | 'live' | 'polls' | 'channels' | 'materials' | 'announcements' | 'students'
   >('beginner_lessons');
-
-  // Stories Management State
-  const [adminStories, setAdminStories] = useState(() => stories || storiesService.getStories());
-  const displayStories = stories || adminStories;
-
-  const refreshAdminStories = () => {
-    setAdminStories(storiesService.getStories());
-  };
-
-  const handleDeleteStory = (id: string) => {
-    setAdminStories((prev) => prev.filter((s) => s.id !== id));
-    if (onDeleteStory) {
-      onDeleteStory(id);
-    }
-    const updated = storiesService.deleteStory(id);
-    setAdminStories(updated);
-    onRefreshAll();
-  };
 
   // Video Player & Editing Lesson State
   const [editingLessonId, setEditingLessonId] = useState<string | null>(null);
@@ -232,7 +205,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     url: '',
     title: ''
   });
-  const [showStoryModal, setShowStoryModal] = useState(false);
 
   // Forms state
   const [showLessonModal, setShowLessonModal] = useState(false);
@@ -920,28 +892,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               Upload Futures Signal · High-leverage long/short setups
             </p>
           </button>
-
-          {/* Action 5: Post Story (Learn & Grow Story feature) */}
-          <button
-            type="button"
-            onClick={() => setShowStoryModal(true)}
-            className="group relative p-4 rounded-2xl bg-gradient-to-br from-[#1e1608] via-[#171207] to-[#0e0b04] border border-amber-500/50 hover:border-amber-400 text-left transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-amber-950/20"
-          >
-            <div className="flex items-center justify-between mb-2">
-              <div className="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform">
-                <Radio className="w-5 h-5 animate-pulse" />
-              </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/25 text-amber-300 border border-amber-500/40 font-bold">
-                + STORY
-              </span>
-            </div>
-            <h3 className="text-sm font-bold text-white group-hover:text-amber-300 transition-colors">
-              Post Story
-            </h3>
-            <p className="text-[11px] text-neutral-400 mt-1 leading-snug">
-              Post Story · Share daily bias, VIP gain, or live alert
-            </p>
-          </button>
         </div>
       </div>
 
@@ -991,13 +941,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             icon: Radio,
             count: liveClasses.length,
             color: 'rose'
-          },
-          {
-            id: 'stories',
-            label: 'Stories Hub',
-            icon: Radio,
-            count: adminStories.length,
-            color: 'amber'
           },
           {
             id: 'polls',
@@ -2531,190 +2474,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               </div>
             ))}
           </div>
-        </div>
-      )}
-
-      {/* Tab: Stories Manager (Learn & Grow Stories Feature) */}
-      {activeTab === 'stories' && (
-        <div className="space-y-5">
-          {/* Official Logo Banner & Quick Upload Card */}
-          <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-r from-[#1f170a] via-[#141007] to-[#0c0a05] border-2 border-amber-500/50 shadow-2xl space-y-4">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
-              {/* Left: Official Clickable Logo Emblem */}
-              <div className="flex items-center gap-4">
-                <div
-                  onClick={() => setShowStoryModal(true)}
-                  className="group relative cursor-pointer"
-                  title="Click Logo to Post Story"
-                >
-                  <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl p-1 bg-gradient-to-tr from-amber-400 via-yellow-400 to-amber-600 shadow-xl shadow-amber-500/30 group-hover:scale-105 group-hover:shadow-amber-500/50 transition-all">
-                    <div className="w-full h-full rounded-xl overflow-hidden bg-black flex items-center justify-center border border-amber-300/40 relative">
-                      <img
-                        src="/logo.png"
-                        alt="Learn and Grow Logo"
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform"
-                      />
-                      <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 flex items-center justify-center transition-colors">
-                        <Plus className="w-6 h-6 text-amber-300 stroke-[3] drop-shadow" />
-                      </div>
-                    </div>
-                    {/* Pulsing indicator */}
-                    <div className="absolute -bottom-1 -right-1 px-1.5 py-0.5 rounded-full bg-amber-400 text-black font-mono font-black text-[9px] uppercase tracking-wider shadow-md border border-black flex items-center gap-0.5">
-                      <Sparkles className="w-2.5 h-2.5 text-black" />
-                      <span>POST</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-mono font-bold mb-1 border border-amber-500/40">
-                    <Radio className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
-                    <span>OFFICIAL STORIES DESK</span>
-                  </div>
-                  <h3 className="text-base sm:text-lg font-black text-white font-mono flex items-center gap-2">
-                    <span>Learn & Grow Stories Manager</span>
-                    <span className="text-xs px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 font-bold">
-                      {adminStories.length} Active Stories
-                    </span>
-                  </h3>
-                  <p className="text-xs text-neutral-300 mt-0.5 max-w-xl leading-relaxed">
-                    Click the Logo or use the buttons below to upload a picture or video clip. Stories appear for all students and play immediately when anyone clicks the logo!
-                  </p>
-                </div>
-              </div>
-
-              {/* Right: Quick Action Buttons: Upload Picture or Upload Video */}
-              <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => setShowStoryModal(true)}
-                  className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 hover:brightness-110 text-black text-xs font-black font-mono flex items-center gap-2 shadow-lg shadow-amber-500/30 transition-all cursor-pointer active:scale-95"
-                >
-                  <ImageIcon className="w-4 h-4 stroke-[2.5]" />
-                  <span>Upload Picture</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setShowStoryModal(true)}
-                  className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 via-amber-500 to-yellow-500 hover:brightness-110 text-black text-xs font-black font-mono flex items-center gap-2 shadow-lg shadow-amber-500/30 transition-all cursor-pointer active:scale-95"
-                >
-                  <Video className="w-4 h-4 stroke-[2.5]" />
-                  <span>Upload Video</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    storiesService.resetDefaultStories();
-                    refreshAdminStories();
-                    onRefreshAll();
-                  }}
-                  className="px-3 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-neutral-300 text-xs font-mono font-bold transition-all border border-white/10 cursor-pointer"
-                  title="Reset to default story templates"
-                >
-                  Reset Defaults
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Stories Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {displayStories.map((story) => (
-              <div
-                key={story.id}
-                className="rounded-2xl bg-[#0f111a] border border-amber-500/30 overflow-hidden shadow-lg flex flex-col justify-between group hover:border-amber-400 transition-all relative"
-              >
-                <div className="relative aspect-video w-full overflow-hidden bg-black">
-                  {story.mediaType === 'video' || story.videoUrl ? (
-                    <video
-                      src={story.videoUrl || story.imageUrl}
-                      muted
-                      loop
-                      playsInline
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <img
-                      src={story.imageUrl}
-                      alt={story.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40 pointer-events-none" />
-
-                  {/* Tag badge */}
-                  <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full bg-amber-500 text-black font-mono font-bold text-[9px] uppercase shadow-sm flex items-center gap-1">
-                    {story.mediaType === 'video' && <Film className="w-3 h-3 text-black" />}
-                    <span>{story.tag}</span>
-                  </span>
-
-                  <span className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-black/70 text-[9px] font-mono text-neutral-300 border border-white/10 flex items-center gap-1">
-                    <Eye className="w-3 h-3 text-amber-400" />
-                    <span>{story.viewsCount || 0} views</span>
-                  </span>
-                </div>
-
-                <div className="p-4 space-y-2 flex-1 flex flex-col justify-between">
-                  <div>
-                    <h4 className="text-sm font-bold text-white line-clamp-1">{story.title}</h4>
-                    <p className="text-xs text-neutral-300 line-clamp-2 mt-1 leading-relaxed">
-                      {story.caption}
-                    </p>
-                  </div>
-
-                  <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs">
-                    <span className="text-[10px] text-neutral-400 font-mono">
-                      By {story.authorName} • {new Date(story.createdAt).toLocaleDateString()}
-                    </span>
-
-                    {/* DIRECT 1-CLICK INSTANT DELETE BUTTON */}
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        handleDeleteStory(story.id);
-                      }}
-                      onTouchEnd={(e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        handleDeleteStory(story.id);
-                      }}
-                      className="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 active:scale-95 text-white text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-md shadow-rose-600/30 relative z-30"
-                      title="Delete this story"
-                    >
-                      <Trash2 className="w-3.5 h-3.5 stroke-[2.5]" />
-                      <span>Delete Story</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {displayStories.length === 0 && (
-            <div className="p-8 sm:p-12 text-center bg-[#11131c] rounded-2xl border border-amber-500/30 space-y-4">
-              <div className="w-14 h-14 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 mx-auto">
-                <Sparkles className="w-7 h-7" />
-              </div>
-              <div className="space-y-1">
-                <h4 className="text-base font-bold text-white">No Stories Active</h4>
-                <p className="text-xs text-neutral-400 max-w-md mx-auto">
-                  Click the button below to upload your first story clip (Picture or Video) to show to students!
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowStoryModal(true)}
-                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 text-black text-xs font-bold font-mono inline-flex items-center gap-2 shadow-md shadow-amber-500/30 cursor-pointer"
-              >
-                <Plus className="w-4 h-4 stroke-[3]" />
-                <span>Upload First Story</span>
-              </button>
-            </div>
-          )}
         </div>
       )}
 
@@ -4908,17 +4667,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
       {/* 0-100% Upload Progress Modal Overlay */}
       <UploadProgressModal state={uploadProgress} />
-
-      {/* Admin Create Story Modal */}
-      <CreateStoryModal
-        isOpen={showStoryModal}
-        onClose={() => setShowStoryModal(false)}
-        onStoryCreated={(data) => {
-          storiesService.addStory(data);
-          refreshAdminStories();
-          onRefreshAll();
-        }}
-      />
     </div>
   );
 };
