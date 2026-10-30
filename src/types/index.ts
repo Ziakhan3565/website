@@ -272,23 +272,4 @@ export interface SocialChannel {
   active: boolean;
 }
 
-export interface PollOption {
-  id: string;
-  text: string;
-  votes: number;
-}
-
-export interface CommunityPoll {
-  id: string;
-  title: string;
-  description?: string;
-  options: PollOption[];
-  totalVotes: number;
-  userVotes: Record<string, string>; // userId -> optionId
-  active: boolean;
-  winnerOptionId?: string;
-  analysisDate?: string;
-  createdAt: string;
-}
-
 

@@ -229,40 +229,6 @@
       "active": true
     }
   ],
-  "polls": [
-    {
-      "id": "poll_next_lecture",
-      "title": "Which asset should our next live market analysis & lecture cover?",
-      "description": "Cast your vote! The winning topic with the highest votes will be thoroughly analyzed in our upcoming live stream.",
-      "options": [
-        {
-          "id": "opt_btc",
-          "text": "Bitcoin (BTC) — Post-Halving Liquidity Sweep & $75K Target",
-          "votes": 52
-        },
-        {
-          "id": "opt_gold",
-          "text": "Gold (XAUUSD) — Macro Breakout vs. Bitcoin Correlation",
-          "votes": 47
-        },
-        {
-          "id": "opt_eth",
-          "text": "Ethereum (ETH) — L1 Institutional Accumulation & Gas Dynamics",
-          "votes": 23
-        },
-        {
-          "id": "opt_sol",
-          "text": "Solana (SOL) — Futures CVD Absorption & Breakout Levels",
-          "votes": 31
-        }
-      ],
-      "totalVotes": 153,
-      "userVotes": {},
-      "active": true,
-      "analysisDate": "Upcoming Live Session",
-      "createdAt": "2026-10-20T12:52:14.904Z"
-    }
-  ],
   "sessions": [
     {
       "token": "079559e29b54803d08eb0a4e7046b4d009bd9877a11aef854bdd7bc48430360d",

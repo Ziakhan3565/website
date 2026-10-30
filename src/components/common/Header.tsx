@@ -23,20 +23,20 @@ interface HeaderProps {
   currentView: string;
   onNavigate: (view: string) => void;
   onOpenAuth: (mode?: 'login' | 'register') => void;
-  mobileMenuOpen: boolean;
-  onToggleMobileMenu: () => void;
   tickers: MarketTicker[];
   isMarketStale: boolean;
   hasLiveClassNow?: boolean;
+  sidebarOpen?: boolean;
+  onToggleSidebar?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   currentView,
   onNavigate,
   onOpenAuth,
-  mobileMenuOpen,
-  onToggleMobileMenu,
   hasLiveClassNow = false,
+  sidebarOpen = true,
+  onToggleSidebar,
 }) => {
   const { user, isAdmin, isPremium, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -51,15 +51,19 @@ export const Header: React.FC<HeaderProps> = ({
     <>
       <header className="sticky top-0 z-40 bg-[#0b0c10]/95 backdrop-blur-md border-b border-[#1f2029] px-4 lg:px-8 py-3">
         <div className="flex items-center justify-between gap-4 max-w-7xl mx-auto">
-          {/* Left: Brand Logo */}
+          {/* Left: Brand Logo & Desktop Three Lines Button */}
           <div className="flex items-center gap-3">
+            {/* Desktop Three Lines Button: ONLY for Laptop/Desktop, NEVER on Mobile */}
             <button
-              onClick={onToggleMobileMenu}
-              className="p-1.5 rounded-lg text-neutral-400 hover:text-white hover:bg-[#1a1b24] lg:hidden transition-colors"
-              aria-label="Toggle navigation"
+              type="button"
+              onClick={onToggleSidebar}
+              className="hidden lg:flex items-center justify-center p-2 rounded-xl text-neutral-300 hover:text-amber-400 hover:bg-[#1a1b24] border border-[#23253b] hover:border-amber-500/40 transition-all cursor-pointer shadow-sm"
+              aria-label="Toggle Navigation Sidebar"
+              title="Toggle Sidebar Menu"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              <Menu className="w-5 h-5" />
             </button>
+
             <div
               onClick={handleLogoClick}
               className="cursor-pointer"

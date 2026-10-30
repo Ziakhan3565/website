@@ -14,6 +14,33 @@
     <meta name="keywords" content="Learn and Grow, crypto trading academy, trading education, financial markets, Zia Khan, spot signals, futures signals, live trading classes, order flow" />
     <meta name="author" content="Zia Khan" />
     <meta name="robots" content="index, follow" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    
+    <script>
+      // Immediate cache purger & service worker unregister
+      try {
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(function(regs) {
+            for (var i = 0; i < regs.length; i++) {
+              regs[i].unregister();
+            }
+          });
+        }
+        if ('caches' in window) {
+          caches.keys().then(function(names) {
+            for (var i = 0; i < names.length; i++) {
+              caches.delete(names[i]);
+            }
+          });
+        }
+        localStorage.removeItem('learn_and_grow_stories');
+        localStorage.removeItem('learn_and_grow_stories_v1');
+        localStorage.removeItem('stories');
+        localStorage.removeItem('stories_list');
+      } catch (err) {}
+    </script>
     
     <!-- PWA Web App Manifest & App Icons -->
     <link rel="manifest" href="/manifest.json" />

@@ -18,8 +18,8 @@ import { ProfilePictureModal } from '../profile/ProfilePictureModal.tsx';
 interface SidebarProps {
   currentView: string;
   onNavigate: (view: string) => void;
-  mobileOpen: boolean;
-  onCloseMobile: () => void;
+  isOpen?: boolean;
+  onClose?: () => void;
   hasLiveClassNow: boolean;
   activeSignalsCount: number;
 }
@@ -27,8 +27,8 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({
   currentView,
   onNavigate,
-  mobileOpen,
-  onCloseMobile,
+  isOpen = true,
+  onClose,
   hasLiveClassNow,
   activeSignalsCount,
 }) => {
@@ -60,23 +60,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const handleNavClick = (viewId: string) => {
     onNavigate(viewId);
-    onCloseMobile();
+    if (onClose) onClose();
   };
 
   return (
     <>
-      {/* Mobile backdrop */}
-      {mobileOpen && (
-        <div
-          onClick={onCloseMobile}
-          className="fixed inset-0 bg-black/85 backdrop-blur-sm z-40 lg:hidden"
-        />
-      )}
-
-      {/* Sidebar container - Permanently pinned to viewport left, never scrolls up */}
+      {/* Sidebar container - Exclusively for Laptop / Desktop (Controlled by Three Lines Menu Button) */}
       <aside
-        className={`fixed top-0 left-0 bottom-0 z-40 h-[100dvh] max-h-screen w-60 bg-[#0e0f15] border-r border-[#1f2029] flex flex-col justify-between shrink-0 transition-transform duration-200 ease-in-out ${
-          mobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'
+        className={`hidden lg:flex fixed top-0 left-0 bottom-0 z-40 h-[100dvh] max-h-screen w-60 bg-[#0e0f15] border-r border-[#1f2029] flex-col justify-between shrink-0 transition-transform duration-300 ease-in-out ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Top Brand Zone and Navigation List */}

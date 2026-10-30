@@ -15,7 +15,6 @@ import type {
   PaymentTransaction,
   TransactionStatus,
   SocialChannel,
-  CommunityPoll,
   UserRole
 } from '../src/types/index.ts';
 
@@ -33,7 +32,6 @@ interface DatabaseSchema {
   pricingConfig: CoursePricingConfig;
   transactions: PaymentTransaction[];
   channels: SocialChannel[];
-  polls: CommunityPoll[];
 }
 
 const DATA_DIR = path.resolve(process.cwd(), 'data');
@@ -199,26 +197,6 @@ function getInitialData(): DatabaseSchema {
         subscribers: 'Direct Support',
         active: true
       }
-    ],
-
-    // Community Lecture & Analysis Request Polls
-    polls: [
-      {
-        id: 'poll_next_lecture',
-        title: 'Which asset should our next live market analysis & lecture cover?',
-        description: 'Cast your vote! The winning topic with the highest votes will be thoroughly analyzed in our upcoming live stream.',
-        options: [
-          { id: 'opt_btc', text: 'Bitcoin (BTC) — Post-Halving Liquidity Sweep & $75K Target', votes: 52 },
-          { id: 'opt_gold', text: 'Gold (XAUUSD) — Macro Breakout vs. Bitcoin Correlation', votes: 47 },
-          { id: 'opt_eth', text: 'Ethereum (ETH) — L1 Institutional Accumulation & Gas Dynamics', votes: 23 },
-          { id: 'opt_sol', text: 'Solana (SOL) — Futures CVD Absorption & Breakout Levels', votes: 31 },
-        ],
-        totalVotes: 153,
-        userVotes: {},
-        active: true,
-        analysisDate: 'Upcoming Live Session',
-        createdAt: new Date().toISOString()
-      }
     ]
   };
 }
@@ -241,18 +219,6 @@ class StorageManager {
         if (!parsed.pricingConfig) parsed.pricingConfig = getInitialData().pricingConfig;
         if (!parsed.transactions) parsed.transactions = [];
         if (!parsed.channels) parsed.channels = getInitialData().channels;
-        if (!parsed.polls) parsed.polls = getInitialData().polls;
-
-        // Clean any duplicate or leading numbers from poll options
-        if (parsed.polls && Array.isArray(parsed.polls)) {
-          parsed.polls = parsed.polls.map((p: any) => ({
-            ...p,
-            options: (p.options || []).map((opt: any) => ({
-              ...opt,
-              text: (opt.text || '').replace(/^\d+[\.\)]\s*/, '').trim()
-            }))
-          }));
-        }
 
         // Wipe out any old preseeded mock lessons or signals if still present
         if (parsed.lessons) {
@@ -656,95 +622,6 @@ class StorageManager {
       return true;
     }
     return false;
-  }
-
-  // --- Community Lecture & Analysis Request Polls ---
-  getPolls(): CommunityPoll[] {
-    if (!this.data.polls) {
-      this.data.polls = getInitialData().polls;
-      this.saveData(this.data);
-    }
-    return this.data.polls;
-  }
-
-  createPoll(pollData: { title: string; description?: string; options: string[]; analysisDate?: string }): CommunityPoll {
-    const newPoll: CommunityPoll = {
-      id: `poll_${Date.now()}_${crypto.randomBytes(2).toString('hex')}`,
-      title: pollData.title,
-      description: pollData.description,
-      options: pollData.options.map((optText, index) => ({
-        id: `opt_${index + 1}_${crypto.randomBytes(2).toString('hex')}`,
-        text: optText,
-        votes: 0,
-      })),
-      totalVotes: 0,
-      userVotes: {},
-      active: true,
-      analysisDate: pollData.analysisDate || 'Upcoming Session',
-      createdAt: new Date().toISOString(),
-    };
-    if (!this.data.polls) this.data.polls = [];
-    this.data.polls.unshift(newPoll);
-    this.saveData(this.data);
-    return newPoll;
-  }
-
-  updatePoll(id: string, updates: Partial<CommunityPoll>): CommunityPoll | null {
-    if (!this.data.polls) return null;
-    const idx = this.data.polls.findIndex(p => p.id === id);
-    if (idx === -1) return null;
-    this.data.polls[idx] = { ...this.data.polls[idx], ...updates };
-    this.saveData(this.data);
-    return this.data.polls[idx];
-  }
-
-  deletePoll(id: string): boolean {
-    if (!this.data.polls) return false;
-    const before = this.data.polls.length;
-    this.data.polls = this.data.polls.filter(p => p.id !== id);
-    if (this.data.polls.length !== before) {
-      this.saveData(this.data);
-      return true;
-    }
-    return false;
-  }
-
-  votePoll(pollId: string, optionId: string, userId: string): CommunityPoll | null {
-    if (!this.data.polls) return null;
-    const poll = this.data.polls.find(p => p.id === pollId);
-    if (!poll || !poll.active) return null;
-
-    if (!poll.userVotes) poll.userVotes = {};
-
-    const existingVote = poll.userVotes[userId];
-    if (existingVote) {
-      // decrement old option
-      const oldOpt = poll.options.find(o => o.id === existingVote);
-      if (oldOpt && oldOpt.votes > 0) oldOpt.votes -= 1;
-    } else {
-      poll.totalVotes += 1;
-    }
-
-    // increment new option
-    const newOpt = poll.options.find(o => o.id === optionId);
-    if (!newOpt) return null;
-    newOpt.votes += 1;
-
-    poll.userVotes[userId] = optionId;
-
-    // determine current winner
-    let maxVotes = -1;
-    let winningId = '';
-    poll.options.forEach(o => {
-      if (o.votes > maxVotes) {
-        maxVotes = o.votes;
-        winningId = o.id;
-      }
-    });
-    poll.winnerOptionId = winningId;
-
-    this.saveData(this.data);
-    return poll;
   }
 
   // --- Reports & Materials ---

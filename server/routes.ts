@@ -720,42 +720,6 @@ apiRouter.delete('/admin/channels/:id', requireAdmin, (req: Request, res: Respon
   res.json({ success: true });
 });
 
-// ================= COMMUNITY LECTURE POLLS ROUTES =================
-
-apiRouter.get('/polls', (_req: Request, res: Response) => {
-  res.json({ polls: storage.getPolls() });
-});
-
-apiRouter.post('/polls/:id/vote', requireAuth, (req: Request, res: Response) => {
-  const userId = (req as any).userId;
-  const { optionId } = req.body;
-  if (!optionId) return res.status(400).json({ error: 'optionId is required' });
-  const updated = storage.votePoll(req.params.id, optionId, userId);
-  if (!updated) return res.status(404).json({ error: 'Poll not found or inactive' });
-  res.json({ poll: updated });
-});
-
-apiRouter.post('/admin/polls', requireAdmin, (req: Request, res: Response) => {
-  const { title, description, options, analysisDate } = req.body;
-  if (!title || !options || !Array.isArray(options) || options.length < 2) {
-    return res.status(400).json({ error: 'Poll title and at least 2 options are required' });
-  }
-  const poll = storage.createPoll({ title, description, options, analysisDate });
-  res.status(201).json({ poll });
-});
-
-apiRouter.put('/admin/polls/:id', requireAdmin, (req: Request, res: Response) => {
-  const updated = storage.updatePoll(req.params.id, req.body);
-  if (!updated) return res.status(404).json({ error: 'Poll not found' });
-  res.json({ poll: updated });
-});
-
-apiRouter.delete('/admin/polls/:id', requireAdmin, (req: Request, res: Response) => {
-  const ok = storage.deletePoll(req.params.id);
-  if (!ok) return res.status(404).json({ error: 'Poll not found' });
-  res.json({ success: true });
-});
-
 // ================= ADMIN USER MANAGEMENT =================
 
 apiRouter.get('/admin/users', requireAdmin, (_req: Request, res: Response) => {

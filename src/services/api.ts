@@ -13,7 +13,6 @@ import type {
   PaymentTransaction,
   TransactionStatus,
   SocialChannel,
-  CommunityPoll,
   PaymentGatewayInfo,
   CheckoutSessionResponse,
   CourseEnrollment
@@ -488,38 +487,6 @@ export const api = {
 
   async deleteChannel(id: string): Promise<{ success: boolean }> {
     return request<{ success: boolean }>(`/api/admin/channels/${id}`, {
-      method: 'DELETE',
-    });
-  },
-
-  // Community Polls & Lecture Portal
-  async getPolls(): Promise<{ polls: CommunityPoll[] }> {
-    return request<{ polls: CommunityPoll[] }>('/api/polls');
-  },
-
-  async votePoll(pollId: string, optionId: string): Promise<{ poll: CommunityPoll }> {
-    return request<{ poll: CommunityPoll }>(`/api/polls/${pollId}/vote`, {
-      method: 'POST',
-      body: JSON.stringify({ optionId }),
-    });
-  },
-
-  async createPoll(params: { title: string; description?: string; options: string[]; analysisDate?: string }): Promise<{ poll: CommunityPoll }> {
-    return request<{ poll: CommunityPoll }>('/api/admin/polls', {
-      method: 'POST',
-      body: JSON.stringify(params),
-    });
-  },
-
-  async updatePoll(id: string, updates: Partial<CommunityPoll>): Promise<{ poll: CommunityPoll }> {
-    return request<{ poll: CommunityPoll }>(`/api/admin/polls/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(updates),
-    });
-  },
-
-  async deletePoll(id: string): Promise<{ success: boolean }> {
-    return request<{ success: boolean }>(`/api/admin/polls/${id}`, {
       method: 'DELETE',
     });
   },

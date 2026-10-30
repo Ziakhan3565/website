@@ -107,7 +107,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
                 {/* Badge Overlay */}
                 {item.badge && (
                   <span
-                    className={`absolute -top-1.5 -right-3 text-[9px] font-mono font-black px-1.5 py-0.2 rounded-full leading-tight shadow-md ${
+                    className={`absolute -top-1.5 -right-3 text-[9px] font-mono font-black px-1.5 py-0.5 rounded-full leading-tight shadow-md ${
                       item.badgeColor || 'bg-amber-500 text-black'
                     }`}
                   >

@@ -20,6 +20,7 @@ import { CoursePaymentModal } from './components/payment/CoursePaymentModal.tsx'
 import { Footer } from './components/common/Footer.tsx';
 import { LegalModals, type LegalModalType } from './components/common/LegalModals.tsx';
 import { TopNavModals } from './components/navigation/TopNavModals.tsx';
+import { MobileBottomNav } from './components/navigation/MobileBottomNav.tsx';
 import { PwaInstallBanner } from './components/common/PwaInstallBanner.tsx';
 import { api } from './services/api.ts';
 import type {
@@ -37,7 +38,7 @@ import type {
 function MainApp() {
   const { user, refreshUser } = useAuth();
   const [currentView, setCurrentView] = useState('home');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [paymentPlan, setPaymentPlan] = useState<'beginner' | 'advanced'>('beginner');
@@ -283,18 +284,20 @@ function MainApp() {
 
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-[#ececec] flex">
-      {/* Sidebar */}
+      {/* Sidebar - Controlled on Laptop via Three Lines Menu Button */}
       <Sidebar
         currentView={currentView}
         onNavigate={setCurrentView}
-        mobileOpen={mobileMenuOpen}
-        onCloseMobile={() => setMobileMenuOpen(false)}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
         hasLiveClassNow={hasLiveClassNow}
         activeSignalsCount={activeSignalsCount}
       />
 
       {/* Main Workspace Frame with Rich Ambient Background Mesh */}
-      <div className="flex-1 flex flex-col min-w-0 lg:pl-60 relative bg-gradient-to-b from-[#0d0e14] via-[#090a0f] to-[#06070a]">
+      <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 relative bg-gradient-to-b from-[#0d0e14] via-[#090a0f] to-[#06070a] ${
+        sidebarOpen ? 'lg:pl-60' : 'lg:pl-0'
+      }`}>
         {/* Ambient background gold & obsidian light orbs matching logo */}
         <div className="absolute top-0 right-1/4 w-[600px] h-[500px] bg-gradient-to-br from-amber-500/10 via-yellow-600/6 to-transparent rounded-full blur-[140px] pointer-events-none" />
         <div className="absolute top-1/3 left-0 w-[500px] h-[450px] bg-gradient-to-tr from-amber-600/8 via-yellow-500/5 to-transparent rounded-full blur-[150px] pointer-events-none" />
@@ -307,15 +310,15 @@ function MainApp() {
           currentView={currentView}
           onNavigate={setCurrentView}
           onOpenAuth={() => setAuthModalOpen(true)}
-          mobileMenuOpen={mobileMenuOpen}
-          onToggleMobileMenu={() => setMobileMenuOpen(!mobileMenuOpen)}
           tickers={tickers}
           isMarketStale={isMarketStale}
           hasLiveClassNow={hasLiveClassNow}
+          sidebarOpen={sidebarOpen}
+          onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
         />
 
         {/* Viewport Content with Mobile-First Responsive Spacing */}
-        <main className="flex-1 p-3 sm:p-6 lg:p-8 pb-24 lg:pb-12 max-w-7xl w-full mx-auto relative z-10 space-y-4 min-w-0 overflow-x-hidden">
+        <main className="flex-1 p-3 sm:p-6 lg:p-8 pb-28 lg:pb-12 max-w-7xl w-full mx-auto relative z-10 space-y-4 min-w-0 overflow-x-hidden">
           {paymentAlert && (
             <div className={`p-4 rounded-2xl border flex items-center justify-between text-xs font-mono shadow-xl animate-fade-in ${
               paymentAlert.type === 'success'
@@ -500,6 +503,14 @@ function MainApp() {
       <TopNavModals
         activeModal={topNavModal}
         onClose={() => setTopNavModal(null)}
+      />
+
+      {/* Mobile Sticky Bottom Navigation (Mobile Only: Home, Beginner, Advance, Live, Signals, Profile) */}
+      <MobileBottomNav
+        currentView={currentView}
+        onNavigate={setCurrentView}
+        hasLiveClassNow={hasLiveClassNow}
+        activeSignalsCount={activeSignalsCount}
       />
     </div>
   );

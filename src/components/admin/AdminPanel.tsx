@@ -28,7 +28,6 @@ import {
   RefreshCw,
   AlertCircle,
   Filter,
-  Vote,
   Share2,
   Globe,
   MessageCircle,
@@ -62,7 +61,6 @@ import type {
   CoursePricingConfig,
   PaymentTransaction,
   SocialChannel,
-  CommunityPoll,
   PaymentGatewayInfo
 } from '../../types/index.ts';
 import { api } from '../../services/api.ts';
@@ -100,7 +98,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 }) => {
   const { user, isAdmin, switchDemoAccount } = useAuth();
   const [activeTab, setActiveTab] = useState<
-    'beginner_lessons' | 'advanced_lessons' | 'spot' | 'futures' | 'pricing' | 'live' | 'polls' | 'channels' | 'materials' | 'announcements' | 'students'
+    'beginner_lessons' | 'advanced_lessons' | 'spot' | 'futures' | 'pricing' | 'live' | 'channels' | 'materials' | 'announcements' | 'students'
   >('beginner_lessons');
 
   // Video Player & Editing Lesson State
@@ -143,20 +141,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     subscribers: '',
     active: true,
   });
-
-  // Polls & Demand Portal State & Forms
-  const [polls, setPolls] = useState<CommunityPoll[]>([]);
-  const [pollsLoading, setPollsLoading] = useState(false);
-  const [showPollModal, setShowPollModal] = useState(false);
-  const [pollFormTitle, setPollFormTitle] = useState('');
-  const [pollFormDesc, setPollFormDesc] = useState('');
-  const [pollFormDate, setPollFormDate] = useState('Upcoming Live Analysis Stream');
-  const [pollFormOptions, setPollFormOptions] = useState<string[]>([
-    'Bitcoin (BTC) — Institutional Order Flow & $75K Targets',
-    'Gold (XAUUSD) — Macro Safe-Haven Breakout vs USD',
-    'Ethereum (ETH) — L1 Institutional Accumulation & Gas Dynamics',
-    'Solana (SOL) — Futures CVD Absorption & Breakout Levels',
-  ]);
 
   // Student accounts list state
   const [usersList, setUsersList] = useState<UserType[]>([]);
@@ -342,24 +326,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     }
   };
 
-  const loadPolls = async () => {
-    setPollsLoading(true);
-    try {
-      const res = await api.getPolls();
-      if (res.polls) setPolls(res.polls);
-    } catch (e) {
-      console.error('Failed to load polls', e);
-    } finally {
-      setPollsLoading(false);
-    }
-  };
-
   useEffect(() => {
     if (isAdmin) {
       loadPricingAndTransactions();
       loadStudents();
       loadChannels();
-      loadPolls();
     }
   }, [isAdmin, activeTab]);
 
@@ -395,39 +366,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       await loadChannels();
     } catch (err: any) {
       alert(err.message || 'Failed to update channel status');
-    }
-  };
-
-  const handleCreatePoll = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const validOptions = pollFormOptions.map(o => o.trim()).filter(Boolean);
-    if (!pollFormTitle.trim() || validOptions.length < 2) {
-      alert('Poll title and at least 2 options are required.');
-      return;
-    }
-    try {
-      await api.createPoll({
-        title: pollFormTitle.trim(),
-        description: pollFormDesc.trim() || 'Vote for your preferred asset. The highest votes will receive dedicated live analysis.',
-        options: validOptions,
-        analysisDate: pollFormDate.trim()
-      });
-      setShowPollModal(false);
-      setPollFormTitle('');
-      setPollFormDesc('');
-      await loadPolls();
-    } catch (err: any) {
-      alert(err.message || 'Failed to create poll');
-    }
-  };
-
-  const handleDeletePoll = async (id: string, title: string) => {
-    setPolls(prev => prev.filter(p => p.id !== id));
-    try {
-      await api.deletePoll(id);
-      await loadPolls();
-    } catch (err: any) {
-      console.error('Failed to delete poll', err);
     }
   };
 
@@ -941,13 +879,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             icon: Radio,
             count: liveClasses.length,
             color: 'rose'
-          },
-          {
-            id: 'polls',
-            label: 'Student Demand Polls',
-            icon: Vote,
-            count: polls.length,
-            color: 'blue'
           },
           {
             id: 'channels',
@@ -2738,150 +2669,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         </div>
       )}
 
-      {/* Tab: Community Demand Portal & Asset Polls */}
-      {activeTab === 'polls' && (
-        <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#171717] p-5 rounded-2xl border border-[#2a2a2a]">
-            <div>
-              <span className="text-xs font-mono uppercase text-purple-400 font-bold flex items-center gap-1.5">
-                <Vote className="w-4 h-4 text-purple-400" /> Community Demand Portal
-              </span>
-              <h2 className="text-lg font-bold text-white mt-1">
-                Student Lecture & Market Request Polls
-              </h2>
-              <p className="text-xs text-neutral-400 mt-1 max-w-2xl">
-                Create topics for students to vote on (e.g. Bitcoin vs. Gold). The asset with the highest votes dictates your next live deep-dive analysis.
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => {
-                setPollFormTitle('');
-                setPollFormDesc('');
-                setPollFormDate('Upcoming Live NY Session');
-                setPollFormOptions([
-                  'Bitcoin (BTC) — Institutional Order Flow & $75K Targets',
-                  'Gold (XAUUSD) — Macro Safe-Haven Breakout vs USD',
-                  'Ethereum (ETH) — L1 Institutional Accumulation & Gas Dynamics',
-                  'Solana (SOL) — Futures CVD Absorption & Breakout Levels',
-                ]);
-                setShowPollModal(true);
-              }}
-              className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold font-mono flex items-center gap-1.5 shadow-md shadow-purple-600/30 self-start sm:self-auto"
-            >
-              <Plus className="w-4 h-4" />
-              <span>+ Add Demand Poll</span>
-            </button>
-          </div>
-
-          <div className="space-y-4">
-            {polls.length === 0 ? (
-              <div className="p-10 text-center rounded-2xl bg-[#141524] border border-[#24263b] text-neutral-400 space-y-2">
-                <Vote className="w-8 h-8 text-neutral-500 mx-auto" />
-                <h4 className="text-sm font-bold text-white">No Lecture Request Polls Active</h4>
-                <p className="text-xs text-neutral-400">Click "+ Add Demand Poll" above to publish a community voting topic.</p>
-              </div>
-            ) : (
-              polls.map((poll) => {
-                let leader = poll.options[0];
-                poll.options.forEach((opt) => {
-                  if (opt.votes > (leader?.votes || 0)) leader = opt;
-                });
-
-                return (
-                  <div
-                    key={poll.id}
-                    className="p-5 rounded-2xl bg-[#121824] border border-slate-800 space-y-4 shadow-lg"
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-800 font-bold uppercase">
-                            LIVE POLL
-                          </span>
-                          {poll.analysisDate && (
-                            <span className="text-[10px] font-mono text-amber-300">
-                              Target Session: {poll.analysisDate}
-                            </span>
-                          )}
-                          <span className="text-[10px] font-mono text-slate-400">
-                            {poll.totalVotes} Total Student Votes
-                          </span>
-                        </div>
-                        <h4 className="text-base font-bold text-white">{poll.title}</h4>
-                        {poll.description && (
-                          <p className="text-xs text-slate-400 mt-0.5">{poll.description}</p>
-                        )}
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          handleDeletePoll(poll.id, poll.title);
-                        }}
-                        onTouchEnd={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          handleDeletePoll(poll.id, poll.title);
-                        }}
-                        className="self-start sm:self-auto px-2.5 py-1.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 active:scale-95 text-rose-400 hover:text-rose-300 border border-rose-500/30 text-xs font-mono font-bold flex items-center gap-1.5 transition-all shadow-sm cursor-pointer shrink-0"
-                        title="Delete Poll Permanently"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                        <span>Delete</span>
-                      </button>
-                    </div>
-
-                    {leader && poll.totalVotes > 0 && (
-                      <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between gap-3 text-xs">
-                        <div className="flex items-center gap-2 text-amber-300">
-                          <Award className="w-4 h-4 text-amber-400 shrink-0" />
-                          <span className="font-bold">
-                            #1 Leading Demand Choice: {leader.text.replace(/^\d+[\.\)]\s*/, '')} ({Math.round((leader.votes / poll.totalVotes) * 100)}% Votes)
-                          </span>
-                        </div>
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold shrink-0">
-                          Scheduled for Analysis
-                        </span>
-                      </div>
-                    )}
-
-                    <div className="space-y-2">
-                      {poll.options.map((opt) => {
-                        const pct = poll.totalVotes > 0 ? Math.round((opt.votes / poll.totalVotes) * 100) : 0;
-                        const isLead = leader?.id === opt.id && poll.totalVotes > 0;
-                        return (
-                          <div key={opt.id} className="relative p-3 rounded-xl bg-[#0b0e14] border border-slate-800 overflow-hidden">
-                            <div
-                              className={`absolute inset-y-0 left-0 opacity-20 pointer-events-none transition-all ${
-                                isLead ? 'bg-amber-400' : 'bg-purple-600'
-                              }`}
-                              style={{ width: `${pct}%` }}
-                            />
-                            <div className="relative z-10 flex items-center justify-between text-xs">
-                              <span className={`font-medium ${isLead ? 'text-amber-200 font-bold' : 'text-slate-200'}`}>
-                                {opt.text.replace(/^\d+[\.\)]\s*/, '')}
-                              </span>
-                              <div className="flex items-center gap-2 font-mono text-[11px] shrink-0">
-                                <span className="font-bold text-white">{pct}%</span>
-                                <span className="text-slate-400">({opt.votes} votes)</span>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-      )}
-
       {/* Tab: Official Channels & Communities Desk */}
       {activeTab === 'channels' && (
         <div className="space-y-4">
@@ -4234,120 +4021,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 className="px-4 py-2 rounded bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold"
               >
                 {editingChannelId ? 'Update Channel' : 'Add Channel'}
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      {/* Modal: Add Demand Poll */}
-      {showPollModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <form
-            onSubmit={handleCreatePoll}
-            className="w-full max-w-lg bg-[#121824] border border-slate-800 rounded-2xl p-6 space-y-3.5 my-6"
-          >
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <div className="flex items-center gap-2">
-                <Vote className="w-4 h-4 text-purple-400" />
-                <h3 className="text-base font-bold text-white">Create Lecture Demand Poll</h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowPollModal(false)}
-                className="text-slate-400 hover:text-white"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div>
-              <label className="text-slate-400 text-xs block mb-1">Poll Question / Title</label>
-              <input
-                type="text"
-                value={pollFormTitle}
-                onChange={(e) => setPollFormTitle(e.target.value)}
-                placeholder="Which asset should our next live market analysis cover?"
-                className="w-full bg-[#0b0e14] border border-slate-800 rounded p-2 text-xs text-white"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="text-slate-400 text-xs block mb-1">Description (Optional)</label>
-              <textarea
-                value={pollFormDesc}
-                onChange={(e) => setPollFormDesc(e.target.value)}
-                placeholder="Cast your vote! The winning topic dictates our upcoming live session."
-                className="w-full bg-[#0b0e14] border border-slate-800 rounded p-2 text-xs text-white h-16"
-              />
-            </div>
-
-            <div>
-              <label className="text-slate-400 text-xs block mb-1">Scheduled Analysis Date / Session</label>
-              <input
-                type="text"
-                value={pollFormDate}
-                onChange={(e) => setPollFormDate(e.target.value)}
-                placeholder="e.g. Wednesday Live NY Desk or Upcoming Masterclass"
-                className="w-full bg-[#0b0e14] border border-slate-800 rounded p-2 text-xs text-white"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-slate-400 text-xs block">Voting Choices (e.g. Bitcoin vs. Gold)</label>
-              {pollFormOptions.map((opt, idx) => (
-                <div key={idx} className="flex items-center gap-2">
-                  <span className="text-xs font-mono text-purple-400 font-bold w-4">{idx + 1}.</span>
-                  <input
-                    type="text"
-                    value={opt}
-                    onChange={(e) => {
-                      const updated = [...pollFormOptions];
-                      updated[idx] = e.target.value;
-                      setPollFormOptions(updated);
-                    }}
-                    placeholder={`Option ${idx + 1}`}
-                    className="flex-1 bg-[#0b0e14] border border-slate-800 rounded p-2 text-xs text-white"
-                  />
-                  {pollFormOptions.length > 2 && (
-                    <button
-                      type="button"
-                      onClick={() => setPollFormOptions(pollFormOptions.filter((_, i) => i !== idx))}
-                      className="p-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 active:scale-95 text-rose-400 hover:text-rose-300 border border-rose-500/30 transition-all cursor-pointer shrink-0"
-                      title="Remove Choice"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  )}
-                </div>
-              ))}
-
-              {pollFormOptions.length < 6 && (
-                <button
-                  type="button"
-                  onClick={() => setPollFormOptions([...pollFormOptions, ''])}
-                  className="text-xs text-purple-400 hover:text-purple-300 flex items-center gap-1 mt-1 font-semibold"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Add Another Option</span>
-                </button>
-              )}
-            </div>
-
-            <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">
-              <button
-                type="button"
-                onClick={() => setShowPollModal(false)}
-                className="px-4 py-2 rounded bg-slate-800 text-slate-300 text-xs"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 rounded bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold"
-              >
-                Publish Demand Poll
               </button>
             </div>
           </form>

@@ -14,7 +14,6 @@ import {
   Zap,
   Radio,
   Layers,
-  Vote,
   Sparkles,
   Lock,
   CheckCircle2,
@@ -41,7 +40,7 @@ export interface VideoChapter {
     label: string;
     isClicking?: boolean;
   };
-  simulatedView: 'market' | 'channel' | 'beginner' | 'advance' | 'live' | 'signals' | 'poll';
+  simulatedView: 'market' | 'channel' | 'beginner' | 'advance' | 'live' | 'signals';
   narrationEnglish: string;
   appView: string;
 }
@@ -113,17 +112,17 @@ export const CHAPTERS: VideoChapter[] = [
       'Chapter 5: Live Trading Desk. Whenever an instructor goes live, a broadcast bar appears at the top. Click the one-click Join button to instantly enter the live room, watch real-time New York open execution, and chat with Zia Khan.',
   },
   {
-    id: 'signals_and_polls',
+    id: 'signals_desk',
     chapterNumber: 6,
-    title: 'Signals Terminal & Student Demand Portal',
-    subtitle: 'Verified spot/futures trade calls & Instagram/WhatsApp polls',
+    title: 'Signals Terminal & Quantitative Setups',
+    subtitle: 'Verified spot/futures trade calls & disciplined risk targets',
     startTime: 125,
     endTime: 150,
-    cursorTarget: { x: 50, y: 64, label: 'Vote on Live Masterclass Topic', isClicking: true },
-    simulatedView: 'poll',
+    cursorTarget: { x: 50, y: 64, label: 'Access Spot & Futures Signals', isClicking: true },
+    simulatedView: 'signals',
     appView: 'signals',
     narrationEnglish:
-      'Chapter 6: Signals Desk and Student Demand Portal. Access verified trade setups with exact Entry, Take Profit, and Stop Loss targets. Plus, vote on upcoming session topics just like WhatsApp and Instagram polls.',
+      'Chapter 6: Signals Desk. Access verified trade setups with exact Entry, Take Profit, and Stop Loss targets. High-accuracy quantitative trade execution for students.',
   },
 ];
 
@@ -525,34 +524,34 @@ export const ScreenRecordingSimulator: React.FC<ScreenRecordingSimulatorProps> =
             </div>
           )}
 
-          {/* CHAPTER 6: SIGNALS & COMMUNITY POLLS SIMULATION */}
-          {currentChapter.simulatedView === 'poll' && (
+          {/* CHAPTER 6: SIGNALS TERMINAL SIMULATION */}
+          {currentChapter.simulatedView === 'signals' && (
             <div className="h-full flex flex-col justify-between p-2 sm:p-4 animate-fade-in">
               <div className="p-3.5 rounded-2xl bg-[#121320] border border-amber-500/40 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Vote className="w-4 h-4 text-amber-400" />
+                  <Zap className="w-4 h-4 text-amber-400" />
                   <span className="text-xs sm:text-sm font-black text-white">
-                    Student Demand Portal (Poll)
+                    BTC/USDT Perpetual Long Setup
                   </span>
                 </div>
-                <span className="text-[10px] font-mono text-neutral-400">
-                  Like WhatsApp / Instagram Polls
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold">
+                  Active Signal
                 </span>
               </div>
 
-              {/* Poll Options */}
-              <div className="space-y-1.5 max-w-md mx-auto w-full">
-                <div className="p-2.5 rounded-xl bg-amber-500/20 border-2 border-amber-400 text-xs flex items-center justify-between text-white font-bold shadow-md">
-                  <span>Bitcoin (BTC) — $75K Liquidity Target</span>
-                  <span className="font-mono text-amber-300">58% Votes</span>
+              {/* Trade Levels */}
+              <div className="grid grid-cols-3 gap-2 max-w-md mx-auto w-full text-center">
+                <div className="p-2.5 rounded-xl bg-black/40 border border-white/10">
+                  <span className="text-[9px] font-mono text-neutral-400 block uppercase">Entry Zone</span>
+                  <span className="text-xs font-bold text-white font-mono">$67,420</span>
                 </div>
-                <div className="p-2.5 rounded-xl bg-black/40 border border-white/10 text-xs flex items-center justify-between text-neutral-400">
-                  <span>Gold (XAUUSD) — Breakout vs USD</span>
-                  <span className="font-mono text-neutral-500">24% Votes</span>
+                <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
+                  <span className="text-[9px] font-mono text-emerald-400 block uppercase">Target (TP)</span>
+                  <span className="text-xs font-bold text-emerald-300 font-mono">$72,800</span>
                 </div>
-                <div className="p-2.5 rounded-xl bg-black/40 border border-white/10 text-xs flex items-center justify-between text-neutral-400">
-                  <span>Solana (SOL) — Futures CVD Absorption</span>
-                  <span className="font-mono text-neutral-500">18% Votes</span>
+                <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30">
+                  <span className="text-[9px] font-mono text-rose-400 block uppercase">Stop Loss</span>
+                  <span className="text-xs font-bold text-rose-300 font-mono">$65,900</span>
                 </div>
               </div>
             </div>
