@@ -17,13 +17,15 @@ import {
   Share2,
   Calendar
 } from 'lucide-react';
-import type { LiveClass, LiveChatMessage } from '../../types/index.ts';
+import type { LiveClass, LiveChatMessage, ExchangeReferral } from '../../types/index.ts';
 import { useAuth } from '../../context/AuthContext.tsx';
 import { api } from '../../services/api.ts';
 import { getEmbedUrl, isDirectVideo, getAutoThumbnail } from '../../utils/videoUtils.ts';
+import { ExchangeReferralCards } from '../common/ExchangeReferralCards.tsx';
 
 interface LiveClassesViewProps {
   liveClasses: LiveClass[];
+  exchanges?: ExchangeReferral[];
   onOpenScheduleClass?: () => void;
   onRefreshClasses: () => void;
   onOpenPayment?: (plan: 'beginner' | 'advanced') => void;
@@ -31,6 +33,7 @@ interface LiveClassesViewProps {
 
 export const LiveClassesView: React.FC<LiveClassesViewProps> = ({
   liveClasses,
+  exchanges = [],
   onOpenScheduleClass,
   onRefreshClasses,
 }) => {
@@ -709,6 +712,15 @@ export const LiveClassesView: React.FC<LiveClassesViewProps> = ({
           })}
         </div>
       </div>
+
+      {/* Official Exchange Referral Accounts (MEXC • Binance • Bybit) */}
+      {exchanges && exchanges.length > 0 && (
+        <ExchangeReferralCards
+          exchanges={exchanges}
+          title="Official Exchange Portals (MEXC • Binance • Bybit)"
+          subtitle="Follow along with real-time live trading streams and order executions with verified partner links."
+        />
+      )}
     </div>
   );
 };

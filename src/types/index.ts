@@ -272,4 +272,20 @@ export interface SocialChannel {
   active: boolean;
 }
 
+export interface ExchangeReferral {
+  id: string;
+  name: string;
+  exchangeKey: 'mexc' | 'binance' | 'bybit' | 'okx' | 'bitget' | 'other';
+  referralUrl: string;
+  referralCode: string;
+  bonusTag?: string;
+  badge?: string;
+  description?: string;
+  clicksCount: number;
+  active: boolean;
+  order?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 

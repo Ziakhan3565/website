@@ -15,13 +15,15 @@ import {
   AlertTriangle,
   Layers
 } from 'lucide-react';
-import type { SpotSignal, FuturesSignal, SignalStatus } from '../../types/index.ts';
+import type { SpotSignal, FuturesSignal, SignalStatus, ExchangeReferral } from '../../types/index.ts';
 import { useAuth } from '../../context/AuthContext.tsx';
 import { api } from '../../services/api.ts';
+import { ExchangeReferralCards } from '../common/ExchangeReferralCards.tsx';
 
 interface SignalsSectionViewProps {
   spotSignals: SpotSignal[];
   futuresSignals: FuturesSignal[];
+  exchanges?: ExchangeReferral[];
   defaultSection?: 'spot' | 'futures';
   onOpenPayment?: (plan: 'beginner' | 'advanced') => void;
   pricing?: { beginnerPrice: number; advancedPrice: number };
@@ -31,6 +33,7 @@ interface SignalsSectionViewProps {
 export const SignalsSectionView: React.FC<SignalsSectionViewProps> = ({
   spotSignals,
   futuresSignals,
+  exchanges = [],
   defaultSection = 'spot',
   onOpenPayment,
   pricing,
@@ -598,6 +601,15 @@ export const SignalsSectionView: React.FC<SignalsSectionViewProps> = ({
             )}
           </div>
         </div>
+      )}
+
+      {/* Official Exchange Referral Accounts (MEXC • Binance • Bybit) */}
+      {exchanges && exchanges.length > 0 && (
+        <ExchangeReferralCards
+          exchanges={exchanges}
+          title="Official Exchange Portals (MEXC • Binance • Bybit)"
+          subtitle="Open an account on recommended exchanges to execute spot and futures signals with 0% maker fee perks."
+        />
       )}
 
       {/* ADMIN MODAL: ADD SPOT SIGNAL */}

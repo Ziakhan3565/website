@@ -36,7 +36,7 @@ export const Footer: React.FC<FooterProps> = ({
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-10">
         {/* Main Footer Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand Column (Span 2) */}
           <div className="lg:col-span-2 space-y-4">
             <div onClick={() => onNavigate('home')} className="inline-block cursor-pointer">
@@ -51,9 +51,6 @@ export const Footer: React.FC<FooterProps> = ({
               <span className="text-[11px] font-mono px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-300 border border-amber-500/30 font-bold flex items-center gap-1.5">
                 <Sparkles className="w-3 h-3 text-amber-400" />
                 <span>Trading • Education • Success</span>
-              </span>
-              <span className="text-[11px] font-mono px-2.5 py-1 rounded-lg bg-[#141624] text-neutral-300 border border-[#23263c]">
-                By Lead Instructor Zia Khan
               </span>
             </div>
           </div>
@@ -113,62 +110,7 @@ export const Footer: React.FC<FooterProps> = ({
             </ul>
           </div>
 
-          {/* Column 3: Signals & Trading Desk */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-mono uppercase tracking-wider text-amber-300 font-bold flex items-center gap-1.5">
-              <Zap className="w-3.5 h-3.5 text-amber-400" />
-              <span>Desk & Signals</span>
-            </h4>
-            <ul className="space-y-2 text-xs text-neutral-300">
-              <li>
-                <button
-                  type="button"
-                  onClick={() => onNavigate('spot')}
-                  className="hover:text-amber-300 transition-colors text-left"
-                >
-                  Spot Accumulation Signals
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() => onNavigate('futures')}
-                  className="hover:text-amber-300 transition-colors text-left"
-                >
-                  Perpetual Futures Setups
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() => onNavigate('market')}
-                  className="hover:text-amber-300 transition-colors text-left"
-                >
-                  Live Binance Market Tickers
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() => onNavigate('materials')}
-                  className="hover:text-amber-300 transition-colors text-left"
-                >
-                  Course Study Notes & PDFs
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() => onNavigate('announcements')}
-                  className="hover:text-amber-300 transition-colors text-left"
-                >
-                  Official Platform Dispatches
-                </button>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 4: Trust & Compliance */}
+          {/* Column 3: Trust & Compliance */}
           <div className="space-y-3">
             <h4 className="text-xs font-mono uppercase tracking-wider text-amber-300 font-bold flex items-center gap-1.5">
               <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />

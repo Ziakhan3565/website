@@ -720,6 +720,50 @@ apiRouter.delete('/admin/channels/:id', requireAdmin, (req: Request, res: Respon
   res.json({ success: true });
 });
 
+// ================= EXCHANGE PARTNER REFERRALS ROUTES =================
+
+apiRouter.get('/exchanges', (req: Request, res: Response) => {
+  const all = storage.getExchangeReferrals();
+  const isAdminUser = (req as any).userRole === 'admin';
+  const exchanges = isAdminUser ? all : all.filter(e => e.active);
+  res.json({ exchanges });
+});
+
+apiRouter.post('/exchanges/:id/click', (req: Request, res: Response) => {
+  const result = storage.trackReferralClick(req.params.id);
+  res.json(result);
+});
+
+apiRouter.post('/admin/exchanges', requireAdmin, (req: Request, res: Response) => {
+  const { name, referralUrl, referralCode } = req.body;
+  if (!name || !referralUrl) {
+    return res.status(400).json({ error: 'Exchange name and referral URL are required' });
+  }
+  const exchange = storage.createExchangeReferral({
+    name: req.body.name,
+    exchangeKey: req.body.exchangeKey || 'other',
+    referralUrl: req.body.referralUrl,
+    referralCode: req.body.referralCode || '',
+    bonusTag: req.body.bonusTag || '',
+    description: req.body.description || '',
+    badge: req.body.badge || '',
+    active: req.body.active !== false
+  });
+  res.status(201).json({ exchange });
+});
+
+apiRouter.put('/admin/exchanges/:id', requireAdmin, (req: Request, res: Response) => {
+  const updated = storage.updateExchangeReferral(req.params.id, req.body);
+  if (!updated) return res.status(404).json({ error: 'Exchange referral not found' });
+  res.json({ exchange: updated });
+});
+
+apiRouter.delete('/admin/exchanges/:id', requireAdmin, (req: Request, res: Response) => {
+  const ok = storage.deleteExchangeReferral(req.params.id);
+  if (!ok) return res.status(404).json({ error: 'Exchange referral not found' });
+  res.json({ success: true });
+});
+
 // ================= ADMIN USER MANAGEMENT =================
 
 apiRouter.get('/admin/users', requireAdmin, (_req: Request, res: Response) => {

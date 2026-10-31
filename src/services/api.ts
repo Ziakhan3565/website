@@ -13,6 +13,7 @@ import type {
   PaymentTransaction,
   TransactionStatus,
   SocialChannel,
+  ExchangeReferral,
   PaymentGatewayInfo,
   CheckoutSessionResponse,
   CourseEnrollment
@@ -487,6 +488,37 @@ export const api = {
 
   async deleteChannel(id: string): Promise<{ success: boolean }> {
     return request<{ success: boolean }>(`/api/admin/channels/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  // Exchange Partner Referral Links
+  async getExchanges(): Promise<{ exchanges: ExchangeReferral[] }> {
+    return request<{ exchanges: ExchangeReferral[] }>('/api/exchanges');
+  },
+
+  async trackExchangeClick(id: string): Promise<{ success: boolean; clicksCount: number }> {
+    return request<{ success: boolean; clicksCount: number }>(`/api/exchanges/${id}/click`, {
+      method: 'POST',
+    });
+  },
+
+  async createExchange(params: Partial<ExchangeReferral>): Promise<{ exchange: ExchangeReferral }> {
+    return request<{ exchange: ExchangeReferral }>('/api/admin/exchanges', {
+      method: 'POST',
+      body: JSON.stringify(params),
+    });
+  },
+
+  async updateExchange(id: string, updates: Partial<ExchangeReferral>): Promise<{ exchange: ExchangeReferral }> {
+    return request<{ exchange: ExchangeReferral }>(`/api/admin/exchanges/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(updates),
+    });
+  },
+
+  async deleteExchange(id: string): Promise<{ success: boolean }> {
+    return request<{ success: boolean }>(`/api/admin/exchanges/${id}`, {
       method: 'DELETE',
     });
   },

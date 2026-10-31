@@ -44,7 +44,8 @@ import {
   Receipt,
   Video,
   Film,
-  Sparkles
+  Sparkles,
+  ArrowUpRight
 } from 'lucide-react';
 import { Logo } from '../common/Logo.tsx';
 import { useAuth } from '../../context/AuthContext.tsx';
@@ -61,6 +62,7 @@ import type {
   CoursePricingConfig,
   PaymentTransaction,
   SocialChannel,
+  ExchangeReferral,
   PaymentGatewayInfo
 } from '../../types/index.ts';
 import { api } from '../../services/api.ts';
@@ -98,7 +100,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 }) => {
   const { user, isAdmin, switchDemoAccount } = useAuth();
   const [activeTab, setActiveTab] = useState<
-    'beginner_lessons' | 'advanced_lessons' | 'spot' | 'futures' | 'pricing' | 'live' | 'channels' | 'materials' | 'announcements' | 'students'
+    'beginner_lessons' | 'advanced_lessons' | 'spot' | 'futures' | 'pricing' | 'live' | 'channels' | 'exchanges' | 'materials' | 'announcements' | 'students'
   >('beginner_lessons');
 
   // Video Player & Editing Lesson State
@@ -139,6 +141,22 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     handle: '',
     description: '',
     subscribers: '',
+    active: true,
+  });
+
+  // Exchange Partner Referral Links State & Forms (MEXC, Binance, Bybit, etc.)
+  const [exchanges, setExchanges] = useState<ExchangeReferral[]>([]);
+  const [exchangesLoading, setExchangesLoading] = useState(false);
+  const [showExchangeModal, setShowExchangeModal] = useState(false);
+  const [editingExchangeId, setEditingExchangeId] = useState<string | null>(null);
+  const [exchangeForm, setExchangeForm] = useState<Partial<ExchangeReferral>>({
+    name: 'MEXC Global',
+    exchangeKey: 'mexc',
+    referralUrl: 'https://www.mexc.com/register?inviteCode=ZIAKHAN',
+    referralCode: 'ZIAKHAN',
+    bonusTag: '0% Maker Fees + Exclusive VIP Deposit Bonus',
+    description: 'Fast execution, deep altcoin liquidity and zero maker fee trading.',
+    badge: 'Top Pick for Altcoins',
     active: true,
   });
 
@@ -326,13 +344,65 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     }
   };
 
+  const loadExchanges = async () => {
+    setExchangesLoading(true);
+    try {
+      const res = await api.getExchanges();
+      if (res.exchanges) setExchanges(res.exchanges);
+    } catch (e) {
+      console.error('Failed to load exchanges', e);
+    } finally {
+      setExchangesLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (isAdmin) {
       loadPricingAndTransactions();
       loadStudents();
       loadChannels();
+      loadExchanges();
     }
   }, [isAdmin, activeTab]);
+
+  const handleSaveExchange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!exchangeForm.name?.trim() || !exchangeForm.referralUrl?.trim()) {
+      alert('Exchange name and referral URL are required.');
+      return;
+    }
+    try {
+      if (editingExchangeId) {
+        await api.updateExchange(editingExchangeId, exchangeForm);
+      } else {
+        await api.createExchange(exchangeForm);
+      }
+      setShowExchangeModal(false);
+      setEditingExchangeId(null);
+      await loadExchanges();
+    } catch (err: any) {
+      alert(err.message || 'Failed to save exchange referral link');
+    }
+  };
+
+  const handleDeleteExchange = async (id: string, name: string) => {
+    setExchanges(prev => prev.filter(e => e.id !== id));
+    try {
+      await api.deleteExchange(id);
+      await loadExchanges();
+    } catch (err: any) {
+      console.error('Failed to delete exchange', err);
+    }
+  };
+
+  const handleToggleExchangeStatus = async (id: string, currentActive: boolean) => {
+    try {
+      await api.updateExchange(id, { active: !currentActive });
+      await loadExchanges();
+    } catch (err: any) {
+      alert(err.message || 'Failed to update exchange status');
+    }
+  };
 
   const handleSaveChannel = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -830,6 +900,31 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               Upload Futures Signal · High-leverage long/short setups
             </p>
           </button>
+
+          {/* Action 5: Manage Exchange Referral Links (MEXC, Binance, Bybit) */}
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTab('exchanges');
+              window.scrollTo({ top: 400, behavior: 'smooth' });
+            }}
+            className="group relative p-4 rounded-2xl bg-gradient-to-br from-[#1b1c2b] via-[#151624] to-[#0c0d18] border border-amber-500/40 hover:border-amber-400 text-left transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-black/40"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <div className="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform">
+                <ArrowUpRight className="w-5 h-5 stroke-[2.5]" />
+              </div>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold">
+                {exchanges.length} LINKS
+              </span>
+            </div>
+            <h3 className="text-sm font-bold text-white group-hover:text-amber-300 transition-colors">
+              Exchange Referral Links
+            </h3>
+            <p className="text-[11px] text-neutral-400 mt-1 leading-snug">
+              MEXC, Binance & Bybit · Bracketed referral codes & signup links
+            </p>
+          </button>
         </div>
       </div>
 
@@ -872,6 +967,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               ? `${transactions.filter(t => t.status === 'pending').length} Pending`
               : `$${transactions.filter(t => t.status === 'approved').reduce((acc, t) => acc + (t.amount || 0), 0)}`,
             color: 'emerald'
+          },
+          {
+            id: 'exchanges',
+            label: 'Exchange Referral Links',
+            icon: ArrowUpRight,
+            count: exchanges.length,
+            color: 'amber'
           },
           {
             id: 'live',
@@ -2796,6 +2898,169 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         </div>
       )}
 
+      {/* Tab: Exchange Referral Links (MEXC, Binance, Bybit) */}
+      {activeTab === 'exchanges' && (
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#0d1424] p-4 rounded-2xl border border-cyan-500/25">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse" />
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
+                  Exchange Partner Referral Links & Bracketed Codes
+                </h3>
+              </div>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Manage partner referral URLs (MEXC, Binance, Bybit). Students can open direct registration links and copy bracketed codes [Code: ...].
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setEditingExchangeId(null);
+                setExchangeForm({
+                  name: 'MEXC Global',
+                  exchangeKey: 'mexc',
+                  referralUrl: 'https://www.mexc.com/register?inviteCode=mexc-ZIAKHAN',
+                  referralCode: 'mexc-ZIAKHAN',
+                  bonusTag: 'Up to $1,000 USDT Bonus + 0% Maker Fees',
+                  description: '0% Maker fees on Spot & Futures. 200x leverage on perpetual contracts.',
+                  badge: 'RECOMMENDED FOR FUTURES',
+                  active: true,
+                });
+                setShowExchangeModal(true);
+              }}
+              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 hover:opacity-95 text-slate-950 text-xs font-bold font-mono flex items-center gap-2 shadow-lg shadow-cyan-500/20 cursor-pointer shrink-0"
+            >
+              <Plus className="w-4 h-4 stroke-[3]" />
+              <span>+ Add Exchange Link</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            {exchanges.length === 0 ? (
+              <div className="col-span-full p-8 rounded-2xl bg-[#0c1220] border border-dashed border-slate-800 text-center text-slate-400 font-mono text-xs">
+                No exchange referral links added yet. Click "+ Add Exchange Link" above.
+              </div>
+            ) : (
+              exchanges.map((exch) => (
+                <div
+                  key={exch.id}
+                  className="p-4 rounded-2xl bg-[#0c1220] border border-slate-800 hover:border-cyan-500/40 transition-all flex flex-col justify-between space-y-3"
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="w-7 h-7 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-xs uppercase font-mono">
+                          {exch.name.charAt(0)}
+                        </span>
+                        <div>
+                          <h4 className="font-bold text-white text-xs leading-tight">{exch.name}</h4>
+                          <span className="text-[10px] font-mono text-slate-400 uppercase">{exch.exchangeKey}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-cyan-300 font-bold border border-slate-700">
+                          {exch.clicksCount || 0} Clicks
+                        </span>
+                        <span
+                          className={`text-[9px] font-mono px-2 py-0.5 rounded-full font-bold ${
+                            exch.active
+                              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                              : 'bg-slate-800 text-slate-500'
+                          }`}
+                        >
+                          {exch.active ? 'ACTIVE' : 'PAUSED'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Bracketed Referral Code */}
+                    <div className="p-2 rounded-xl bg-black/60 border border-cyan-500/30 flex items-center justify-between text-xs font-mono">
+                      <span className="text-cyan-300 font-bold select-all truncate">
+                        [ Code: {exch.referralCode} ]
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(exch.referralCode);
+                          alert(`Copied ${exch.referralCode}!`);
+                        }}
+                        className="p-1 text-slate-400 hover:text-white"
+                        title="Copy code"
+                      >
+                        <Copy className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+
+                    {/* Bonus Tag */}
+                    {exch.bonusTag && (
+                      <div className="text-[11px] text-amber-300 font-mono bg-amber-950/40 px-2 py-1 rounded-lg border border-amber-500/20 truncate">
+                        🎁 {exch.bonusTag}
+                      </div>
+                    )}
+
+                    {/* Description */}
+                    {exch.description && (
+                      <p className="text-[11px] text-slate-400 line-clamp-2">
+                        {exch.description}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Actions Bar */}
+                  <div className="flex items-center justify-between pt-2 border-t border-slate-800/80 text-xs">
+                    <button
+                      type="button"
+                      onClick={() => handleToggleExchangeStatus(exch.id, exch.active)}
+                      className={`px-2 py-1 rounded text-[10px] font-mono font-bold uppercase transition-colors ${
+                        exch.active
+                          ? 'bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25'
+                          : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                      }`}
+                    >
+                      {exch.active ? 'Disable' : 'Enable'}
+                    </button>
+
+                    <div className="flex items-center gap-1.5">
+                      <a
+                        href={exch.referralUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded"
+                        title="Test link"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingExchangeId(exch.id);
+                          setExchangeForm(exch);
+                          setShowExchangeModal(true);
+                        }}
+                        className="p-1.5 text-slate-400 hover:text-cyan-300 hover:bg-slate-800 rounded cursor-pointer"
+                        title="Edit link"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteExchange(exch.id, exch.name)}
+                        className="p-1.5 text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 rounded cursor-pointer"
+                        title="Delete referral link"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Tab 5: Materials */}
       {activeTab === 'materials' && (
         <div className="space-y-4">
@@ -4335,6 +4600,236 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Exchange Partner Referral Modal */}
+      {showExchangeModal && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <form
+            onSubmit={handleSaveExchange}
+            className="w-full max-w-lg bg-[#0e1424] border border-cyan-500/40 rounded-3xl p-6 space-y-4 shadow-2xl max-h-[92vh] overflow-y-auto font-sans"
+          >
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center">
+                  <ArrowUpRight className="w-4 h-4 stroke-[3]" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-white font-mono">
+                    {editingExchangeId ? 'Edit Exchange Referral Link' : 'Add Exchange Referral Link'}
+                  </h3>
+                  <p className="text-[10px] text-slate-400 font-mono">
+                    Configure direct registration URL & bracketed referral code
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowExchangeModal(false);
+                  setEditingExchangeId(null);
+                }}
+                className="text-slate-400 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Quick Presets */}
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-mono font-bold text-slate-400 block uppercase">
+                1-Click Preset Autofill:
+              </label>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setExchangeForm(prev => ({
+                      ...prev,
+                      name: 'MEXC Global',
+                      exchangeKey: 'mexc',
+                      referralUrl: 'https://www.mexc.com/register?inviteCode=mexc-ZIAKHAN',
+                      referralCode: 'mexc-ZIAKHAN',
+                      bonusTag: 'Up to $1,000 USDT Bonus + 0% Maker Fees',
+                      badge: 'RECOMMENDED FOR FUTURES',
+                      description: '0% Maker fees on Spot & Futures. 200x leverage on perpetual contracts with deep liquidity.',
+                    }));
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 text-[10px] font-mono font-bold"
+                >
+                  + MEXC Preset
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setExchangeForm(prev => ({
+                      ...prev,
+                      name: 'Binance',
+                      exchangeKey: 'binance',
+                      referralUrl: 'https://accounts.binance.com/register?ref=ZIAKHAN',
+                      referralCode: 'ZIAKHAN',
+                      bonusTag: 'Lifetime 20% Fee Discount + $100 Voucher',
+                      badge: 'WORLD #1 VOLUME',
+                      description: 'The world’s largest cryptocurrency exchange with deepest liquidity and SAFU protection.',
+                    }));
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-[10px] font-mono font-bold"
+                >
+                  + Binance Preset
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setExchangeForm(prev => ({
+                      ...prev,
+                      name: 'Bybit',
+                      exchangeKey: 'bybit',
+                      referralUrl: 'https://www.bybit.com/register?affiliate_id=ZIAKHAN',
+                      referralCode: 'ZIAKHAN',
+                      bonusTag: 'Up to $30,000 Deposit Rewards & VIP Tiers',
+                      badge: 'VIP DERIVATIVES DESK',
+                      description: 'Elite crypto derivatives platform with lightning-fast execution and copy trading.',
+                    }));
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-orange-500/20 hover:bg-orange-500/30 text-orange-300 border border-orange-500/40 text-[10px] font-mono font-bold"
+                >
+                  + Bybit Preset
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div>
+                <label className="text-slate-300 block mb-1 font-semibold">Exchange Name</label>
+                <input
+                  type="text"
+                  value={exchangeForm.name || ''}
+                  onChange={(e) => setExchangeForm({ ...exchangeForm, name: e.target.value })}
+                  className="w-full bg-[#141b2d] border border-slate-700 rounded-xl p-2.5 text-white placeholder-slate-500"
+                  placeholder="e.g. MEXC Global, Binance"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-slate-300 block mb-1 font-semibold">Exchange Key</label>
+                <select
+                  value={exchangeForm.exchangeKey || 'mexc'}
+                  onChange={(e) => setExchangeForm({ ...exchangeForm, exchangeKey: e.target.value as any })}
+                  className="w-full bg-[#141b2d] border border-slate-700 rounded-xl p-2.5 text-white font-mono"
+                >
+                  <option value="mexc">MEXC Global</option>
+                  <option value="binance">Binance</option>
+                  <option value="bybit">Bybit</option>
+                  <option value="okx">OKX</option>
+                  <option value="bitget">Bitget</option>
+                  <option value="other">Other Exchange</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-slate-300 text-xs block mb-1 font-semibold">
+                Direct Referral Registration URL <span className="text-cyan-400">*</span>
+              </label>
+              <input
+                type="url"
+                value={exchangeForm.referralUrl || ''}
+                onChange={(e) => setExchangeForm({ ...exchangeForm, referralUrl: e.target.value })}
+                className="w-full bg-[#141b2d] border border-slate-700 rounded-xl p-2.5 text-xs text-white placeholder-slate-500 font-mono"
+                placeholder="https://www.mexc.com/register?inviteCode=..."
+                required
+              />
+              <p className="text-[10px] text-slate-400 mt-1">
+                When any student clicks "Create Account", this link will open immediately.
+              </p>
+            </div>
+
+            <div>
+              <label className="text-slate-300 text-xs block mb-1 font-semibold">
+                Referral Code (Will be displayed in Brackets) <span className="text-cyan-400">*</span>
+              </label>
+              <div className="flex items-center gap-2">
+                <span className="text-slate-500 font-mono text-xs">[ Code: </span>
+                <input
+                  type="text"
+                  value={exchangeForm.referralCode || ''}
+                  onChange={(e) => setExchangeForm({ ...exchangeForm, referralCode: e.target.value })}
+                  className="flex-1 bg-[#141b2d] border border-cyan-500/40 rounded-xl p-2.5 text-xs text-cyan-300 font-mono font-bold"
+                  placeholder="e.g. ZIAKHAN"
+                  required
+                />
+                <span className="text-slate-500 font-mono text-xs"> ]</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div>
+                <label className="text-slate-300 block mb-1 font-semibold">Bonus Tag / Perk</label>
+                <input
+                  type="text"
+                  value={exchangeForm.bonusTag || ''}
+                  onChange={(e) => setExchangeForm({ ...exchangeForm, bonusTag: e.target.value })}
+                  className="w-full bg-[#141b2d] border border-slate-700 rounded-xl p-2.5 text-white placeholder-slate-500"
+                  placeholder="e.g. 0% Maker Fees + $1,000 Bonus"
+                />
+              </div>
+
+              <div>
+                <label className="text-slate-300 block mb-1 font-semibold">Badge Pill</label>
+                <input
+                  type="text"
+                  value={exchangeForm.badge || ''}
+                  onChange={(e) => setExchangeForm({ ...exchangeForm, badge: e.target.value })}
+                  className="w-full bg-[#141b2d] border border-slate-700 rounded-xl p-2.5 text-white placeholder-slate-500"
+                  placeholder="e.g. RECOMMENDED FOR FUTURES"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-slate-300 text-xs block mb-1 font-semibold">Platform Description</label>
+              <textarea
+                value={exchangeForm.description || ''}
+                onChange={(e) => setExchangeForm({ ...exchangeForm, description: e.target.value })}
+                className="w-full bg-[#141b2d] border border-slate-700 rounded-xl p-2.5 text-xs text-white placeholder-slate-500 h-16 resize-none"
+                placeholder="Brief summary of why students should use this exchange..."
+              />
+            </div>
+
+            <div className="flex items-center gap-2 p-3 rounded-xl bg-black/40 border border-slate-800">
+              <input
+                type="checkbox"
+                id="activeExchange"
+                checked={exchangeForm.active !== false}
+                onChange={(e) => setExchangeForm({ ...exchangeForm, active: e.target.checked })}
+                className="w-4 h-4 rounded text-cyan-500 bg-slate-900 border-slate-700 focus:ring-0 cursor-pointer"
+              />
+              <label htmlFor="activeExchange" className="text-xs text-slate-300 font-medium cursor-pointer">
+                Display this exchange referral link publicly on Laptop, Tablet, and Mobile interfaces
+              </label>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowExchangeModal(false);
+                  setEditingExchangeId(null);
+                }}
+                className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white text-xs font-mono"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 hover:opacity-95 text-slate-950 text-xs font-bold font-mono shadow-lg shadow-cyan-500/25"
+              >
+                {editingExchangeId ? 'Update Referral Link' : 'Save & Publish Link'}
+              </button>
+            </div>
+          </form>
         </div>
       )}
 

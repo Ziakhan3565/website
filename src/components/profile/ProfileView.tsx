@@ -23,10 +23,11 @@ import {
   X
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.tsx';
-import type { Lesson, LiveClass, SpotSignal, FuturesSignal, PaymentTransaction, CourseEnrollment } from '../../types/index.ts';
+import type { Lesson, LiveClass, SpotSignal, FuturesSignal, PaymentTransaction, CourseEnrollment, ExchangeReferral } from '../../types/index.ts';
 import { api } from '../../services/api.ts';
 import { ProfilePictureModal } from './ProfilePictureModal.tsx';
 import { compressImageFile } from '../../utils/avatarUtils.ts';
+import { ExchangeReferralCards } from '../common/ExchangeReferralCards.tsx';
 
 interface ProfileViewProps {
   beginnerLessons: Lesson[];
@@ -34,6 +35,7 @@ interface ProfileViewProps {
   liveClasses: LiveClass[];
   spotSignals: SpotSignal[];
   futuresSignals: FuturesSignal[];
+  exchanges?: ExchangeReferral[];
   onNavigate: (view: string) => void;
 }
 
@@ -43,6 +45,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   liveClasses,
   spotSignals,
   futuresSignals,
+  exchanges = [],
   onNavigate,
 }) => {
   const { user, isAdmin, isPremium, upgradeTier, updateProfile } = useAuth();
@@ -694,6 +697,15 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           </div>
         )}
       </div>
+
+      {/* Official Exchange Referral Accounts (MEXC • Binance • Bybit) */}
+      {exchanges && exchanges.length > 0 && (
+        <ExchangeReferralCards
+          exchanges={exchanges}
+          title="My Official Partner Exchange Accounts (MEXC • Binance • Bybit)"
+          subtitle="Direct registration links and bracketed fee discount codes for your student trading terminal."
+        />
+      )}
 
       {/* Profile Picture / DP Gallery Modal */}
       <ProfilePictureModal

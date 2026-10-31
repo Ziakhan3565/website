@@ -15,7 +15,8 @@ import type {
   PaymentTransaction,
   TransactionStatus,
   SocialChannel,
-  UserRole
+  UserRole,
+  ExchangeReferral
 } from '../src/types/index.ts';
 
 interface DatabaseSchema {
@@ -32,6 +33,7 @@ interface DatabaseSchema {
   pricingConfig: CoursePricingConfig;
   transactions: PaymentTransaction[];
   channels: SocialChannel[];
+  exchanges: ExchangeReferral[];
 }
 
 const DATA_DIR = path.resolve(process.cwd(), 'data');
@@ -197,6 +199,47 @@ function getInitialData(): DatabaseSchema {
         subscribers: 'Direct Support',
         active: true
       }
+    ],
+    exchanges: [
+      {
+        id: 'exch_mexc',
+        name: 'MEXC Global',
+        exchangeKey: 'mexc',
+        referralUrl: 'https://www.mexc.com/register?inviteCode=mexc-ZIAKHAN',
+        referralCode: 'mexc-ZIAKHAN',
+        bonusTag: 'Up to $1,000 USDT Bonus + 0% Maker Fees',
+        badge: 'RECOMMENDED FOR FUTURES',
+        description: '0% Maker fees on Spot & Futures. 200x leverage on perpetual contracts with deep orderbook liquidity.',
+        clicksCount: 48,
+        active: true,
+        order: 1
+      },
+      {
+        id: 'exch_binance',
+        name: 'Binance',
+        exchangeKey: 'binance',
+        referralUrl: 'https://accounts.binance.com/register?ref=ZIAKHAN',
+        referralCode: 'ZIAKHAN',
+        bonusTag: 'Lifetime 20% Fee Discount + $100 Welcome Voucher',
+        badge: 'WORLD #1 VOLUME',
+        description: 'The world’s largest cryptocurrency exchange. Lowest slippage, deepest liquidity, and institutional grade cold-storage security.',
+        clicksCount: 96,
+        active: true,
+        order: 2
+      },
+      {
+        id: 'exch_bybit',
+        name: 'Bybit',
+        exchangeKey: 'bybit',
+        referralUrl: 'https://www.bybit.com/register?affiliate_id=ZIAKHAN',
+        referralCode: 'ZIAKHAN',
+        bonusTag: 'Up to $30,000 Deposit Rewards & VIP Fee Tiers',
+        badge: 'VIP DERIVATIVES DESK',
+        description: 'Elite crypto derivatives platform with lightning-fast execution, advanced copy trading, and MT4 integration.',
+        clicksCount: 39,
+        active: true,
+        order: 3
+      }
     ]
   };
 }
@@ -219,6 +262,9 @@ class StorageManager {
         if (!parsed.pricingConfig) parsed.pricingConfig = getInitialData().pricingConfig;
         if (!parsed.transactions) parsed.transactions = [];
         if (!parsed.channels) parsed.channels = getInitialData().channels;
+        if (!parsed.exchanges || !Array.isArray(parsed.exchanges) || parsed.exchanges.length === 0) {
+          parsed.exchanges = getInitialData().exchanges;
+        }
 
         // Wipe out any old preseeded mock lessons or signals if still present
         if (parsed.lessons) {
@@ -622,6 +668,73 @@ class StorageManager {
       return true;
     }
     return false;
+  }
+
+  // --- Exchange Referrals ---
+  getExchanges(onlyActive = false): ExchangeReferral[] {
+    if (!this.data.exchanges) {
+      this.data.exchanges = getInitialData().exchanges;
+      this.saveData(this.data);
+    }
+    if (onlyActive) {
+      return this.data.exchanges.filter(e => e.active);
+    }
+    return this.data.exchanges;
+  }
+
+  createExchangeReferral(referral: Omit<ExchangeReferral, 'id' | 'clicksCount' | 'createdAt'>): ExchangeReferral {
+    const newExch: ExchangeReferral = {
+      ...referral,
+      id: `exch_${Date.now()}_${crypto.randomBytes(2).toString('hex')}`,
+      clicksCount: 0,
+      createdAt: new Date().toISOString()
+    };
+    if (!this.data.exchanges) this.data.exchanges = [];
+    this.data.exchanges.push(newExch);
+    this.saveData(this.data);
+    return newExch;
+  }
+
+  updateExchangeReferral(id: string, updates: Partial<ExchangeReferral>): ExchangeReferral | null {
+    if (!this.data.exchanges) return null;
+    const idx = this.data.exchanges.findIndex(e => e.id === id);
+    if (idx === -1) return null;
+    this.data.exchanges[idx] = {
+      ...this.data.exchanges[idx],
+      ...updates,
+      updatedAt: new Date().toISOString()
+    };
+    this.saveData(this.data);
+    return this.data.exchanges[idx];
+  }
+
+  deleteExchangeReferral(id: string): boolean {
+    if (!this.data.exchanges) return false;
+    const before = this.data.exchanges.length;
+    this.data.exchanges = this.data.exchanges.filter(e => e.id !== id);
+    if (this.data.exchanges.length !== before) {
+      this.saveData(this.data);
+      return true;
+    }
+    return false;
+  }
+
+  trackExchangeClick(id: string): ExchangeReferral | null {
+    if (!this.data.exchanges) return null;
+    const idx = this.data.exchanges.findIndex(e => e.id === id);
+    if (idx === -1) return null;
+    this.data.exchanges[idx].clicksCount = (this.data.exchanges[idx].clicksCount || 0) + 1;
+    this.saveData(this.data);
+    return this.data.exchanges[idx];
+  }
+
+  getExchangeReferrals(onlyActive = false): ExchangeReferral[] {
+    return this.getExchanges(onlyActive);
+  }
+
+  trackReferralClick(id: string): { success: boolean; clicksCount?: number } {
+    const res = this.trackExchangeClick(id);
+    return { success: !!res, clicksCount: res?.clicksCount };
   }
 
   // --- Reports & Materials ---

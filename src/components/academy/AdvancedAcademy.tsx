@@ -17,7 +17,7 @@ import {
   Image as ImageIcon,
   Upload
 } from 'lucide-react';
-import type { Lesson, CoursePricingConfig } from '../../types/index.ts';
+import type { Lesson, CoursePricingConfig, ExchangeReferral } from '../../types/index.ts';
 import { useAuth } from '../../context/AuthContext.tsx';
 import { api } from '../../services/api.ts';
 import {
@@ -28,9 +28,11 @@ import {
   extractYouTubeId
 } from '../../utils/videoUtils.ts';
 import { UploadProgressModal, type UploadProgressState } from '../common/UploadProgressModal.tsx';
+import { ExchangeReferralCards } from '../common/ExchangeReferralCards.tsx';
 
 interface AdvancedAcademyProps {
   lessons: Lesson[];
+  exchanges?: ExchangeReferral[];
   onOpenCreateLesson?: () => void;
   onEditLesson?: (lesson: Lesson) => void;
   onDeleteLesson?: (id: string) => void;
@@ -42,6 +44,7 @@ interface AdvancedAcademyProps {
 
 export const AdvancedAcademy: React.FC<AdvancedAcademyProps> = ({
   lessons,
+  exchanges = [],
   onOpenPayment,
   pricing,
   onRefreshData,
@@ -480,6 +483,15 @@ export const AdvancedAcademy: React.FC<AdvancedAcademyProps> = ({
           )}
         </div>
       </div>
+
+      {/* Official Exchange Referral Accounts (MEXC • Binance • Bybit) */}
+      {exchanges && exchanges.length > 0 && (
+        <ExchangeReferralCards
+          exchanges={exchanges}
+          title="Official Exchange Portals (MEXC • Binance • Bybit)"
+          subtitle="Execute institutional setups and advanced order flow strategies with VIP partner fee rebates."
+        />
+      )}
 
       {/* VIDEO PLAYER MODAL - Perfectly sized for Mobile, Tablet & Laptop */}
       {activeVideo && (

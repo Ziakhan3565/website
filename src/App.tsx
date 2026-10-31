@@ -32,7 +32,8 @@ import type {
   LearningMaterial,
   Announcement,
   SignalStatus,
-  CoursePricingConfig
+  CoursePricingConfig,
+  ExchangeReferral
 } from './types/index.ts';
 
 function MainApp() {
@@ -82,8 +83,6 @@ function MainApp() {
   }, []);
 
   // Strict access guard & Auto-onboarding tutorial on login/signup:
-  // When admin logs in, switch view directly to admin panel.
-  // When student signs up or logs in, open the onboarding tutorial walkthrough automatically on home.
   useEffect(() => {
     if (!user) {
       setAuthModalOpen(true);
@@ -91,10 +90,8 @@ function MainApp() {
         setCurrentView('home');
       }
     } else if (user.role === 'admin') {
-      // Admin logged in -> open Admin Panel directly
       setCurrentView('admin');
     } else {
-      // Regular student logged in
       if (currentView === 'admin') {
         setCurrentView('home');
       }
@@ -118,6 +115,7 @@ function MainApp() {
   const [futuresSignals, setFuturesSignals] = useState<FuturesSignal[]>([]);
   const [materials, setMaterials] = useState<LearningMaterial[]>([]);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [exchanges, setExchanges] = useState<ExchangeReferral[]>([]);
   const [pricing, setPricing] = useState<CoursePricingConfig>({
     beginnerPrice: 2,
     advancedPrice: 5,
@@ -145,7 +143,7 @@ function MainApp() {
 
   const fetchAppData = async () => {
     try {
-      const [lessRes, liveRes, spotRes, futRes, matRes, annRes, priceRes] = await Promise.all([
+      const [lessRes, liveRes, spotRes, futRes, matRes, annRes, priceRes, exchRes] = await Promise.all([
         api.getLessons(),
         api.getLiveClasses(),
         api.getSpotSignals(),
@@ -153,6 +151,7 @@ function MainApp() {
         api.getMaterials(),
         api.getAnnouncements(),
         api.getPricing(),
+        api.getExchanges().catch(() => ({ exchanges: [] })),
       ]);
 
       setLessons(lessRes.lessons);
@@ -161,6 +160,9 @@ function MainApp() {
       setFuturesSignals(futRes.signals);
       setMaterials(matRes.materials);
       setAnnouncements(annRes.announcements);
+      if (exchRes && exchRes.exchanges) {
+        setExchanges(exchRes.exchanges);
+      }
       if (priceRes && priceRes.pricing) {
         setPricing(priceRes.pricing);
       }
@@ -353,6 +355,7 @@ function MainApp() {
               tickers={tickers}
               completedLessonsCount={user?.completedLessons?.length || 0}
               pricing={pricing}
+              exchanges={exchanges}
               onOpenPayment={handleOpenPayment}
             />
           )}
@@ -360,6 +363,7 @@ function MainApp() {
           {currentView === 'beginner' && (
             <BeginnerAcademy
               lessons={beginnerLessons}
+              exchanges={exchanges}
               onOpenCreateLesson={() => setCurrentView('admin')}
               onEditLesson={() => setCurrentView('admin')}
               onDeleteLesson={handleDeleteLesson}
@@ -373,6 +377,7 @@ function MainApp() {
           {currentView === 'advanced' && (
             <AdvancedAcademy
               lessons={advancedLessons}
+              exchanges={exchanges}
               onOpenCreateLesson={() => setCurrentView('admin')}
               onEditLesson={() => setCurrentView('admin')}
               onDeleteLesson={handleDeleteLesson}
@@ -386,6 +391,7 @@ function MainApp() {
           {currentView === 'live' && (
             <LiveClassesView
               liveClasses={liveClasses}
+              exchanges={exchanges}
               onOpenScheduleClass={() => setCurrentView('admin')}
               onRefreshClasses={fetchAppData}
               onOpenPayment={handleOpenPayment}
@@ -396,6 +402,7 @@ function MainApp() {
             <SignalsSectionView
               spotSignals={spotSignals}
               futuresSignals={futuresSignals}
+              exchanges={exchanges}
               defaultSection={currentView === 'futures' ? 'futures' : 'spot'}
               onOpenPayment={handleOpenPayment}
               pricing={pricing}
@@ -436,6 +443,7 @@ function MainApp() {
               liveClasses={liveClasses}
               spotSignals={spotSignals}
               futuresSignals={futuresSignals}
+              exchanges={exchanges}
               onNavigate={setCurrentView}
             />
           )}

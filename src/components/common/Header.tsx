@@ -57,7 +57,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               type="button"
               onClick={onToggleSidebar}
-              className="hidden lg:flex items-center justify-center p-2 rounded-xl text-neutral-300 hover:text-amber-400 hover:bg-[#1a1b24] border border-[#23253b] hover:border-amber-500/40 transition-all cursor-pointer shadow-sm"
+              className="hidden lg:flex items-center justify-center p-2 rounded-xl text-neutral-300 hover:text-cyan-400 hover:bg-[#131b2e] border border-[#1e293b] hover:border-cyan-500/40 transition-all cursor-pointer shadow-sm"
               aria-label="Toggle Navigation Sidebar"
               title="Toggle Sidebar Menu"
             >
@@ -80,7 +80,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <button
                   type="button"
                   onClick={() => onOpenAuth('login')}
-                  className="px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full border border-neutral-600 hover:border-amber-400 text-white hover:bg-white/5 text-[11px] sm:text-xs font-bold transition-all uppercase tracking-wide cursor-pointer"
+                  className="px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full border border-neutral-700 hover:border-cyan-400 text-white hover:bg-cyan-500/10 text-[11px] sm:text-xs font-bold transition-all uppercase tracking-wide cursor-pointer"
                 >
                   Login
                 </button>
@@ -88,7 +88,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <button
                   type="button"
                   onClick={() => onOpenAuth('register')}
-                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 hover:opacity-95 text-black text-[11px] sm:text-xs font-black shadow-md shadow-amber-500/25 transition-all uppercase tracking-wide cursor-pointer"
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-gradient-to-r from-cyan-500 via-teal-400 to-emerald-500 hover:opacity-95 text-slate-950 text-[11px] sm:text-xs font-black shadow-md shadow-cyan-500/25 transition-all uppercase tracking-wide cursor-pointer"
                 >
                   Sign Up
                 </button>
@@ -97,9 +97,9 @@ export const Header: React.FC<HeaderProps> = ({
               <div className="relative">
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-[#15161e] border border-amber-500/25 hover:border-amber-400/50 transition-colors"
+                  className="flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-[#111726] border border-cyan-500/25 hover:border-cyan-400/50 transition-colors"
                 >
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-600 flex items-center justify-center text-xs font-bold text-black shadow-sm overflow-hidden shrink-0">
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-cyan-500 to-emerald-500 flex items-center justify-center text-xs font-bold text-slate-950 shadow-sm overflow-hidden shrink-0">
                     {user.avatarUrl ? (
                       <img src={user.avatarUrl} alt={user.name || 'User'} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                     ) : (

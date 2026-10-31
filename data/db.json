@@ -236,5 +236,46 @@
       "role": "admin",
       "expiresAt": 1795445091219
     }
+  ],
+  "exchanges": [
+    {
+      "id": "exch_mexc",
+      "name": "MEXC Global",
+      "exchangeKey": "mexc",
+      "referralUrl": "https://www.mexc.com/register?inviteCode=mexc-ZIAKHAN",
+      "referralCode": "mexc-ZIAKHAN",
+      "bonusTag": "Up to $1,000 USDT Bonus + 0% Maker Fees",
+      "badge": "RECOMMENDED FOR FUTURES",
+      "description": "0% Maker fees on Spot & Futures. 200x leverage on perpetual contracts with deep orderbook liquidity.",
+      "clicksCount": 49,
+      "active": true,
+      "order": 1
+    },
+    {
+      "id": "exch_binance",
+      "name": "Binance",
+      "exchangeKey": "binance",
+      "referralUrl": "https://accounts.binance.com/register?ref=ZIAKHAN",
+      "referralCode": "ZIAKHAN",
+      "bonusTag": "Lifetime 20% Fee Discount + $100 Welcome Voucher",
+      "badge": "WORLD #1 VOLUME",
+      "description": "The world’s largest cryptocurrency exchange. Lowest slippage, deepest liquidity, and institutional grade cold-storage security.",
+      "clicksCount": 96,
+      "active": true,
+      "order": 2
+    },
+    {
+      "id": "exch_bybit",
+      "name": "Bybit",
+      "exchangeKey": "bybit",
+      "referralUrl": "https://www.bybit.com/register?affiliate_id=ZIAKHAN",
+      "referralCode": "ZIAKHAN",
+      "bonusTag": "Up to $30,000 Deposit Rewards & VIP Fee Tiers",
+      "badge": "VIP DERIVATIVES DESK",
+      "description": "Elite crypto derivatives platform with lightning-fast execution, advanced copy trading, and MT4 integration.",
+      "clicksCount": 39,
+      "active": true,
+      "order": 3
+    }
   ]
 }
