@@ -342,52 +342,52 @@ export const CoursePaymentModal: React.FC<CoursePaymentModalProps> = ({
 
   return (
     <>
-      <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-2.5 sm:p-5 overflow-y-auto">
-        <div className="relative w-full max-w-4xl max-h-[94vh] overflow-y-auto bg-[#0f1017] border border-amber-500/40 rounded-2xl sm:rounded-3xl shadow-2xl my-auto">
+      <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2.5 sm:p-5 overflow-y-auto">
+        <div className="relative w-full max-w-4xl max-h-[94vh] overflow-y-auto bg-white border border-purple-200 rounded-2xl sm:rounded-3xl shadow-2xl my-auto">
           {/* Top Breadcrumbs / Flow Indicator */}
-          <div className="bg-[#141520] border-b border-[#232536] px-4 py-2.5 hidden sm:flex items-center justify-center gap-4 text-xs font-mono">
-            <span className="text-neutral-500">Student Account</span>
-            <span className="text-neutral-600">›</span>
-            <span className="text-neutral-500">Course Selection</span>
-            <span className="text-neutral-600">›</span>
-            <span className="text-amber-300 font-bold bg-amber-500/15 border border-amber-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
+          <div className="bg-slate-50 border-b border-slate-200 px-4 py-2.5 hidden sm:flex items-center justify-center gap-4 text-xs font-mono">
+            <span className="text-slate-500">Student Account</span>
+            <span className="text-slate-400">›</span>
+            <span className="text-slate-500">Course Selection</span>
+            <span className="text-slate-400">›</span>
+            <span className="text-purple-700 font-bold bg-purple-100 border border-purple-200 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-purple-600 animate-ping" />
               Secure Payment Checkout
             </span>
-            <span className="text-neutral-600">›</span>
-            <span className="text-neutral-500">Instant Access Unlock</span>
+            <span className="text-slate-400">›</span>
+            <span className="text-slate-500">Instant Access Unlock</span>
           </div>
 
           {/* Main Layout Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[540px]">
             {/* Left Column: Educational Platform Background Card */}
-            <div className="lg:col-span-5 bg-gradient-to-br from-[#121320] via-[#0f1019] to-[#0a0a10] p-6 sm:p-7 border-b lg:border-b-0 lg:border-r border-[#232536] flex flex-col justify-between space-y-6">
+            <div className="lg:col-span-5 bg-gradient-to-br from-slate-50 via-purple-50/40 to-white p-6 sm:p-7 border-b lg:border-b-0 lg:border-r border-slate-200 flex flex-col justify-between space-y-6">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase tracking-widest px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/40 font-bold">
+                  <span className="text-[10px] font-mono uppercase tracking-widest px-2.5 py-1 rounded-full bg-purple-100 text-purple-700 border border-purple-200 font-bold">
                     SYSTEMATIC ACADEMY
                   </span>
 
                   {/* Gateway Status Badge */}
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 flex items-center gap-1 font-bold">
-                    <ShieldCheck className="w-3 h-3 text-emerald-400" />
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1 font-bold">
+                    <ShieldCheck className="w-3 h-3 text-emerald-600" />
                     <span>{gatewayInfo?.isStripeConfigured ? 'Stripe Gateway Live' : 'Test Sandbox Gateway'}</span>
                   </span>
                 </div>
 
                 <div>
-                  <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffe58f] via-[#ffd700] to-[#f59e0b] font-serif">Learn and Grow</span>
-                    <span className="text-sm font-sans font-normal text-neutral-400">Trading Academy</span>
+                  <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+                    <span className="text-slate-900 font-bold">Learn <span className="bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 bg-clip-text text-transparent">and Grow</span></span>
+                    <span className="text-xs font-sans font-medium text-slate-500">Trading Academy</span>
                   </h3>
-                  <p className="text-xs text-neutral-300 mt-1 leading-relaxed">
+                  <p className="text-xs text-slate-600 mt-1 leading-relaxed">
                     Master professional crypto quantitative strategy, SMC order flow, and institutional risk management with Zia Khan.
                   </p>
                 </div>
 
                 {/* Plan Selector Pills */}
                 <div className="space-y-2 pt-2">
-                  <label className="text-[11px] font-mono uppercase tracking-wider text-amber-300 font-bold block">
+                  <label className="text-[11px] font-mono uppercase tracking-wider text-purple-700 font-bold block">
                     Choose Course Track:
                   </label>
                   <div className="grid grid-cols-2 gap-2">
@@ -399,17 +399,17 @@ export const CoursePaymentModal: React.FC<CoursePaymentModalProps> = ({
                       }}
                       className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
                         selectedPlan === 'beginner'
-                          ? 'bg-amber-500/20 border-amber-400 shadow-md shadow-amber-500/20 ring-1 ring-amber-400'
-                          : 'bg-[#181926] border-[#292b3d] hover:border-amber-400/50'
+                          ? 'bg-purple-50 border-purple-400 shadow-xs ring-1 ring-purple-400'
+                          : 'bg-white border-slate-200 hover:border-purple-300'
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-white">Beginner Course</span>
-                        <span className="text-xs font-mono font-bold text-amber-400">${pricing.beginnerPrice}</span>
+                        <span className="text-xs font-bold text-slate-900">Beginner Course</span>
+                        <span className="text-xs font-mono font-bold text-purple-700">${pricing.beginnerPrice}</span>
                       </div>
-                      <span className="text-[10px] text-neutral-400 block mt-0.5">Foundations & Risk</span>
+                      <span className="text-[10px] text-slate-500 block mt-0.5">Foundations & Risk</span>
                       {hasBeginnerAccess && (
-                        <span className="inline-block mt-1 text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400">
+                        <span className="inline-block mt-1 text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700">
                           ✓ Already Owned
                         </span>
                       )}
@@ -423,17 +423,17 @@ export const CoursePaymentModal: React.FC<CoursePaymentModalProps> = ({
                       }}
                       className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
                         selectedPlan === 'advanced'
-                          ? 'bg-amber-500/20 border-amber-400 shadow-md shadow-amber-500/20 ring-1 ring-amber-400'
-                          : 'bg-[#181926] border-[#292b3d] hover:border-amber-400/50'
+                          ? 'bg-purple-50 border-purple-400 shadow-xs ring-1 ring-purple-400'
+                          : 'bg-white border-slate-200 hover:border-purple-300'
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-white">Advanced VIP</span>
-                        <span className="text-xs font-mono font-bold text-amber-400">${pricing.advancedPrice}</span>
+                        <span className="text-xs font-bold text-slate-900">Advanced VIP</span>
+                        <span className="text-xs font-mono font-bold text-purple-700">${pricing.advancedPrice}</span>
                       </div>
-                      <span className="text-[10px] text-neutral-400 block mt-0.5">Live Desk & Signals</span>
+                      <span className="text-[10px] text-slate-500 block mt-0.5">Live Desk & Signals</span>
                       {hasAdvancedAccess && (
-                        <span className="inline-block mt-1 text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400">
+                        <span className="inline-block mt-1 text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700">
                           ✓ Already Owned
                         </span>
                       )}
@@ -442,30 +442,30 @@ export const CoursePaymentModal: React.FC<CoursePaymentModalProps> = ({
                 </div>
 
                 {/* Curriculum Bullet Checklist */}
-                <div className="space-y-3 pt-3 border-t border-[#1f202f] text-xs">
+                <div className="space-y-3 pt-3 border-t border-slate-200 text-xs">
                   <div>
-                    <h5 className="font-bold text-white flex items-center gap-1.5 text-[11px] uppercase tracking-wider font-mono text-purple-300">
-                      <Sparkles className="w-3.5 h-3.5 text-purple-400" /> Complete Curriculum Access
+                    <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-[11px] uppercase tracking-wider font-mono text-purple-700">
+                      <Sparkles className="w-3.5 h-3.5 text-purple-600" /> Complete Curriculum Access
                     </h5>
-                    <p className="text-[11px] text-neutral-400 mt-0.5 pl-5">
+                    <p className="text-[11px] text-slate-500 mt-0.5 pl-5">
                       Lifetime access to all video lessons, future updates, and high-resolution chart models.
                     </p>
                   </div>
 
                   <div>
-                    <h5 className="font-bold text-white flex items-center gap-1.5 text-[11px] uppercase tracking-wider font-mono text-purple-300">
-                      <Zap className="w-3.5 h-3.5 text-purple-400" /> Verified Server Unlocking
+                    <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-[11px] uppercase tracking-wider font-mono text-purple-700">
+                      <Zap className="w-3.5 h-3.5 text-purple-600" /> Verified Server Unlocking
                     </h5>
-                    <p className="text-[11px] text-neutral-400 mt-0.5 pl-5">
+                    <p className="text-[11px] text-slate-500 mt-0.5 pl-5">
                       Zero mock success. Orders are verified server-side with anti-duplicate guarantees.
                     </p>
                   </div>
 
                   <div>
-                    <h5 className="font-bold text-white flex items-center gap-1.5 text-[11px] uppercase tracking-wider font-mono text-purple-300">
-                      <GraduationCap className="w-3.5 h-3.5 text-purple-400" /> Student Profile & Receipts
+                    <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-[11px] uppercase tracking-wider font-mono text-purple-700">
+                      <GraduationCap className="w-3.5 h-3.5 text-purple-600" /> Student Profile & Receipts
                     </h5>
-                    <p className="text-[11px] text-neutral-400 mt-0.5 pl-5">
+                    <p className="text-[11px] text-slate-500 mt-0.5 pl-5">
                       Official transaction reference and verifiable proof of enrollment in your profile.
                     </p>
                   </div>
@@ -473,13 +473,13 @@ export const CoursePaymentModal: React.FC<CoursePaymentModalProps> = ({
               </div>
 
               {/* Payment Tutorial CTA Button */}
-              <div className="pt-4 border-t border-[#1f202f]">
+              <div className="pt-4 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => openTutorialForCurrentMethod()}
-                  className="w-full py-2.5 px-3 rounded-2xl bg-[#1d1f30] hover:bg-[#25283f] text-purple-300 hover:text-white border border-purple-500/30 text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer"
+                  className="w-full py-2.5 px-3 rounded-2xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer"
                 >
-                  <PlayCircle className="w-4 h-4 text-purple-400" />
+                  <PlayCircle className="w-4 h-4 text-purple-600" />
                   <span>Payment Video Tutorial ({paymentMode === 'card' ? 'Debit/Credit Card' : localMethod === 'crypto' ? 'USDT' : 'Pakistani Desk'} Guide)</span>
                 </button>
               </div>

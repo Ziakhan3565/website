@@ -39,7 +39,7 @@ import type {
 function MainApp() {
   const { user, refreshUser } = useAuth();
   const [currentView, setCurrentView] = useState('home');
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(() => (typeof window !== 'undefined' ? window.innerWidth >= 1024 : true));
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [paymentPlan, setPaymentPlan] = useState<'beginner' | 'advanced'>('beginner');
@@ -285,7 +285,7 @@ function MainApp() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0d0d0d] text-[#ececec] flex">
+    <div className="min-h-screen bg-white text-slate-900 flex">
       {/* Sidebar - Controlled on Laptop via Three Lines Menu Button */}
       <Sidebar
         currentView={currentView}
@@ -296,14 +296,13 @@ function MainApp() {
         activeSignalsCount={activeSignalsCount}
       />
 
-      {/* Main Workspace Frame with Rich Ambient Background Mesh */}
-      <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 relative bg-gradient-to-b from-[#0d0e14] via-[#090a0f] to-[#06070a] ${
+      {/* Main Workspace Frame with Clean White Background */}
+      <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 relative bg-white text-slate-900 ${
         sidebarOpen ? 'lg:pl-60' : 'lg:pl-0'
       }`}>
-        {/* Ambient background gold & obsidian light orbs matching logo */}
-        <div className="absolute top-0 right-1/4 w-[600px] h-[500px] bg-gradient-to-br from-amber-500/10 via-yellow-600/6 to-transparent rounded-full blur-[140px] pointer-events-none" />
-        <div className="absolute top-1/3 left-0 w-[500px] h-[450px] bg-gradient-to-tr from-amber-600/8 via-yellow-500/5 to-transparent rounded-full blur-[150px] pointer-events-none" />
-        <div className="absolute bottom-10 right-10 w-[550px] h-[500px] bg-gradient-to-tl from-yellow-500/8 via-amber-700/5 to-transparent rounded-full blur-[160px] pointer-events-none" />
+        {/* Soft atmospheric lavender/purple ambient accents */}
+        <div className="absolute top-0 right-1/4 w-[600px] h-[500px] bg-gradient-to-br from-purple-200/25 via-indigo-200/15 to-transparent rounded-full blur-[140px] pointer-events-none" />
+        <div className="absolute bottom-10 left-10 w-[500px] h-[450px] bg-gradient-to-tr from-purple-100/20 via-cyan-100/10 to-transparent rounded-full blur-[150px] pointer-events-none" />
 
         {/* PWA Install Banner & Offline Network Indicator */}
         <PwaInstallBanner />

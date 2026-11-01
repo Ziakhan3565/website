@@ -5,11 +5,12 @@ import {
   Upload,
   CheckCircle2,
   Trash2,
-  Sparkles,
-  AlertCircle
+  Image as ImageIcon,
+  AlertCircle,
+  FolderOpen
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.tsx';
-import { AVATAR_PRESETS, compressImageFile } from '../../utils/avatarUtils.ts';
+import { compressImageFile } from '../../utils/avatarUtils.ts';
 
 interface ProfilePictureModalProps {
   isOpen: boolean;
@@ -36,7 +37,7 @@ export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen
     // Validate image mime or file extension
     const isImage = file.type.startsWith('image/') || /\.(jpe?g|png|webp|gif|bmp|heic)$/i.test(file.name);
     if (!isImage) {
-      setError('Please select a valid image file from your device gallery (JPG, PNG, WEBP).');
+      setError('Please select a valid image file from your gallery (JPG, PNG, WEBP).');
       return;
     }
 
@@ -45,7 +46,7 @@ export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen
       // Fast canvas compression with automatic fallback
       let dataUrl: string;
       try {
-        dataUrl = await compressImageFile(file, 350, 0.85);
+        dataUrl = await compressImageFile(file, 400, 0.88);
       } catch {
         // Fallback to direct FileReader DataURL if canvas compression fails
         dataUrl = await new Promise<string>((resolve, reject) => {
@@ -57,7 +58,7 @@ export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen
       }
 
       setPreviewUrl(dataUrl);
-      setSuccess('Photo selected! Click "Save Profile Picture" below to apply.');
+      setSuccess('Photo selected from your gallery! Click "Save Profile Picture" below to apply.');
     } catch (err: any) {
       setError(err.message || 'Failed to process selected photo from gallery');
     } finally {
@@ -67,13 +68,7 @@ export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen
     }
   };
 
-  const handleSelectPreset = (url: string) => {
-    setPreviewUrl(url);
-    setError(null);
-    setSuccess('Avatar selected! Click "Save Profile Picture" to apply.');
-  };
-
-  const handleRemoveAvatar = async () => {
+  const handleRemovePhoto = async () => {
     setLoading(true);
     setError(null);
     try {
@@ -93,7 +88,7 @@ export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen
 
   const handleSave = async () => {
     if (!previewUrl) {
-      setError('Please choose a photo from your gallery or select an avatar');
+      setError('Please choose a photo from your gallery first');
       return;
     }
 
@@ -118,26 +113,23 @@ export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg bg-[#0c0d16] border-2 border-amber-500/40 rounded-3xl shadow-2xl overflow-hidden my-6">
-        {/* Glow ambient background accents */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-
-        {/* Header - ENGLISH ONLY */}
-        <div className="bg-gradient-to-r from-[#141524] via-[#10111d] to-[#0c0d16] border-b border-amber-500/30 px-6 py-4 flex items-center justify-between relative z-10">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500/15 border border-amber-500/40 flex items-center justify-center text-amber-400 shadow-sm">
-              <Camera className="w-5 h-5" />
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2.5 sm:p-4 overflow-y-auto animate-in fade-in duration-200">
+      <div className="relative w-full max-w-sm sm:max-w-md bg-white border border-purple-200 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col">
+        {/* Header */}
+        <div className="bg-slate-50 border-b border-slate-200 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between relative z-10 shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-700 shadow-xs shrink-0">
+              <Camera className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-bold text-white tracking-tight flex items-center gap-2">
-                <span>Set Profile Picture</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                  LEARN & GROW
+              <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                <span>Upload Profile Picture</span>
+                <span className="text-[9px] sm:text-[10px] font-mono px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 border border-purple-200 font-semibold">
+                  GALLERY
                 </span>
               </h2>
-              <p className="text-xs text-neutral-400">
-                Choose a custom photo from your device gallery
+              <p className="text-[11px] sm:text-xs text-slate-500">
+                Choose any photo from your phone or device gallery
               </p>
             </div>
           </div>
@@ -145,20 +137,24 @@ export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-full text-neutral-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            className="p-1.5 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer shrink-0"
             title="Close"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Content Body */}
-        <div className="p-6 space-y-6 relative z-10">
+        {/* Content Body - Scrollable if screen is very short */}
+        <div className="p-4 sm:p-6 space-y-4 sm:space-y-5 relative z-10 bg-white overflow-y-auto flex-1 min-h-0">
           {/* Avatar Live Preview */}
-          <div className="flex flex-col items-center justify-center text-center space-y-3">
-            <div className="relative group cursor-pointer" onClick={triggerGalleryPicker} title="Click to choose from gallery">
-              <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full p-1 bg-gradient-to-tr from-[#ffe58f] via-[#ffd700] to-[#f59e0b] shadow-2xl shadow-amber-500/30">
-                <div className="w-full h-full rounded-full bg-[#12131f] overflow-hidden flex items-center justify-center border-2 border-black/40">
+          <div className="flex flex-col items-center justify-center text-center space-y-2.5">
+            <div
+              className="relative group cursor-pointer"
+              onClick={triggerGalleryPicker}
+              title="Click to choose a photo from your gallery"
+            >
+              <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full p-1 bg-gradient-to-tr from-purple-500 via-indigo-500 to-purple-600 shadow-xl shadow-purple-600/20 transition-transform group-hover:scale-105">
+                <div className="w-full h-full rounded-full bg-slate-100 overflow-hidden flex items-center justify-center border-2 border-white">
                   {previewUrl ? (
                     <img
                       src={previewUrl}
@@ -167,23 +163,24 @@ export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen
                       referrerPolicy="no-referrer"
                     />
                   ) : (
-                    <span className="text-4xl font-extrabold text-amber-300 font-mono">
-                      {(user.name || user.email || 'U').charAt(0).toUpperCase()}
-                    </span>
+                    <div className="flex flex-col items-center justify-center text-purple-500">
+                      <ImageIcon className="w-8 h-8 sm:w-10 sm:h-10 mb-1 opacity-70" />
+                      <span className="text-[11px] sm:text-xs font-semibold text-slate-500">No Photo</span>
+                    </div>
                   )}
                 </div>
               </div>
 
               {/* Hover quick change overlay */}
-              <div className="absolute inset-0 rounded-full bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white transition-opacity">
-                <Camera className="w-6 h-6 mb-1 text-amber-300" />
-                <span className="text-[10px] font-bold text-amber-300">Pick Photo</span>
+              <div className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white transition-opacity">
+                <Camera className="w-5 h-5 sm:w-6 sm:h-6 mb-1 text-purple-200" />
+                <span className="text-[10px] font-bold text-white">Open Gallery</span>
               </div>
             </div>
 
             <div>
-              <p className="text-sm font-bold text-white">{user.name || user.email}</p>
-              <p className="text-[11px] text-amber-400/80 font-mono">{user.email}</p>
+              <p className="text-xs sm:text-sm font-bold text-slate-900 truncate max-w-[260px]">{user.name || user.email}</p>
+              <p className="text-[10px] sm:text-[11px] text-purple-700 font-mono truncate max-w-[260px]">{user.email}</p>
             </div>
           </div>
 
@@ -196,95 +193,54 @@ export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen
             className="hidden"
           />
 
-          {/* Gallery Upload CTA Button */}
-          <div className="space-y-2">
+          {/* Gallery Upload Card & Button (Only Gallery Option) */}
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-purple-50/50 border border-purple-200 text-center space-y-2 sm:space-y-3">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-purple-100 border border-purple-200 mx-auto flex items-center justify-center text-purple-700">
+              <FolderOpen className="w-5 h-5 sm:w-6 sm:h-6" />
+            </div>
+
+            <div>
+              <h3 className="text-xs sm:text-sm font-bold text-slate-900">Select from Device Gallery</h3>
+              <p className="text-[11px] sm:text-xs text-slate-600 mt-0.5">
+                Upload your personal profile photo directly from your phone or computer storage.
+              </p>
+            </div>
+
             <button
               type="button"
               onClick={triggerGalleryPicker}
-              className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 hover:opacity-95 text-black font-black text-sm flex items-center justify-center gap-2.5 shadow-lg shadow-amber-500/25 transition-all hover:scale-[1.01] cursor-pointer"
+              disabled={loading}
+              className="w-full py-2.5 sm:py-3 px-4 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md shadow-purple-600/20 transition-all hover:scale-[1.01] cursor-pointer"
             >
-              <Upload className="w-5 h-5 text-black" />
+              <Upload className="w-4 h-4 text-white" />
               <span>Choose Photo from Gallery</span>
             </button>
-            <p className="text-[11px] text-center text-neutral-400">
-              Select any portrait, profile photo, or image from your device storage
-            </p>
-          </div>
-
-          {/* Preset Avatars Library */}
-          <div className="space-y-2 pt-2 border-t border-amber-500/20">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-neutral-200 flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                <span>Or Choose Official Trader Avatar:</span>
-              </span>
-              <span className="text-[10px] text-amber-400 font-mono">1-Click Select</span>
-            </div>
-
-            <div className="grid grid-cols-6 gap-2">
-              {AVATAR_PRESETS.map((preset) => {
-                const isSelected = previewUrl === preset.url;
-                return (
-                  <button
-                    key={preset.id}
-                    type="button"
-                    onClick={() => handleSelectPreset(preset.url)}
-                    className={`relative rounded-xl overflow-hidden aspect-square border-2 transition-all cursor-pointer ${
-                      isSelected
-                        ? 'border-amber-400 scale-105 shadow-md shadow-amber-500/40 ring-2 ring-amber-400/50'
-                        : 'border-[#222438] hover:border-amber-400/60 opacity-80 hover:opacity-100'
-                    }`}
-                    title={preset.name}
-                  >
-                    <img
-                      src={preset.url}
-                      alt={preset.name}
-                      className="w-full h-full object-cover"
-                    />
-                    {isSelected && (
-                      <div className="absolute inset-0 bg-amber-500/35 flex items-center justify-center">
-                        <CheckCircle2 className="w-4 h-4 text-black drop-shadow" />
-                      </div>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
           </div>
 
           {/* Status Messages */}
           {error && (
-            <div className="p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
+            <div className="p-2.5 sm:p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
           {success && (
-            <div className="p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs flex items-center gap-2">
+            <div className="p-2.5 sm:p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 shrink-0" />
               <span>{success}</span>
             </div>
           )}
         </div>
 
-        {/* Modal Footer Actions - ENGLISH ONLY */}
-        <div className="bg-[#090a12] border-t border-amber-500/20 px-6 py-4 flex items-center justify-between gap-3 relative z-10">
+        {/* Modal Footer Actions */}
+        <div className="bg-slate-50 border-t border-slate-200 px-6 py-4 flex items-center justify-between gap-3 relative z-10">
           {user.avatarUrl ? (
             <button
               type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                handleRemoveAvatar();
-              }}
-              onTouchEnd={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                handleRemoveAvatar();
-              }}
+              onClick={handleRemovePhoto}
               disabled={loading}
-              className="px-3.5 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 active:scale-95 text-rose-400 border border-rose-500/30 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 active:scale-95 text-rose-700 border border-rose-200 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
             >
               <Trash2 className="w-3.5 h-3.5" />
               <span>Remove Photo</span>
@@ -298,7 +254,7 @@ export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="px-4 py-2 rounded-xl bg-[#171828] hover:bg-[#202236] text-neutral-300 text-xs font-semibold transition-colors cursor-pointer border border-[#2b2d45]"
+              className="px-4 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold transition-colors cursor-pointer border border-slate-200"
             >
               Cancel
             </button>
@@ -306,17 +262,17 @@ export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen
             <button
               type="button"
               onClick={handleSave}
-              disabled={loading}
-              className="px-6 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 hover:opacity-95 text-black text-xs font-black shadow-md shadow-amber-500/30 transition-all flex items-center gap-1.5 cursor-pointer"
+              disabled={loading || !previewUrl}
+              className="px-6 py-2 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold shadow-xs transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <>
-                  <div className="w-3.5 h-3.5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                  <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   <span>Saving...</span>
                 </>
               ) : (
                 <>
-                  <CheckCircle2 className="w-4 h-4 text-black" />
+                  <CheckCircle2 className="w-4 h-4 text-white" />
                   <span>Save Profile Picture</span>
                 </>
               )}

@@ -123,16 +123,16 @@ export const ExchangeReferralCards: React.FC<ExchangeReferralCardsProps> = ({
         🎁 Sign Up Today & Grab Your FREE $10 Bonus!
         (As specifically requested: "oor sath hi is ka upar likhu 🎁 Sign Up Today & Grab Your FREE $10 Bonus!")
       */}
-      <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-amber-500/15 via-emerald-500/15 to-cyan-500/15 border border-amber-400/40 shadow-xl flex items-center justify-between gap-3">
+      <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-purple-50 via-indigo-50 to-purple-50 border border-purple-200 shadow-sm flex items-center justify-between gap-3">
         <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-2xl bg-amber-500/20 text-amber-300 border border-amber-400/40 flex items-center justify-center text-xl shrink-0 shadow-md">
+          <div className="w-11 h-11 rounded-2xl bg-purple-600/15 text-purple-700 border border-purple-300 flex items-center justify-center text-xl shrink-0 shadow-xs">
             🎁
           </div>
           <div>
-            <h3 className="text-base sm:text-lg font-black text-white tracking-tight flex items-center gap-2">
+            <h3 className="text-base sm:text-lg font-black text-slate-950 tracking-tight flex items-center gap-2">
               <span>🎁 Sign Up Today &amp; Grab Your FREE $10 Bonus!</span>
             </h3>
-            <p className="text-xs text-amber-200/90 mt-0.5">
+            <p className="text-xs text-slate-600 mt-0.5">
               Create your official account on MEXC, Binance, or Bybit using our partner links below to claim your free $10 reward instantly.
             </p>
           </div>
@@ -148,7 +148,7 @@ export const ExchangeReferralCards: React.FC<ExchangeReferralCardsProps> = ({
           return (
             <div
               key={exchange.id}
-              className={`group relative rounded-3xl p-5 bg-gradient-to-br ${visuals.gradient} border ${visuals.borderColor} shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col justify-between`}
+              className="group relative rounded-3xl p-5 bg-white border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-purple-300 transition-all duration-300 flex flex-col justify-between"
             >
               <div>
                 {/* Top Row: Official Exchange SVG Logo & Name */}
@@ -159,10 +159,10 @@ export const ExchangeReferralCards: React.FC<ExchangeReferralCardsProps> = ({
                       {visuals.logoComponent}
                     </div>
                     <div>
-                      <h3 className="text-base sm:text-lg font-black text-white group-hover:text-cyan-300 transition-colors flex items-center gap-1.5">
+                      <h3 className="text-base sm:text-lg font-black text-slate-900 group-hover:text-purple-700 transition-colors flex items-center gap-1.5">
                         <span>{exchange.name}</span>
                       </h3>
-                      <span className="text-[10px] font-mono text-emerald-400 block font-bold">
+                      <span className="text-[10px] font-mono text-emerald-600 block font-bold">
                         ✓ FREE $10 Bonus Included
                       </span>
                     </div>
@@ -170,7 +170,7 @@ export const ExchangeReferralCards: React.FC<ExchangeReferralCardsProps> = ({
 
                   {exchange.badge && (
                     <span
-                      className={`text-[9px] font-mono font-black px-2.5 py-1 rounded-full border uppercase tracking-wider ${visuals.badgeBg}`}
+                      className="text-[9px] font-mono font-black px-2.5 py-1 rounded-full border uppercase tracking-wider bg-purple-50 text-purple-700 border-purple-200"
                     >
                       {exchange.badge}
                     </span>
@@ -181,19 +181,19 @@ export const ExchangeReferralCards: React.FC<ExchangeReferralCardsProps> = ({
                   BRACKETED REFERRAL CODE SECTION
                   Displays [ Code: {exchange.referralCode} ] with 1-click copy
                 */}
-                <div className="mb-4 p-3.5 rounded-2xl bg-black/60 border border-white/10 space-y-1.5 shadow-inner">
+                <div className="mb-4 p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5 shadow-xs">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest font-bold">
+                    <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest font-bold">
                       Referral Code
                     </span>
-                    <span className="text-[9px] font-mono text-emerald-400 font-bold">
+                    <span className="text-[9px] font-mono text-purple-700 font-bold">
                       [ In Brackets ]
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between gap-2">
                     <div
-                      className={`flex-1 px-3 py-2 rounded-xl border font-mono font-extrabold text-xs sm:text-sm tracking-wider text-center select-all shadow-sm ${visuals.codeBox}`}
+                      className="flex-1 px-3 py-2 rounded-xl border border-purple-200 bg-white font-mono font-extrabold text-xs sm:text-sm tracking-wider text-center select-all shadow-xs text-purple-900"
                     >
                       [ Code: {exchange.referralCode} ]
                     </div>
@@ -203,8 +203,8 @@ export const ExchangeReferralCards: React.FC<ExchangeReferralCardsProps> = ({
                       onClick={(e) => handleCopyCode(exchange.id, exchange.referralCode, e)}
                       className={`px-3 py-2 rounded-xl text-xs font-mono font-bold border transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
                         isCopied
-                          ? 'bg-emerald-500 text-slate-950 border-emerald-400 shadow-md'
-                          : 'bg-white/10 hover:bg-white/20 text-white border-white/20 active:scale-95'
+                          ? 'bg-emerald-600 text-white border-emerald-500 shadow-xs'
+                          : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-300 active:scale-95'
                       }`}
                       title="Copy Referral Code"
                     >
@@ -228,7 +228,7 @@ export const ExchangeReferralCards: React.FC<ExchangeReferralCardsProps> = ({
               <button
                 type="button"
                 onClick={() => handleOpenReferral(exchange)}
-                className={`w-full py-3 px-4 rounded-2xl bg-gradient-to-r ${visuals.btnGradient} shadow-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 text-xs uppercase tracking-wider cursor-pointer font-black`}
+                className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-500 hover:to-indigo-500 text-white shadow-md shadow-purple-600/20 transition-all duration-200 transform hover:scale-[1.01] active:scale-[0.98] flex items-center justify-center gap-2 text-xs uppercase tracking-wider cursor-pointer font-bold"
               >
                 <span>Create {exchange.name} Account ($10 Bonus)</span>
                 <ExternalLink className="w-4 h-4 stroke-[2.5]" />

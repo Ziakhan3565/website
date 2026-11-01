@@ -223,19 +223,19 @@ export const HomeTradingChart: React.FC = () => {
   const activeCandle = hoveredCandle || candles[candles.length - 1];
 
   return (
-    <section className="relative rounded-3xl overflow-hidden border border-cyan-500/30 bg-gradient-to-br from-[#0a0f1d] via-[#090d18] to-[#06080f] shadow-2xl backdrop-blur-2xl transition-all duration-300">
-      {/* Luminous Cyber Blue & Emerald background glow */}
-      <div className="absolute -top-24 -left-24 w-96 h-96 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+    <section className="relative rounded-3xl overflow-hidden border border-slate-200 bg-white shadow-xl transition-all duration-300">
+      {/* Soft purple and indigo ambient glow */}
+      <div className="absolute -top-24 -left-24 w-96 h-96 bg-purple-200/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-indigo-200/20 rounded-full blur-3xl pointer-events-none" />
 
       {/* 1. TOP HEADER & MARKET TICKER BAR */}
-      <div className="relative z-10 p-4 sm:p-6 border-b border-cyan-500/20 bg-slate-950/40">
+      <div className="relative z-10 p-4 sm:p-6 border-b border-slate-100 bg-slate-50/70">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           
           {/* Pair Selector & Live Price */}
           <div className="flex flex-wrap items-center gap-3 sm:gap-4">
             {/* Pair Pills */}
-            <div className="inline-flex p-1 rounded-2xl bg-[#0e1629] border border-cyan-500/30 shadow-inner">
+            <div className="inline-flex p-1 rounded-2xl bg-white border border-slate-200 shadow-xs">
               {TRADING_PAIRS.map((pair) => (
                 <button
                   key={pair.symbol}
@@ -243,8 +243,8 @@ export const HomeTradingChart: React.FC = () => {
                   onClick={() => setSelectedPair(pair)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
                     selectedPair.symbol === pair.symbol
-                      ? 'bg-gradient-to-r from-cyan-500 to-emerald-500 text-slate-950 shadow-md shadow-cyan-500/30 scale-105'
-                      : 'text-slate-400 hover:text-white hover:bg-white/5'
+                      ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/25 scale-105'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                   }`}
                 >
                   {pair.symbol.split('/')[0]}
@@ -257,10 +257,10 @@ export const HomeTradingChart: React.FC = () => {
               <span
                 className={`text-2xl sm:text-3xl font-black font-mono tracking-tight transition-colors duration-200 ${
                   priceFlash === 'up'
-                    ? 'text-emerald-400 drop-shadow-[0_0_12px_rgba(16,185,129,0.8)]'
+                    ? 'text-emerald-600'
                     : priceFlash === 'down'
-                    ? 'text-rose-400 drop-shadow-[0_0_12px_rgba(244,63,94,0.8)]'
-                    : 'text-white'
+                    ? 'text-rose-600'
+                    : 'text-slate-900'
                 }`}
               >
                 ${currentPrice.toLocaleString(undefined, { minimumFractionDigits: selectedPair.precision })}
@@ -269,8 +269,8 @@ export const HomeTradingChart: React.FC = () => {
               <span
                 className={`inline-flex items-center gap-1 text-xs sm:text-sm font-mono font-bold px-2 py-0.5 rounded-lg ${
                   selectedPair.change24h >= 0
-                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-                    : 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
+                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                    : 'bg-rose-50 text-rose-700 border border-rose-200'
                 }`}
               >
                 {selectedPair.change24h >= 0 ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
@@ -279,8 +279,8 @@ export const HomeTradingChart: React.FC = () => {
             </div>
 
             {/* Live Pulse Indicator */}
-            <div className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-cyan-950/60 border border-cyan-500/40 text-[10px] font-mono text-cyan-300">
-              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+            <div className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-purple-50 border border-purple-200 text-[10px] font-mono text-purple-700 font-bold">
+              <span className="w-2 h-2 rounded-full bg-purple-600 animate-ping" />
               <span>LIVE FEED</span>
             </div>
           </div>
@@ -288,7 +288,7 @@ export const HomeTradingChart: React.FC = () => {
           {/* Timeframe & Chart Controls */}
           <div className="flex flex-wrap items-center gap-2">
             {/* Timeframe pills */}
-            <div className="flex items-center p-1 rounded-xl bg-[#0c1222] border border-slate-800">
+            <div className="flex items-center p-1 rounded-xl bg-white border border-slate-200 shadow-xs">
               {TIMEFRAMES.map((tf) => (
                 <button
                   key={tf}
@@ -296,8 +296,8 @@ export const HomeTradingChart: React.FC = () => {
                   onClick={() => setTimeframe(tf)}
                   className={`px-2 sm:px-2.5 py-1 rounded-lg text-[11px] font-mono font-semibold transition-all cursor-pointer ${
                     timeframe === tf
-                      ? 'bg-cyan-500 text-slate-950 font-bold shadow-sm'
-                      : 'text-slate-400 hover:text-white'
+                      ? 'bg-purple-600 text-white font-bold shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   {tf}
@@ -311,8 +311,8 @@ export const HomeTradingChart: React.FC = () => {
               onClick={() => setShowEMA(!showEMA)}
               className={`px-2.5 py-1 rounded-xl text-[10px] font-mono font-bold border transition-all cursor-pointer ${
                 showEMA
-                  ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50'
-                  : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'
+                  ? 'bg-purple-50 text-purple-700 border-purple-300'
+                  : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
               }`}
             >
               EMA 20
@@ -323,8 +323,8 @@ export const HomeTradingChart: React.FC = () => {
               onClick={() => setShowOrderBlocks(!showOrderBlocks)}
               className={`px-2.5 py-1 rounded-xl text-[10px] font-mono font-bold border transition-all cursor-pointer ${
                 showOrderBlocks
-                  ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
-                  : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'
+                  ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                  : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
               }`}
             >
               Order Blocks
@@ -333,23 +333,23 @@ export const HomeTradingChart: React.FC = () => {
         </div>
 
         {/* 24h Stats bar */}
-        <div className="flex flex-wrap items-center gap-4 sm:gap-6 pt-3 mt-3 border-t border-slate-800/80 text-[11px] font-mono text-slate-400">
+        <div className="flex flex-wrap items-center gap-4 sm:gap-6 pt-3 mt-3 border-t border-slate-200 text-[11px] font-mono text-slate-600">
           <div>
-            <span className="text-slate-400 block text-[9px] uppercase">24h High</span>
-            <span className="text-slate-200 font-bold">${selectedPair.high24h.toLocaleString()}</span>
+            <span className="text-slate-400 block text-[9px] uppercase font-bold">24h High</span>
+            <span className="text-slate-800 font-bold">${selectedPair.high24h.toLocaleString()}</span>
           </div>
           <div>
-            <span className="text-slate-400 block text-[9px] uppercase">24h Low</span>
-            <span className="text-slate-200 font-bold">${selectedPair.low24h.toLocaleString()}</span>
+            <span className="text-slate-400 block text-[9px] uppercase font-bold">24h Low</span>
+            <span className="text-slate-800 font-bold">${selectedPair.low24h.toLocaleString()}</span>
           </div>
           <div>
-            <span className="text-slate-400 block text-[9px] uppercase">24h Volume</span>
-            <span className="text-cyan-400 font-bold">{selectedPair.volume24h}</span>
+            <span className="text-slate-400 block text-[9px] uppercase font-bold">24h Volume</span>
+            <span className="text-purple-600 font-bold">{selectedPair.volume24h}</span>
           </div>
           <div>
-            <span className="text-slate-400 block text-[9px] uppercase">Market Sentiment</span>
-            <span className="text-emerald-400 font-bold flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-slate-400 block text-[9px] uppercase font-bold">Market Sentiment</span>
+            <span className="text-emerald-600 font-bold flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               78% Bullish Flow
             </span>
           </div>
@@ -357,17 +357,17 @@ export const HomeTradingChart: React.FC = () => {
       </div>
 
       {/* 2. INTERACTIVE SVG CANDLESTICK CHART */}
-      <div className="relative z-10 px-2 sm:px-6 py-4 bg-gradient-to-b from-transparent to-slate-950/60">
+      <div className="relative z-10 px-2 sm:px-6 py-4 bg-white">
         
         {/* Inspection Tooltip Badge */}
         {activeCandle && (
-          <div className="flex flex-wrap items-center gap-3 px-3 py-1.5 rounded-xl bg-[#0d1424]/90 border border-cyan-500/30 text-[10px] font-mono mb-2 shadow-lg backdrop-blur-md">
-            <span className="text-slate-400">Time: <strong className="text-white">{activeCandle.time}</strong></span>
-            <span className="text-slate-400">O: <strong className="text-slate-200">${activeCandle.open.toFixed(selectedPair.precision)}</strong></span>
-            <span className="text-slate-400">H: <strong className="text-emerald-400">${activeCandle.high.toFixed(selectedPair.precision)}</strong></span>
-            <span className="text-slate-400">L: <strong className="text-rose-400">${activeCandle.low.toFixed(selectedPair.precision)}</strong></span>
-            <span className="text-slate-400">C: <strong className={activeCandle.isBullish ? 'text-emerald-400' : 'text-rose-400'}>${activeCandle.close.toFixed(selectedPair.precision)}</strong></span>
-            <span className="text-slate-400">Vol: <strong className="text-cyan-300">{activeCandle.volume} BTC</strong></span>
+          <div className="flex flex-wrap items-center gap-3 px-3 py-1.5 rounded-xl bg-slate-50 border border-purple-200 text-[10px] font-mono mb-2 shadow-xs">
+            <span className="text-slate-500">Time: <strong className="text-slate-900">{activeCandle.time}</strong></span>
+            <span className="text-slate-500">O: <strong className="text-slate-800">${activeCandle.open.toFixed(selectedPair.precision)}</strong></span>
+            <span className="text-slate-500">H: <strong className="text-emerald-600">${activeCandle.high.toFixed(selectedPair.precision)}</strong></span>
+            <span className="text-slate-500">L: <strong className="text-rose-600">${activeCandle.low.toFixed(selectedPair.precision)}</strong></span>
+            <span className="text-slate-500">C: <strong className={activeCandle.isBullish ? 'text-emerald-600' : 'text-rose-600'}>${activeCandle.close.toFixed(selectedPair.precision)}</strong></span>
+            <span className="text-slate-500">Vol: <strong className="text-purple-600">{activeCandle.volume} BTC</strong></span>
           </div>
         )}
 
@@ -406,7 +406,7 @@ export const HomeTradingChart: React.FC = () => {
                     y1={y}
                     x2={svgWidth - paddingX}
                     y2={y}
-                    stroke="#1e293b"
+                    stroke="#e2e8f0"
                     strokeDasharray="4 4"
                     strokeWidth="1"
                   />
@@ -539,7 +539,7 @@ export const HomeTradingChart: React.FC = () => {
               y1={getY(currentPrice)}
               x2={svgWidth - paddingX}
               y2={getY(currentPrice)}
-              stroke="#06b6d4"
+              stroke="#7c3aed"
               strokeWidth="1.2"
               strokeDasharray="3 3"
               className="animate-pulse"
@@ -550,13 +550,13 @@ export const HomeTradingChart: React.FC = () => {
               width={54}
               height={18}
               rx="4"
-              fill="#06b6d4"
+              fill="#7c3aed"
             />
             <text
               x={svgWidth - paddingX + 25}
               y={getY(currentPrice) + 3}
               textAnchor="middle"
-              fill="#020617"
+              fill="#ffffff"
               fontSize="9"
               fontFamily="monospace"
               fontWeight="bold"
@@ -567,17 +567,17 @@ export const HomeTradingChart: React.FC = () => {
         </div>
 
         {/* Volume Delta Bar */}
-        <div className="mt-2 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono">
+        <div className="mt-2 pt-3 border-t border-slate-200 flex items-center justify-between text-[11px] font-mono">
           <div className="flex items-center gap-2">
-            <span className="text-slate-400">Orderflow Momentum:</span>
-            <div className="w-32 sm:w-48 h-2 rounded-full bg-rose-500/30 overflow-hidden flex">
-              <div className="bg-emerald-400 h-full transition-all duration-300" style={{ width: '76%' }} />
+            <span className="text-slate-600">Orderflow Momentum:</span>
+            <div className="w-32 sm:w-48 h-2 rounded-full bg-rose-200 overflow-hidden flex">
+              <div className="bg-emerald-500 h-full transition-all duration-300" style={{ width: '76%' }} />
             </div>
-            <span className="text-emerald-400 font-bold">76% Buyers</span>
+            <span className="text-emerald-700 font-bold">76% Buyers</span>
           </div>
 
-          <span className="text-[10px] text-cyan-400/90 font-mono hidden sm:inline-flex items-center gap-1">
-            <CheckCircle2 className="w-3 h-3 text-cyan-400" /> Real-time tick stream active
+          <span className="text-[10px] text-purple-700 font-mono hidden sm:inline-flex items-center gap-1 font-semibold">
+            <CheckCircle2 className="w-3 h-3 text-purple-600" /> Real-time tick stream active
           </span>
         </div>
       </div>

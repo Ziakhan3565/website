@@ -77,12 +77,12 @@ export const TopNavModals: React.FC<TopNavModalsProps> = ({ activeModal, onClose
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-      <div className="relative w-full max-w-lg max-h-[92vh] overflow-y-auto bg-gradient-to-b from-[#141525] via-[#0f101a] to-[#0a0b12] border border-amber-500/40 rounded-3xl p-4 sm:p-7 shadow-2xl my-auto">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+      <div className="relative w-full max-w-lg max-h-[92vh] overflow-y-auto bg-white border border-purple-200 rounded-3xl p-5 sm:p-7 shadow-2xl my-auto">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-1.5 rounded-full text-neutral-400 hover:text-white hover:bg-[#1a1b26] transition-colors cursor-pointer"
+          className="absolute top-5 right-5 p-1.5 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
         >
           <X className="w-5 h-5" />
         </button>
@@ -91,52 +91,52 @@ export const TopNavModals: React.FC<TopNavModalsProps> = ({ activeModal, onClose
         {activeModal === 'channel' && (
           <div className="space-y-5">
             <div>
-              <span className="text-[10px] font-mono uppercase px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/40 font-bold">
+              <span className="text-[10px] font-mono uppercase px-2.5 py-1 rounded-full bg-purple-100 text-purple-700 border border-purple-200 font-bold">
                 Official Channels
               </span>
-              <h3 className="text-xl font-bold text-white tracking-tight mt-2">
+              <h3 className="text-xl font-bold text-slate-900 tracking-tight mt-2">
                 Join Our Communities
               </h3>
-              <p className="text-xs text-neutral-400 mt-1">
+              <p className="text-xs text-slate-500 mt-1">
                 Connect with our trading mentors, market updates, and official media feeds.
               </p>
             </div>
 
             <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
               {channelsLoading && (
-                <div className="p-4 text-center text-xs font-mono text-neutral-400">
+                <div className="p-4 text-center text-xs font-mono text-slate-400">
                   Loading official channels...
                 </div>
               )}
 
               {!channelsLoading && channels.length === 0 && (
-                <div className="p-6 text-center rounded-2xl bg-[#171825] border border-[#27293d] text-neutral-400 text-xs">
+                <div className="p-6 text-center rounded-2xl bg-slate-50 border border-slate-200 text-slate-500 text-xs">
                   No channels configured yet. Admin can add official channels from the Admin Panel.
                 </div>
               )}
 
               {channels.map((chan) => {
                 let IconComponent = Globe;
-                let colorClass = 'text-purple-400 bg-purple-500/15 border-purple-500/30 group-hover:border-purple-500/50';
+                let colorClass = 'text-purple-600 bg-purple-50 border-purple-200 group-hover:border-purple-400';
 
                 if (chan.platform === 'youtube') {
                   IconComponent = Youtube;
-                  colorClass = 'text-rose-400 bg-rose-500/15 border-rose-500/30 group-hover:border-rose-500/50';
+                  colorClass = 'text-rose-600 bg-rose-50 border-rose-200 group-hover:border-rose-400';
                 } else if (chan.platform === 'telegram') {
                   IconComponent = SendHorizontal;
-                  colorClass = 'text-sky-400 bg-sky-500/15 border-sky-500/30 group-hover:border-sky-500/50';
+                  colorClass = 'text-sky-600 bg-sky-50 border-sky-200 group-hover:border-sky-400';
                 } else if (chan.platform === 'instagram') {
                   IconComponent = Instagram;
-                  colorClass = 'text-pink-400 bg-pink-500/15 border-pink-500/30 group-hover:border-pink-500/50';
+                  colorClass = 'text-pink-600 bg-pink-50 border-pink-200 group-hover:border-pink-400';
                 } else if (chan.platform === 'whatsapp') {
                   IconComponent = MessageCircle;
-                  colorClass = 'text-emerald-400 bg-emerald-500/15 border-emerald-500/30 group-hover:border-emerald-500/50';
+                  colorClass = 'text-emerald-600 bg-emerald-50 border-emerald-200 group-hover:border-emerald-400';
                 } else if (chan.platform === 'discord') {
                   IconComponent = MessageSquare;
-                  colorClass = 'text-indigo-400 bg-indigo-500/15 border-indigo-500/30 group-hover:border-indigo-500/50';
+                  colorClass = 'text-indigo-600 bg-indigo-50 border-indigo-200 group-hover:border-indigo-400';
                 } else if (chan.platform === 'twitter') {
                   IconComponent = Share2;
-                  colorClass = 'text-cyan-400 bg-cyan-500/15 border-cyan-500/30 group-hover:border-cyan-500/50';
+                  colorClass = 'text-cyan-600 bg-cyan-50 border-cyan-200 group-hover:border-cyan-400';
                 }
 
                 return (
@@ -145,7 +145,7 @@ export const TopNavModals: React.FC<TopNavModalsProps> = ({ activeModal, onClose
                     href={chan.url}
                     target="_blank"
                     rel="noreferrer"
-                    className="p-3.5 rounded-2xl bg-[#171825] border border-[#27293d] hover:border-neutral-500 flex items-center justify-between text-xs transition-all group"
+                    className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 hover:border-purple-300 flex items-center justify-between text-xs transition-all group shadow-xs"
                   >
                     <div className="flex items-center gap-3">
                       <div className={`w-9 h-9 rounded-xl border flex items-center justify-center group-hover:scale-105 transition-transform ${colorClass}`}>
@@ -153,26 +153,26 @@ export const TopNavModals: React.FC<TopNavModalsProps> = ({ activeModal, onClose
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <h4 className="font-bold text-white group-hover:text-purple-300">
+                          <h4 className="font-bold text-slate-900 group-hover:text-purple-700">
                             {chan.title}
                           </h4>
                           {chan.subscribers && (
-                            <span className="text-[10px] font-mono px-2 py-0.2 rounded bg-black/40 text-neutral-400 border border-neutral-700/50">
+                            <span className="text-[10px] font-mono px-2 py-0.2 rounded bg-purple-100 text-purple-700 border border-purple-200 font-semibold">
                               {chan.subscribers}
                             </span>
                           )}
                         </div>
-                        <span className="text-[11px] text-neutral-400 font-mono block">
+                        <span className="text-[11px] text-slate-500 font-mono block">
                           {chan.handle || chan.url}
                         </span>
                         {chan.description && (
-                          <p className="text-[11px] text-neutral-400 mt-0.5 line-clamp-1">
+                          <p className="text-[11px] text-slate-600 mt-0.5 line-clamp-1">
                             {chan.description}
                           </p>
                         )}
                       </div>
                     </div>
-                    <ExternalLink className="w-4 h-4 text-neutral-500 group-hover:text-white shrink-0 ml-2" />
+                    <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-purple-600 shrink-0 ml-2" />
                   </a>
                 );
               })}
@@ -184,62 +184,62 @@ export const TopNavModals: React.FC<TopNavModalsProps> = ({ activeModal, onClose
         {activeModal === 'service' && (
           <div className="space-y-4">
             <div>
-              <span className="text-[10px] font-mono uppercase px-2.5 py-1 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 font-bold">
+              <span className="text-[10px] font-mono uppercase px-2.5 py-1 rounded-full bg-purple-100 text-purple-700 border border-purple-200 font-bold">
                 Student Help Desk
               </span>
-              <h3 className="text-xl font-bold text-white tracking-tight mt-2">
+              <h3 className="text-xl font-bold text-slate-900 tracking-tight mt-2">
                 Student & Account Support
               </h3>
-              <p className="text-xs text-neutral-400 mt-1">
+              <p className="text-xs text-slate-500 mt-1">
                 Official contact for account activation, verification, and technical assistance.
               </p>
             </div>
 
             {serviceSubmitted ? (
-              <div className="p-5 rounded-2xl bg-emerald-500/15 border border-emerald-500/40 text-center space-y-2">
-                <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
-                <h4 className="text-sm font-bold text-white">Support Request Received!</h4>
-                <p className="text-xs text-emerald-200">
+              <div className="p-5 rounded-2xl bg-emerald-50 border border-emerald-200 text-center space-y-2">
+                <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto" />
+                <h4 className="text-sm font-bold text-slate-900">Support Request Received!</h4>
+                <p className="text-xs text-emerald-700">
                   Our team will review your account inquiry and contact you at your email.
                 </p>
               </div>
             ) : (
               <form onSubmit={handleServiceSubmit} className="space-y-3.5">
                 <div>
-                  <label className="text-[11px] font-mono text-neutral-300 block mb-1">
+                  <label className="text-[11px] font-mono text-slate-700 block mb-1">
                     Your Gmail / Email Address
                   </label>
                   <div className="relative">
-                    <Mail className="w-4 h-4 text-neutral-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                     <input
                       type="email"
                       placeholder="you@gmail.com"
                       value={serviceEmail}
                       onChange={(e) => setServiceEmail(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-[#171826] border border-[#27293d] text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-cyan-500"
+                      className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-purple-600"
                       required
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-[11px] font-mono text-neutral-300 block mb-1">
+                  <label className="text-[11px] font-mono text-slate-700 block mb-1">
                     PIN / Account Verification Code (Optional)
                   </label>
                   <div className="relative">
-                    <KeyRound className="w-4 h-4 text-neutral-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <KeyRound className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                     <input
                       type="text"
                       placeholder="e.g. 4-digit PIN or Transaction Ref"
                       value={servicePin}
                       onChange={(e) => setServicePin(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-[#171826] border border-[#27293d] text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-cyan-500"
+                      className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-purple-600"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-[11px] font-mono text-neutral-300 block mb-1">
+                  <label className="text-[11px] font-mono text-slate-700 block mb-1">
                     How can we assist you?
                   </label>
                   <textarea
@@ -247,18 +247,18 @@ export const TopNavModals: React.FC<TopNavModalsProps> = ({ activeModal, onClose
                     placeholder="Describe your question or issue with course access..."
                     value={serviceMessage}
                     onChange={(e) => setServiceMessage(e.target.value)}
-                    className="w-full p-3 rounded-xl bg-[#171826] border border-[#27293d] text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-cyan-500 resize-none"
+                    className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-purple-600 resize-none"
                     required
                   />
                 </div>
 
-                <div className="p-3 rounded-xl bg-[#161724] border border-[#25273b] text-[11px] text-neutral-400">
-                  Direct Administrator Email: <strong className="text-white font-mono">admin@gmail.com</strong>
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-600">
+                  Direct Administrator Email: <strong className="text-slate-900 font-mono">admin@gmail.com</strong>
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 hover:opacity-95 text-black text-xs font-black transition-all shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold transition-all shadow-md shadow-purple-600/20 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Send className="w-4 h-4" />
                   <span>Submit Support Request</span>
@@ -272,36 +272,36 @@ export const TopNavModals: React.FC<TopNavModalsProps> = ({ activeModal, onClose
         {activeModal === 'about' && (
           <div className="space-y-4">
             <div>
-              <span className="text-[10px] font-mono uppercase px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 font-bold">
+              <span className="text-[10px] font-mono uppercase px-2.5 py-1 rounded-full bg-purple-100 text-purple-700 border border-purple-200 font-bold">
                 Platform Philosophy
               </span>
-              <h3 className="text-xl font-bold text-white tracking-tight mt-2 flex items-center gap-2">
+              <h3 className="text-xl font-bold text-slate-900 tracking-tight mt-2 flex items-center gap-2">
                 <span>About Learn and Grow</span>
               </h3>
             </div>
 
-            <div className="space-y-3 text-xs text-neutral-300 leading-relaxed bg-[#151624] p-4 rounded-2xl border border-amber-500/25">
-              <div className="flex items-center gap-2.5 pb-2 border-b border-[#23253a]">
-                <img src="/logo.png" alt="Logo" className="w-8 h-8 rounded-lg object-cover border border-amber-400/40" />
+            <div className="space-y-3 text-xs text-slate-600 leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-200">
+              <div className="flex items-center gap-2.5 pb-2 border-b border-slate-200">
+                <img src="/logo.png" alt="Logo" className="w-8 h-8 rounded-lg object-cover border border-purple-200" />
                 <div>
-                  <h4 className="text-sm font-bold text-white font-serif" style={{ fontFamily: "'Cinzel', serif" }}>Learn and Grow</h4>
-                  <span className="text-[10px] font-mono text-amber-300">Trading • Education • Success</span>
+                  <h4 className="text-sm font-bold text-slate-900 font-serif" style={{ fontFamily: "'Cinzel', serif" }}>Learn and Grow</h4>
+                  <span className="text-[10px] font-mono text-purple-700">Trading • Education • Success</span>
                 </div>
               </div>
               <p>
-                <strong className="text-white">Learn and Grow</strong> is a dedicated quantitative education portal engineered to demystify financial markets and cryptocurrency trading under the direction of Lead Instructor Zia Khan.
+                <strong className="text-slate-900">Learn and Grow</strong> is a dedicated quantitative education portal engineered to demystify financial markets and cryptocurrency trading under the direction of Lead Instructor Zia Khan.
               </p>
               <p>
                 Our curriculum bridges the gap between retail speculation and institutional mechanics. From spot order execution and risk-to-reward discipline to advanced order flow (CVD) and perpetual futures liquidation clustering, we equip students with repeatable, probabilistic frameworks.
               </p>
               <div className="grid grid-cols-2 gap-2 pt-2 text-[11px] font-mono">
-                <div className="p-2.5 rounded-xl bg-[#1b1c2e] border border-amber-500/20">
-                  <span className="text-emerald-400 font-bold block">Video Modules</span>
-                  <span className="text-neutral-400">Beginner Track ($2)</span>
+                <div className="p-2.5 rounded-xl bg-white border border-slate-200">
+                  <span className="text-purple-700 font-bold block">Video Modules</span>
+                  <span className="text-slate-500">Beginner Track ($2)</span>
                 </div>
-                <div className="p-2.5 rounded-xl bg-[#1b1c2e] border border-amber-500/20">
-                  <span className="text-amber-300 font-bold block">Live Desk & Signals</span>
-                  <span className="text-neutral-400">Advanced VIP Pass ($5)</span>
+                <div className="p-2.5 rounded-xl bg-white border border-slate-200">
+                  <span className="text-indigo-700 font-bold block">Live Desk & Signals</span>
+                  <span className="text-slate-500">Advanced VIP Pass ($5)</span>
                 </div>
               </div>
             </div>
@@ -309,7 +309,7 @@ export const TopNavModals: React.FC<TopNavModalsProps> = ({ activeModal, onClose
             <button
               type="button"
               onClick={onClose}
-              className="w-full py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 text-xs font-bold border border-amber-500/40 transition-colors"
+              className="w-full py-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-bold border border-purple-200 transition-colors cursor-pointer"
             >
               Close
             </button>
@@ -320,29 +320,29 @@ export const TopNavModals: React.FC<TopNavModalsProps> = ({ activeModal, onClose
         {activeModal === 'feedback' && (
           <div className="space-y-4">
             <div>
-              <span className="text-[10px] font-mono uppercase px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-bold">
+              <span className="text-[10px] font-mono uppercase px-2.5 py-1 rounded-full bg-purple-100 text-purple-700 border border-purple-200 font-bold">
                 Community Feedback
               </span>
-              <h3 className="text-xl font-bold text-white tracking-tight mt-2">
+              <h3 className="text-xl font-bold text-slate-900 tracking-tight mt-2">
                 Feedback About Course
               </h3>
-              <p className="text-xs text-neutral-400 mt-1">
+              <p className="text-xs text-slate-500 mt-1">
                 Tell us your thoughts and what features or lessons should be developed next.
               </p>
             </div>
 
             {feedbackSubmitted ? (
-              <div className="p-5 rounded-2xl bg-emerald-500/15 border border-emerald-500/40 text-center space-y-2">
-                <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
-                <h4 className="text-sm font-bold text-white">Thank You for Your Feedback!</h4>
-                <p className="text-xs text-emerald-200">
+              <div className="p-5 rounded-2xl bg-emerald-50 border border-emerald-200 text-center space-y-2">
+                <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto" />
+                <h4 className="text-sm font-bold text-slate-900">Thank You for Your Feedback!</h4>
+                <p className="text-xs text-emerald-700">
                   Your feedback has been recorded. Our development team will review it for upcoming curriculum releases.
                 </p>
               </div>
             ) : (
               <form onSubmit={handleFeedbackSubmit} className="space-y-3.5">
                 <div>
-                  <label className="text-[11px] font-mono text-neutral-300 block mb-1">
+                  <label className="text-[11px] font-mono text-slate-700 block mb-1">
                     Your Email (Optional)
                   </label>
                   <input
@@ -350,18 +350,18 @@ export const TopNavModals: React.FC<TopNavModalsProps> = ({ activeModal, onClose
                     placeholder="you@gmail.com"
                     value={feedbackEmail}
                     onChange={(e) => setFeedbackEmail(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#171826] border border-[#27293d] text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-purple-600"
                   />
                 </div>
 
                 <div>
-                  <label className="text-[11px] font-mono text-neutral-300 block mb-1">
+                  <label className="text-[11px] font-mono text-slate-700 block mb-1">
                     Category
                   </label>
                   <select
                     value={feedbackCategory}
                     onChange={(e) => setFeedbackCategory(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#171826] border border-[#27293d] text-xs text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-purple-600"
                   >
                     <option value="Course Content">Course Content / Lessons</option>
                     <option value="Trading Signals">Trading Signals & Accuracy</option>
@@ -371,7 +371,7 @@ export const TopNavModals: React.FC<TopNavModalsProps> = ({ activeModal, onClose
                 </div>
 
                 <div>
-                  <label className="text-[11px] font-mono text-neutral-300 block mb-1">
+                  <label className="text-[11px] font-mono text-slate-700 block mb-1">
                     What should be developed or improved?
                   </label>
                   <textarea
@@ -379,14 +379,14 @@ export const TopNavModals: React.FC<TopNavModalsProps> = ({ activeModal, onClose
                     placeholder="Share what new topics, features, or tools you'd like to see developed..."
                     value={feedbackText}
                     onChange={(e) => setFeedbackText(e.target.value)}
-                    className="w-full p-3 rounded-xl bg-[#171826] border border-[#27293d] text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-emerald-500 resize-none"
+                    className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-purple-600 resize-none"
                     required
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-95 text-white text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2"
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold transition-all shadow-md shadow-purple-600/20 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Send className="w-4 h-4" />
                   <span>Submit Course Feedback</span>

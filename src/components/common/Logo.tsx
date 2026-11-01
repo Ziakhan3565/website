@@ -15,11 +15,13 @@ export const Logo: React.FC<LogoProps> = ({
   className = '',
   isLive = false,
 }) => {
+  const [imgFailed, setImgFailed] = React.useState(false);
+
   const dimensions = {
-    sm: { box: 34, title: 'text-sm', sub: 'text-[8px]' },
-    md: { box: 44, title: 'text-base sm:text-lg', sub: 'text-[9px] sm:text-[10px]' },
-    lg: { box: 56, title: 'text-xl sm:text-2xl', sub: 'text-[10px] sm:text-[11px]' },
-    xl: { box: 74, title: 'text-2xl sm:text-3xl', sub: 'text-xs' },
+    sm: { box: 36, title: 'text-sm', sub: 'text-[8px]' },
+    md: { box: 46, title: 'text-base sm:text-lg', sub: 'text-[9px] sm:text-[10px]' },
+    lg: { box: 60, title: 'text-xl sm:text-2xl', sub: 'text-[10px] sm:text-[11px]' },
+    xl: { box: 80, title: 'text-2xl sm:text-3xl', sub: 'text-xs' },
   }[size];
 
   return (
@@ -29,64 +31,27 @@ export const Logo: React.FC<LogoProps> = ({
     >
       {/* 
         Side Area: Pure White Container with subtle modern elevation
-        Center: Striking Electric Cyan & Growth Emerald Learning Symbol
+        Center: The official Learn and Grow emblem ("L" with candlesticks and arrow)
       */}
       <div
-        className={`relative shrink-0 rounded-2xl p-1 bg-white shadow-md shadow-white/10 ring-1 ring-slate-200/80 transition-all duration-300 group-hover:scale-105 group-hover:shadow-cyan-500/20 ${
+        className={`relative shrink-0 rounded-2xl p-1 bg-white shadow-md shadow-black/10 ring-1 ring-slate-200/90 transition-all duration-300 group-hover:scale-105 group-hover:shadow-indigo-500/20 ${
           isLive ? 'ring-2 ring-rose-500 animate-pulse' : ''
         }`}
         style={{ width: dimensions.box, height: dimensions.box }}
       >
-        <div className="w-full h-full rounded-[11px] overflow-hidden bg-white flex items-center justify-center p-0.5 relative">
-          <img
-            src="/logo.png"
-            alt="Learn and Grow Logo"
-            className="w-full h-full object-contain filter drop-shadow-sm transition-transform duration-300 group-hover:scale-105"
-            onError={(e) => {
-              (e.target as HTMLElement).style.display = 'none';
-            }}
-          />
-
-          {/* High-res SVG fallback emblem with suggested Cyan & Emerald learning-growth color */}
-          <div className="w-full h-full flex flex-col items-center justify-center rounded-[10px] bg-gradient-to-br from-white to-slate-50">
-            <svg
-              viewBox="0 0 32 32"
-              className="w-full h-full p-0.5"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <defs>
-                <linearGradient id="learningGradient" x1="2" y1="2" x2="30" y2="30" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#0284c7" />
-                  <stop offset="0.5" stopColor="#06b6d4" />
-                  <stop offset="1" stopColor="#10b981" />
-                </linearGradient>
-                <linearGradient id="glowCandle" x1="0" y1="0" x2="0" y2="1">
-                  <stop stopColor="#00f2fe" />
-                  <stop offset="1" stopColor="#059669" />
-                </linearGradient>
-              </defs>
-              {/* Educational graduation cap apex */}
-              <path
-                d="M16 4L4 10L16 16L28 10L16 4Z"
-                fill="url(#learningGradient)"
-              />
-              <path
-                d="M8 12.5V18.5C8 22 11.5 24.5 16 24.5C20.5 24.5 24 22 24 18.5V12.5L16 16.5L8 12.5Z"
-                fill="url(#learningGradient)"
-                fillOpacity="0.85"
-              />
-              {/* Upward Trading Growth Arrow & Candlesticks inside */}
-              <path
-                d="M13 20L16 14L19 20"
-                stroke="white"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <circle cx="28" cy="11.5" r="1.5" fill="#0ea5e9" />
-            </svg>
-          </div>
+        <div className="w-full h-full rounded-[11px] overflow-hidden bg-white flex items-center justify-center relative">
+          {!imgFailed ? (
+            <img
+              src="/assets/aistudio/WhatsApp_Image_2026-10-31_at_9.11.16_PM_3e22bda3.jpeg"
+              alt="Learn and Grow Logo"
+              className="w-full h-full object-contain filter drop-shadow-sm transition-transform duration-300 group-hover:scale-105"
+              onError={() => setImgFailed(true)}
+            />
+          ) : (
+            <div className="w-full h-full flex flex-col items-center justify-center rounded-[10px] bg-white text-slate-900 font-serif font-black text-lg">
+              L
+            </div>
+          )}
         </div>
 
         {/* Pulsing Live indicator badge on the Logo emblem */}
@@ -103,25 +68,24 @@ export const Logo: React.FC<LogoProps> = ({
           <div className="flex items-center gap-1.5">
             <span
               className={`font-black tracking-tight leading-none uppercase font-serif transition-all text-xs sm:text-base ${dimensions.title}`}
-              style={{ fontFamily: "'Cinzel', serif, system-ui" }}
+              style={{ fontFamily: "'Cinzel', 'Playfair Display', serif, system-ui" }}
             >
-              <span className="text-white drop-shadow-sm">Learn </span>
-              <span className="bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(6,182,212,0.4)]">
+              <span className="text-slate-900">Learn </span>
+              <span className="bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-600 bg-clip-text text-transparent">
                 and Grow
               </span>
             </span>
             {isLive && (
-              <span className="px-1.5 py-0.5 rounded bg-rose-600/90 text-[8px] sm:text-[9px] font-mono font-black text-white border border-rose-400/40 animate-pulse uppercase shrink-0">
+              <span className="px-1.5 py-0.5 rounded bg-rose-600 text-[8px] sm:text-[9px] font-mono font-black text-white uppercase shrink-0">
                 ON AIR
               </span>
             )}
           </div>
 
           {showTagline && (
-            <div className="hidden xs:flex sm:flex items-center gap-1.5 mt-0.5">
-              <span className={`font-mono uppercase font-bold text-cyan-400/90 tracking-widest leading-none text-[8px] sm:text-[9px] flex items-center gap-1 ${dimensions.sub}`}>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span>Trading • Education • Success</span>
+            <div className="hidden xs:flex sm:flex items-center gap-1.5 mt-1">
+              <span className={`font-mono uppercase font-bold text-slate-500 tracking-wider leading-none text-[8px] sm:text-[9px] flex items-center gap-1 ${dimensions.sub}`}>
+                <span>— LEARN • TRADE • INVEST • GROW —</span>
               </span>
             </div>
           )}

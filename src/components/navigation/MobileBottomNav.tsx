@@ -58,7 +58,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
       icon: Zap,
       active: currentView === 'signals' || currentView === 'spot' || currentView === 'futures',
       badge: activeSignalsCount > 0 ? String(activeSignalsCount) : undefined,
-      badgeColor: 'bg-amber-500 text-black font-black',
+      badgeColor: 'bg-purple-600 text-white font-bold',
     },
     {
       id: isAdmin ? 'admin' : 'profile',
@@ -71,7 +71,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   return (
     <nav
       aria-label="Mobile Bottom Navigation"
-      className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0c0d14]/95 backdrop-blur-xl border-t border-amber-500/25 px-1 pt-1.5 pb-[max(0.6rem,env(safe-area-inset-bottom))] shadow-[0_-8px_30px_rgba(0,0,0,0.7)]"
+      className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-xl border-t border-slate-200 px-1 pt-1.5 pb-[max(0.6rem,env(safe-area-inset-bottom))] shadow-[0_-4px_20px_rgba(0,0,0,0.06)]"
     >
       <div className="flex items-center justify-around max-w-md mx-auto">
         {items.map((item) => {
@@ -88,27 +88,21 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
               }}
               className={`flex-1 flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all relative group cursor-pointer ${
                 isActive
-                  ? 'text-amber-400 font-bold'
-                  : 'text-neutral-400 hover:text-neutral-200'
+                  ? 'text-purple-600 font-bold'
+                  : 'text-slate-400 hover:text-slate-700'
               }`}
             >
-              {/* Active Indicator Top Glow */}
+              {/* Active Indicator Top Pill */}
               {isActive && (
-                <span className="absolute -top-1.5 w-8 h-1 rounded-full bg-gradient-to-r from-amber-400 to-yellow-400 shadow-[0_0_8px_rgba(245,158,11,0.8)]" />
+                <span className="absolute -top-1.5 w-8 h-1 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 shadow-[0_0_8px_rgba(124,58,237,0.5)]" />
               )}
 
               <div className="relative">
-                <Icon
-                  className={`w-5 h-5 transition-transform duration-150 ${
-                    isActive ? 'scale-110 text-amber-400 stroke-[2.5]' : 'stroke-[1.75]'
-                  }`}
-                />
-
-                {/* Badge Overlay */}
+                <Icon className={`w-5 h-5 transition-transform group-hover:scale-110 ${isActive ? 'text-purple-600' : 'text-slate-400'}`} />
                 {item.badge && (
                   <span
-                    className={`absolute -top-1.5 -right-3 text-[9px] font-mono font-black px-1.5 py-0.5 rounded-full leading-tight shadow-md ${
-                      item.badgeColor || 'bg-amber-500 text-black'
+                    className={`absolute -top-1.5 -right-2 text-[8px] font-mono px-1 py-0.2 rounded-full font-bold shadow-sm ${
+                      item.badgeColor || 'bg-purple-600 text-white'
                     }`}
                   >
                     {item.badge}
@@ -116,11 +110,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
                 )}
               </div>
 
-              <span
-                className={`text-[10px] mt-1 tracking-tight leading-none ${
-                  isActive ? 'text-amber-300 font-extrabold' : 'text-neutral-400'
-                }`}
-              >
+              <span className={`text-[10px] mt-1 tracking-tight ${isActive ? 'font-bold text-purple-700' : 'font-medium'}`}>
                 {item.label}
               </span>
             </button>

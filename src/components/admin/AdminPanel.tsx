@@ -775,25 +775,25 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   return (
     <div className="space-y-6 pb-12">
       {/* Top Admin Banner */}
-      <div className="rounded-2xl bg-gradient-to-r from-[#171424] via-[#151728] to-[#0c0e18] border border-purple-500/30 p-6 lg:p-8 shadow-2xl relative overflow-hidden">
+      <div className="rounded-3xl bg-gradient-to-r from-purple-50 via-indigo-50/50 to-white border border-purple-200 p-6 lg:p-8 shadow-xs relative overflow-hidden">
         <div className="absolute top-0 right-0 w-80 h-80 bg-purple-600/10 rounded-full blur-3xl pointer-events-none" />
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
           <div>
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs font-mono font-bold mb-2">
-              <ShieldAlert className="w-3.5 h-3.5 text-emerald-400" /> MASTER DESK CONTROLLER
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-purple-100 border border-purple-200 text-purple-700 text-xs font-mono font-bold mb-2">
+              <ShieldAlert className="w-3.5 h-3.5 text-purple-600" /> MASTER DESK CONTROLLER
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffe58f] via-[#ffd700] to-[#f59e0b] font-serif">Learn and Grow</span>
-              <span className="text-lg font-normal text-neutral-300 font-sans">Admin Panel</span>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight flex items-center gap-2">
+              <span>Learn <span className="bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 bg-clip-text text-transparent">and Grow</span></span>
+              <span className="text-lg font-normal text-slate-500 font-sans">Admin Panel</span>
             </h1>
-            <p className="mt-1 text-xs sm:text-sm text-neutral-300 max-w-2xl leading-relaxed">
+            <p className="mt-1 text-xs sm:text-sm text-slate-600 max-w-2xl leading-relaxed">
               Instant controls to upload course videos (with custom thumbnails & player preview), publish spot & futures signals, host live sessions, and manage student enrollments.
             </p>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
-            <div className="px-3.5 py-2 rounded-xl bg-purple-950/60 border border-purple-500/40 text-xs font-mono text-purple-200 shadow-sm flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <div className="px-3.5 py-2 rounded-xl bg-white border border-purple-200 text-xs font-mono text-purple-700 shadow-xs flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>Admin: <strong>admin@gmail.com</strong></span>
             </div>
           </div>
@@ -803,11 +803,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       {/* ⚡ HERO QUICK ACTION DESK */}
       <div className="space-y-2">
         <div className="flex items-center justify-between px-1">
-          <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-400 font-bold flex items-center gap-1.5">
-            <Zap className="w-3.5 h-3.5 text-amber-400" />
+          <span className="text-[11px] font-mono uppercase tracking-wider text-slate-500 font-bold flex items-center gap-1.5">
+            <Zap className="w-3.5 h-3.5 text-purple-600" />
             <span>Quick Action Desk (1-Click Uploads)</span>
           </span>
-          <span className="text-[10px] font-mono text-neutral-500">
+          <span className="text-[10px] font-mono text-slate-400">
             Upload videos with thumbnails or dispatch verified signals
           </span>
         </div>
@@ -817,20 +817,20 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           <button
             type="button"
             onClick={openUploadBeginnerModal}
-            className="group relative p-4 rounded-2xl bg-gradient-to-br from-[#0e1a17] via-[#10191c] to-[#0c1214] border border-emerald-500/40 hover:border-emerald-400 text-left transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-emerald-950/20"
+            className="group relative p-4 rounded-2xl bg-white border border-slate-200 hover:border-purple-300 text-left transition-all duration-200 hover:scale-[1.01] shadow-xs hover:shadow-md cursor-pointer"
           >
             <div className="flex items-center justify-between mb-2">
-              <div className="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
+              <div className="w-9 h-9 rounded-xl bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-700 group-hover:scale-110 transition-transform">
                 <GraduationCap className="w-5 h-5" />
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 border border-purple-200 font-bold">
                 + UPLOAD
               </span>
             </div>
-            <h3 className="text-sm font-bold text-white group-hover:text-emerald-300 transition-colors">
+            <h3 className="text-sm font-bold text-slate-900 group-hover:text-purple-700 transition-colors">
               Upload Beginner Video
             </h3>
-            <p className="text-[11px] text-neutral-400 mt-1 leading-snug">
+            <p className="text-[11px] text-slate-500 mt-1 leading-snug">
               Upload Beginner Video · Add tutorial video with custom thumbnail
             </p>
           </button>
@@ -839,20 +839,20 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           <button
             type="button"
             onClick={openUploadAdvancedModal}
-            className="group relative p-4 rounded-2xl bg-gradient-to-br from-[#181126] via-[#151221] to-[#0d0b16] border border-purple-500/40 hover:border-purple-400 text-left transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-purple-950/20"
+            className="group relative p-4 rounded-2xl bg-white border border-slate-200 hover:border-purple-300 text-left transition-all duration-200 hover:scale-[1.01] shadow-xs hover:shadow-md cursor-pointer"
           >
             <div className="flex items-center justify-between mb-2">
-              <div className="w-9 h-9 rounded-xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
+              <div className="w-9 h-9 rounded-xl bg-indigo-100 border border-indigo-200 flex items-center justify-center text-indigo-700 group-hover:scale-110 transition-transform">
                 <PlayCircle className="w-5 h-5" />
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 font-bold">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 font-bold">
                 + UPLOAD
               </span>
             </div>
-            <h3 className="text-sm font-bold text-white group-hover:text-purple-300 transition-colors">
+            <h3 className="text-sm font-bold text-slate-900 group-hover:text-indigo-700 transition-colors">
               Upload Advanced Video
             </h3>
-            <p className="text-[11px] text-neutral-400 mt-1 leading-snug">
+            <p className="text-[11px] text-slate-500 mt-1 leading-snug">
               Upload Advanced Video · Quantitative SMC & Orderflow lessons
             </p>
           </button>
@@ -861,20 +861,20 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           <button
             type="button"
             onClick={() => setShowSpotModal(true)}
-            className="group relative p-4 rounded-2xl bg-gradient-to-br from-[#0c1824] via-[#0d1620] to-[#091017] border border-cyan-500/40 hover:border-cyan-400 text-left transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-cyan-950/20"
+            className="group relative p-4 rounded-2xl bg-white border border-slate-200 hover:border-purple-300 text-left transition-all duration-200 hover:scale-[1.01] shadow-xs hover:shadow-md cursor-pointer"
           >
             <div className="flex items-center justify-between mb-2">
-              <div className="w-9 h-9 rounded-xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
+              <div className="w-9 h-9 rounded-xl bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-700 group-hover:scale-110 transition-transform">
                 <Zap className="w-5 h-5" />
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-bold">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 border border-purple-200 font-bold">
                 + SIGNAL
               </span>
             </div>
-            <h3 className="text-sm font-bold text-white group-hover:text-cyan-300 transition-colors">
+            <h3 className="text-sm font-bold text-slate-900 group-hover:text-purple-700 transition-colors">
               Upload Spot Signal
             </h3>
-            <p className="text-[11px] text-neutral-400 mt-1 leading-snug">
+            <p className="text-[11px] text-slate-500 mt-1 leading-snug">
               Upload Spot Signal · Entry zone, targets & stop-loss
             </p>
           </button>
@@ -883,20 +883,20 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           <button
             type="button"
             onClick={() => setShowFuturesModal(true)}
-            className="group relative p-4 rounded-2xl bg-gradient-to-br from-[#24170d] via-[#1f140c] to-[#140c07] border border-amber-500/40 hover:border-amber-400 text-left transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-amber-950/20"
+            className="group relative p-4 rounded-2xl bg-white border border-slate-200 hover:border-purple-300 text-left transition-all duration-200 hover:scale-[1.01] shadow-xs hover:shadow-md cursor-pointer"
           >
             <div className="flex items-center justify-between mb-2">
-              <div className="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform">
+              <div className="w-9 h-9 rounded-xl bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-700 group-hover:scale-110 transition-transform">
                 <Flame className="w-5 h-5" />
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 border border-purple-200 font-bold">
                 + SIGNAL
               </span>
             </div>
-            <h3 className="text-sm font-bold text-white group-hover:text-amber-300 transition-colors">
+            <h3 className="text-sm font-bold text-slate-900 group-hover:text-purple-700 transition-colors">
               Upload Futures Signal
             </h3>
-            <p className="text-[11px] text-neutral-400 mt-1 leading-snug">
+            <p className="text-[11px] text-slate-500 mt-1 leading-snug">
               Upload Futures Signal · High-leverage long/short setups
             </p>
           </button>
@@ -908,20 +908,20 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               setActiveTab('exchanges');
               window.scrollTo({ top: 400, behavior: 'smooth' });
             }}
-            className="group relative p-4 rounded-2xl bg-gradient-to-br from-[#1b1c2b] via-[#151624] to-[#0c0d18] border border-amber-500/40 hover:border-amber-400 text-left transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-black/40"
+            className="group relative p-4 rounded-2xl bg-white border border-slate-200 hover:border-purple-300 text-left transition-all duration-200 hover:scale-[1.01] shadow-xs hover:shadow-md cursor-pointer"
           >
             <div className="flex items-center justify-between mb-2">
-              <div className="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform">
+              <div className="w-9 h-9 rounded-xl bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-700 group-hover:scale-110 transition-transform">
                 <ArrowUpRight className="w-5 h-5 stroke-[2.5]" />
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 border border-purple-200 font-bold">
                 {exchanges.length} LINKS
               </span>
             </div>
-            <h3 className="text-sm font-bold text-white group-hover:text-amber-300 transition-colors">
+            <h3 className="text-sm font-bold text-slate-900 group-hover:text-purple-700 transition-colors">
               Exchange Referral Links
             </h3>
-            <p className="text-[11px] text-neutral-400 mt-1 leading-snug">
+            <p className="text-[11px] text-slate-500 mt-1 leading-snug">
               MEXC, Binance & Bybit · Bracketed referral codes & signup links
             </p>
           </button>
@@ -929,7 +929,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       </div>
 
       {/* Admin Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-[#23253b] font-mono text-xs">
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-200 font-mono text-xs">
         {[
           {
             id: 'beginner_lessons',
@@ -1017,16 +1017,16 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl whitespace-nowrap transition-all cursor-pointer ${
+              className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl whitespace-nowrap transition-all cursor-pointer font-bold text-xs ${
                 isActive
-                  ? 'bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 text-black font-black shadow-md shadow-amber-500/25'
-                  : 'bg-[#131422] text-neutral-400 hover:text-amber-300 border border-[#23253b] hover:border-amber-500/30'
+                  ? 'bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white shadow-md shadow-purple-600/25'
+                  : 'bg-white text-slate-600 hover:text-purple-700 border border-slate-200 hover:border-purple-200 shadow-xs'
               }`}
             >
               <Icon className="w-3.5 h-3.5" />
               <span>{tab.label}</span>
               <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
-                isActive ? 'bg-black/30 text-white' : 'bg-black/50 text-neutral-400'
+                isActive ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'
               }`}>
                 {tab.count}
               </span>

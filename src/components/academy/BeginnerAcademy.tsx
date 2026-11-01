@@ -218,37 +218,37 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto pb-16">
-      {/* Header Banner with Learn & Grow Brand Styling */}
-      <div className="rounded-3xl bg-gradient-to-br from-[#18150d] via-[#12131f] to-[#090a12] border border-amber-500/40 p-6 lg:p-8 shadow-2xl flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+      {/* Header Banner with Clean White & Purple Theme */}
+      <div className="rounded-3xl bg-gradient-to-br from-purple-50 via-white to-indigo-50 border border-purple-200 p-6 lg:p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-purple-200/30 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/15 border border-amber-500/40 text-amber-300 text-xs font-mono font-bold mb-2 shadow-sm">
-            <GraduationCap className="w-3.5 h-3.5 text-amber-400" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-purple-100 border border-purple-300 text-purple-700 text-xs font-mono font-bold mb-2 shadow-xs">
+            <GraduationCap className="w-3.5 h-3.5 text-purple-600" />
             <span>LEARN AND GROW · BEGINNER VIDEO ACADEMY</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
             Beginner Video Curriculum
           </h1>
-          <p className="text-xs sm:text-sm text-neutral-300 mt-1 max-w-2xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-2xl leading-relaxed">
             Direct video lessons covering crypto foundations, candlestick patterns, spot execution, and the 1% risk management rule.
           </p>
         </div>
 
         {/* Progress & Upload Button */}
         <div className="relative z-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
-          <div className="p-3.5 rounded-2xl bg-[#141525]/90 border border-amber-500/30 min-w-[180px] shadow-lg">
+          <div className="p-3.5 rounded-2xl bg-white border border-purple-200 min-w-[180px] shadow-xs">
             <div className="flex items-center justify-between text-xs mb-1.5">
-              <span className="font-semibold text-neutral-300">Your Progress</span>
-              <span className="font-mono text-amber-400 font-bold">{progressPercent}%</span>
+              <span className="font-semibold text-slate-700">Your Progress</span>
+              <span className="font-mono text-purple-700 font-bold">{progressPercent}%</span>
             </div>
-            <div className="w-full h-2 rounded-full bg-[#0d0e17] overflow-hidden border border-white/5">
+            <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden border border-slate-200">
               <div
-                className="h-full bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 rounded-full transition-all duration-500"
+                className="h-full bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 rounded-full transition-all duration-500"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
-            <span className="text-[10px] font-mono text-neutral-400 block mt-1.5 text-right">
+            <span className="text-[10px] font-mono text-slate-500 block mt-1.5 text-right">
               {completedCount} / {lessons.length} Completed
             </span>
           </div>
@@ -257,7 +257,7 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
             <button
               type="button"
               onClick={handleOpenAddModal}
-              className="px-5 py-3 rounded-2xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 hover:opacity-95 text-black text-xs font-black font-mono shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 transition-all cursor-pointer"
+              className="px-5 py-3 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold font-mono shadow-md shadow-purple-600/25 flex items-center justify-center gap-2 transition-all cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>+ Upload Video</span>
@@ -268,23 +268,23 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
 
       {/* Enrollment Callout Banner if locked */}
       {!hasBeginnerAccess && !isAdmin && (
-        <div className="rounded-2xl bg-gradient-to-r from-amber-950/40 via-[#151622] to-yellow-950/30 border border-amber-500/40 p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl">
+        <div className="rounded-2xl bg-purple-50/90 border border-purple-200 p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xs">
           <div>
-            <div className="flex items-center gap-2 text-xs font-mono uppercase text-amber-400 font-bold">
+            <div className="flex items-center gap-2 text-xs font-mono uppercase text-purple-700 font-bold">
               <Lock className="w-4 h-4" />
               <span>Beginner Enrollment Required</span>
             </div>
-            <h3 className="text-base sm:text-lg font-bold text-white mt-1">
+            <h3 className="text-base sm:text-lg font-bold text-slate-900 mt-1">
               Unlock All Beginner Videos for only ${beginnerPrice} USD
             </h3>
-            <p className="text-xs text-neutral-300 mt-1 max-w-xl">
+            <p className="text-xs text-slate-600 mt-1 max-w-xl">
               Get immediate full access to all beginner cryptocurrency video lessons and disciplined trading frameworks.
             </p>
           </div>
           <button
             type="button"
             onClick={() => onOpenPayment?.('beginner')}
-            className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 hover:opacity-95 text-black text-xs font-black shadow-lg shadow-amber-500/25 flex items-center gap-2 shrink-0 transition-all cursor-pointer"
+            className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold shadow-md shadow-purple-600/25 flex items-center gap-2 shrink-0 transition-all cursor-pointer"
           >
             <Lock className="w-4 h-4" />
             <span>Enroll Now • ${beginnerPrice} USD</span>
@@ -293,15 +293,15 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
         </div>
       )}
 
-      {/* VIDEOS LIST (ONLY VIDEOS UPLOADED BY ADMIN) */}
+      {/* VIDEOS LIST */}
       <div className="space-y-4">
         <div className="flex items-center justify-between px-1">
-          <h2 className="text-xs font-mono uppercase tracking-wider text-amber-300 font-bold flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-amber-400" />
+          <h2 className="text-xs font-mono uppercase tracking-wider text-slate-900 font-bold flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-purple-600" />
             Uploaded Video Lessons ({lessons.length})
           </h2>
           {isAdmin && (
-            <span className="text-[11px] font-mono text-amber-400">
+            <span className="text-[11px] font-mono text-purple-700 font-semibold">
               Admin Mode: You have full authority to upload, edit & delete videos
             </span>
           )}
@@ -315,17 +315,17 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
             return (
               <div
                 key={lesson.id}
-                className={`group rounded-2xl bg-[#0f1019] border transition-all duration-200 flex flex-col justify-between overflow-hidden shadow-lg ${
+                className={`group rounded-2xl bg-white border transition-all duration-200 flex flex-col justify-between overflow-hidden shadow-sm hover:shadow-xl ${
                   isCompleted
-                    ? 'border-amber-500/50 shadow-amber-950/20'
+                    ? 'border-purple-300 ring-1 ring-purple-400/20'
                     : isLocked
-                    ? 'border-[#202235] opacity-90'
-                    : 'border-[#23253a] hover:border-amber-400'
+                    ? 'border-slate-200 opacity-90'
+                    : 'border-slate-200 hover:border-purple-300'
                 }`}
               >
                 {/* Video Preview / Card Top */}
                 <div>
-                  <div className="relative aspect-video bg-[#07080f] overflow-hidden group-hover:scale-[1.01] transition-transform">
+                  <div className="relative aspect-video bg-slate-950 overflow-hidden group-hover:scale-[1.01] transition-transform">
                     {/* Real Video Thumbnail */}
                     <img
                       src={getAutoThumbnail(lesson.videoUrl, lesson.thumbnailUrl)}
@@ -336,19 +336,19 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
                       }}
                     />
                     {/* Dark gradient thumbnail overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20 z-10" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent z-10" />
                     <div className="absolute inset-0 flex items-center justify-center z-20">
                       {isLocked ? (
-                        <div className="w-12 h-12 rounded-full bg-black/70 border border-amber-500/40 flex items-center justify-center text-amber-400">
+                        <div className="w-12 h-12 rounded-full bg-black/70 border border-purple-400/40 flex items-center justify-center text-purple-300">
                           <Lock className="w-5 h-5" />
                         </div>
                       ) : (
                         <button
                           type="button"
                           onClick={() => setActiveVideo(lesson)}
-                          className="w-12 h-12 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-black flex items-center justify-center shadow-lg shadow-amber-500/30 transition-all hover:scale-110 cursor-pointer"
+                          className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white flex items-center justify-center shadow-lg shadow-purple-600/30 transition-all hover:scale-110 cursor-pointer"
                         >
-                          <Play className="w-5 h-5 ml-0.5 fill-black" />
+                          <Play className="w-5 h-5 ml-0.5 fill-white" />
                         </button>
                       )}
                     </div>
@@ -362,8 +362,8 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
 
                     {/* Duration Badge */}
                     <div className="absolute bottom-3 right-3 z-20">
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-black/80 text-neutral-300 border border-white/10 flex items-center gap-1">
-                        <Clock className="w-3 h-3 text-amber-400" />
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-black/80 text-white border border-white/10 flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-purple-400" />
                         {lesson.durationMinutes || 20}m
                       </span>
                     </div>
@@ -371,7 +371,7 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
                     {/* Free Preview Tag */}
                     {idx < 2 && !hasBeginnerAccess && (
                       <div className="absolute top-3 right-3 z-20">
-                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-500 text-black shadow-sm">
+                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-purple-600 text-white shadow-sm">
                           FREE PREVIEW
                         </span>
                       </div>
@@ -381,41 +381,41 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
                   {/* Card Content */}
                   <div className="p-5 space-y-2">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 font-bold">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200 font-bold">
                         {lesson.category || 'Trading Foundations'}
                       </span>
 
                       <button
                         type="button"
                         onClick={() => toggleLessonProgress(lesson.id)}
-                        className="text-neutral-500 hover:text-amber-400 transition-colors p-0.5 cursor-pointer"
+                        className="text-slate-400 hover:text-purple-600 transition-colors p-0.5 cursor-pointer"
                         title={isCompleted ? 'Completed' : 'Mark as completed'}
                       >
                         {isCompleted ? (
-                          <CheckCircle2 className="w-4 h-4 text-amber-400" />
+                          <CheckCircle2 className="w-4 h-4 text-purple-600" />
                         ) : (
-                          <Circle className="w-4 h-4 text-neutral-600" />
+                          <Circle className="w-4 h-4 text-slate-300" />
                         )}
                       </button>
                     </div>
 
-                    <h3 className="text-sm font-bold text-white group-hover:text-amber-300 transition-colors line-clamp-2">
+                    <h3 className="text-sm font-bold text-slate-900 group-hover:text-purple-700 transition-colors line-clamp-2">
                       {lesson.title}
                     </h3>
 
-                    <p className="text-xs text-neutral-400 line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
                       {lesson.description}
                     </p>
                   </div>
                 </div>
 
                 {/* Card Actions */}
-                <div className="p-5 pt-0 border-t border-[#1a1c2a] flex items-center justify-between gap-2 mt-2">
+                <div className="p-5 pt-0 border-t border-slate-100 flex items-center justify-between gap-2 mt-2">
                   {isLocked ? (
                     <button
                       type="button"
                       onClick={() => onOpenPayment?.('beginner')}
-                      className="w-full py-2 px-3 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                      className="w-full py-2 px-3 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                     >
                       <Lock className="w-3.5 h-3.5" />
                       <span>Unlock with Course (${beginnerPrice})</span>
@@ -424,9 +424,9 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
                     <button
                       type="button"
                       onClick={() => setActiveVideo(lesson)}
-                      className="w-full py-2 px-3 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                      className="w-full py-2 px-3 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                     >
-                      <Play className="w-3.5 h-3.5 fill-amber-300" />
+                      <Play className="w-3.5 h-3.5 fill-purple-700" />
                       <span>Watch Lesson</span>
                     </button>
                   )}
@@ -437,7 +437,7 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
                       <button
                         type="button"
                         onClick={() => handleOpenEditModal(lesson)}
-                        className="px-2.5 py-1.5 text-neutral-300 hover:text-white rounded-xl bg-[#1a1c2b] hover:bg-[#25283d] text-xs font-mono font-bold flex items-center gap-1 transition-all cursor-pointer"
+                        className="px-2.5 py-1.5 text-slate-700 hover:text-purple-700 rounded-xl bg-slate-100 hover:bg-purple-50 border border-slate-200 text-xs font-mono font-bold flex items-center gap-1 transition-all cursor-pointer"
                         title="Edit video"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
@@ -455,7 +455,7 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
                           e.preventDefault();
                           handleDelete(lesson.id, lesson.title);
                         }}
-                        className="px-2.5 py-1.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 active:scale-95 text-rose-400 hover:text-rose-300 border border-rose-500/30 text-xs font-mono font-bold flex items-center gap-1 transition-all shadow-sm cursor-pointer"
+                        className="px-2.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 active:scale-95 text-rose-600 border border-rose-200 text-xs font-mono font-bold flex items-center gap-1 transition-all shadow-xs cursor-pointer"
                         title="Delete video permanently"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -469,10 +469,10 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
           })}
 
           {lessons.length === 0 && (
-            <div className="col-span-full py-16 text-center bg-[#0f1019] border border-[#23253a] rounded-3xl p-6 space-y-3">
-              <GraduationCap className="w-10 h-10 text-neutral-600 mx-auto" />
-              <h3 className="text-base font-bold text-white">No Beginner Videos Uploaded Yet</h3>
-              <p className="text-xs text-neutral-400 max-w-sm mx-auto">
+            <div className="col-span-full py-16 text-center bg-white border border-slate-200 rounded-3xl p-6 space-y-3 shadow-xs">
+              <GraduationCap className="w-10 h-10 text-purple-600 mx-auto" />
+              <h3 className="text-base font-bold text-slate-900">No Beginner Videos Uploaded Yet</h3>
+              <p className="text-xs text-slate-600 max-w-sm mx-auto">
                 {isAdmin
                   ? 'As administrator, click the "+ Upload Video" button to add your video lessons to this section.'
                   : 'The course instructor has not published videos yet. Please check back shortly.'}
@@ -481,7 +481,7 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
                 <button
                   type="button"
                   onClick={handleOpenAddModal}
-                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs"
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs cursor-pointer"
                 >
                   + Upload First Video Lesson
                 </button>
@@ -503,19 +503,19 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
       {/* VIDEO PLAYER MODAL - Perfectly sized for Mobile, Tablet & Laptop */}
       {activeVideo && (
         <div 
-          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto animate-in fade-in duration-150"
+          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto animate-in fade-in duration-150"
           onClick={(e) => {
             if (e.target === e.currentTarget) setActiveVideo(null);
           }}
         >
-          <div className="relative w-full max-w-2xl lg:max-w-3xl max-h-[90vh] bg-[#10111a] border border-amber-500/40 rounded-2xl sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden my-auto">
+          <div className="relative w-full max-w-2xl lg:max-w-3xl max-h-[90vh] bg-white border border-purple-200/90 rounded-2xl sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden my-auto">
             {/* Header */}
-            <div className="px-4 py-3 sm:px-5 sm:py-3.5 border-b border-[#202235] flex items-center justify-between gap-3 bg-[#121422] shrink-0">
+            <div className="px-4 py-3 sm:px-5 sm:py-3.5 border-b border-slate-200 flex items-center justify-between gap-3 bg-gradient-to-r from-purple-50/70 via-white to-indigo-50/70 shrink-0">
               <div className="min-w-0 pr-2">
-                <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30 font-bold inline-block">
+                <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-purple-100 text-purple-700 border border-purple-200 font-bold inline-block">
                   Beginner Lesson
                 </span>
-                <h3 className="text-xs sm:text-sm font-bold text-white mt-1 truncate">
+                <h3 className="text-xs sm:text-sm font-bold text-slate-900 mt-1 truncate">
                   {activeVideo.title}
                 </h3>
               </div>
@@ -524,12 +524,12 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
               <button
                 type="button"
                 onClick={() => setActiveVideo(null)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1d1f30] hover:bg-rose-600/90 hover:text-white text-neutral-300 transition-all text-xs font-semibold shrink-0 cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-600 transition-all text-xs font-semibold shrink-0 cursor-pointer border border-slate-200"
                 title="Close Video (Esc)"
               >
                 <X className="w-4 h-4" />
                 <span>Close</span>
-                <kbd className="hidden sm:inline-block px-1 py-0.2 text-[9px] bg-black/40 rounded border border-white/20 font-mono text-neutral-400">
+                <kbd className="hidden sm:inline-block px-1 py-0.2 text-[9px] bg-white rounded border border-slate-300 font-mono text-slate-500">
                   ESC
                 </kbd>
               </button>
@@ -553,17 +553,17 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
                   allowFullScreen
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-xs text-neutral-500">
+                <div className="w-full h-full flex items-center justify-center text-xs text-slate-400">
                   No video URL attached to this lesson.
                 </div>
               )}
             </div>
 
             {/* Lesson Details - Scrollable if description is long */}
-            <div className="p-3.5 sm:p-4 space-y-2.5 bg-[#0d0e17] border-t border-[#1d1f2e] overflow-y-auto max-h-[26vh] shrink">
+            <div className="p-3.5 sm:p-4 space-y-2.5 bg-slate-50 border-t border-slate-200 overflow-y-auto max-h-[26vh] shrink">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-                <span className="text-xs font-mono text-neutral-400 flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-amber-400" />
+                <span className="text-xs font-mono text-slate-600 flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-purple-600" />
                   <span>Duration: {activeVideo.durationMinutes || 20} minutes</span>
                 </span>
 
@@ -571,9 +571,9 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
                   <button
                     type="button"
                     onClick={() => toggleLessonProgress(activeVideo.id)}
-                    className="px-3.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-xs font-bold border border-amber-500/40 flex items-center gap-1.5 transition-colors cursor-pointer"
+                    className="px-3.5 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-bold border border-purple-200 flex items-center gap-1.5 transition-colors cursor-pointer"
                   >
-                    <CheckCircle2 className="w-4 h-4 text-amber-400" />
+                    <CheckCircle2 className="w-4 h-4 text-purple-600" />
                     <span>
                       {user?.completedLessons?.includes(activeVideo.id) ? 'Completed' : 'Mark Completed'}
                     </span>
@@ -582,7 +582,7 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
                   <button
                     type="button"
                     onClick={() => setActiveVideo(null)}
-                    className="px-4 py-1.5 rounded-xl bg-[#1d1f30] hover:bg-[#282a40] text-white text-xs font-mono transition-colors cursor-pointer"
+                    className="px-4 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-mono transition-colors cursor-pointer"
                   >
                     Close Video
                   </button>
@@ -590,7 +590,7 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
               </div>
 
               {activeVideo.description && (
-                <p className="text-xs text-neutral-300 leading-relaxed pt-1">
+                <p className="text-xs text-slate-700 leading-relaxed pt-1">
                   {activeVideo.description}
                 </p>
               )}
@@ -601,28 +601,28 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
 
       {/* ADMIN ADD/EDIT VIDEO MODAL */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="relative w-full max-w-lg bg-[#11121d] border border-[#26283d] rounded-3xl p-6 shadow-2xl space-y-4 my-6">
-            <h3 className="text-lg font-bold text-white font-mono flex items-center gap-2">
-              <GraduationCap className="w-5 h-5 text-emerald-400" />
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="relative w-full max-w-lg bg-white border border-slate-200 rounded-3xl p-6 shadow-2xl space-y-4 my-6 text-slate-900">
+            <h3 className="text-lg font-bold text-slate-900 font-mono flex items-center gap-2">
+              <GraduationCap className="w-5 h-5 text-purple-600" />
               {editingLessonId ? 'Edit Beginner Video Lesson' : 'Upload / Add Beginner Video'}
             </h3>
 
             <form onSubmit={handleSaveVideo} className="space-y-3 text-xs">
               <div>
-                <label className="text-neutral-400 block mb-1">Video Title</label>
+                <label className="text-slate-700 font-medium block mb-1">Video Title</label>
                 <input
                   type="text"
                   value={videoForm.title}
                   onChange={(e) => setVideoForm({ ...videoForm, title: e.target.value })}
                   placeholder="e.g. Lesson 01: Candlestick Anatomy & Market Structure"
-                  className="w-full px-3 py-2 rounded-xl bg-[#171826] border border-[#2a2c42] text-white"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-hidden focus:border-purple-600"
                   required
                 />
               </div>
 
               <div>
-                <label className="text-neutral-400 block mb-1">
+                <label className="text-slate-700 font-medium block mb-1">
                   Video Source (Supports 1–2+ Hour Long Lectures: YouTube, Google Drive, Vimeo, MP4)
                 </label>
                 <div className="flex gap-2">
@@ -631,7 +631,7 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
                     value={videoForm.videoUrl}
                     onChange={(e) => setVideoForm({ ...videoForm, videoUrl: e.target.value })}
                     placeholder="https://www.youtube.com/... or Google Drive / MP4 stream URL"
-                    className="flex-1 px-3 py-2 rounded-xl bg-[#171826] border border-[#2a2c42] text-white text-xs font-mono"
+                    className="flex-1 px-3 py-2 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs font-mono focus:outline-hidden focus:border-purple-600"
                     required
                   />
                   {extractYouTubeId(videoForm.videoUrl) && (
@@ -646,7 +646,7 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
                           }));
                         }
                       }}
-                      className="px-3 py-1.5 rounded-xl bg-purple-600/30 hover:bg-purple-600/50 text-purple-300 border border-purple-500/40 text-[10px] font-mono shrink-0"
+                      className="px-3 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-[10px] font-mono shrink-0 cursor-pointer"
                       title="Grab thumbnail directly from YouTube"
                     >
                       Grab YT Thumb
@@ -655,17 +655,17 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
                 </div>
 
                 <div className="mt-2.5">
-                  <label className="text-[10px] text-neutral-400 block mb-1">
+                  <label className="text-[10px] text-slate-500 block mb-1">
                     Or Attach Video from Device Gallery (Zero-Lag Direct Streaming):
                   </label>
                   <input
                     type="file"
                     accept="video/*"
                     onChange={handleVideoUpload}
-                    className="w-full text-[10px] text-neutral-300 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-500 cursor-pointer"
+                    className="w-full text-[10px] text-slate-600 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-purple-600 file:text-white hover:file:bg-purple-700 cursor-pointer"
                   />
                   {videoForm.videoUrl?.startsWith('blob:') && (
-                    <p className="text-[10px] font-mono text-emerald-400 mt-1 flex items-center gap-1">
+                    <p className="text-[10px] font-mono text-emerald-600 mt-1 flex items-center gap-1 font-semibold">
                       <CheckCircle2 className="w-3 h-3" /> Device video linked with zero memory lag.
                     </p>
                   )}
@@ -673,43 +673,43 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
               </div>
 
               {/* VIDEO THUMBNAIL */}
-              <div className="p-3.5 rounded-2xl bg-[#141522] border border-[#26283c] space-y-2.5">
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <label className="text-white font-semibold text-xs flex items-center gap-1.5">
-                    <ImageIcon className="w-4 h-4 text-emerald-400" />
+                  <label className="text-slate-900 font-semibold text-xs flex items-center gap-1.5">
+                    <ImageIcon className="w-4 h-4 text-purple-600" />
                     <span>Video Thumbnail</span>
                   </label>
-                  <span className="text-[10px] font-mono text-emerald-400">
+                  <span className="text-[10px] font-mono text-purple-700 font-semibold">
                     Custom Image or YouTube Cover
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div>
-                    <label className="text-[10px] text-neutral-400 block mb-1">Thumbnail Image URL</label>
+                    <label className="text-[10px] text-slate-500 block mb-1">Thumbnail Image URL</label>
                     <input
                       type="text"
                       value={videoForm.thumbnailUrl || ''}
                       onChange={(e) => setVideoForm({ ...videoForm, thumbnailUrl: e.target.value })}
                       placeholder="https://images.unsplash.com/... or jpg/png"
-                      className="w-full px-2.5 py-1.5 rounded-lg bg-[#1c1d2e] border border-[#2a2c42] text-white text-[11px]"
+                      className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-slate-300 text-slate-900 text-[11px]"
                     />
                   </div>
 
                   <div>
-                    <label className="text-[10px] text-neutral-400 block mb-1">Upload Image from Device</label>
+                    <label className="text-[10px] text-slate-500 block mb-1">Upload Image from Device</label>
                     <input
                       type="file"
                       accept="image/*"
                       onChange={handleThumbnailUpload}
-                      className="w-full text-[10px] text-neutral-300 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-500 cursor-pointer"
+                      className="w-full text-[10px] text-slate-600 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-purple-600 file:text-white hover:file:bg-purple-700 cursor-pointer"
                     />
                   </div>
                 </div>
 
                 {/* Preset Thumbnails */}
                 <div>
-                  <span className="text-[10px] text-neutral-400 block mb-1">Or choose a trading thumbnail preset:</span>
+                  <span className="text-[10px] text-slate-500 block mb-1">Or choose a trading thumbnail preset:</span>
                   <div className="grid grid-cols-3 gap-1.5">
                     {THUMBNAIL_PRESETS.slice(0, 3).map((pr) => (
                       <button
@@ -718,8 +718,8 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
                         onClick={() => setVideoForm({ ...videoForm, thumbnailUrl: pr.url })}
                         className={`p-1 rounded-lg border text-[10px] text-left truncate transition-colors ${
                           videoForm.thumbnailUrl === pr.url
-                            ? 'bg-emerald-500/20 border-emerald-500 text-white font-bold'
-                            : 'bg-[#181926] border-[#292b3f] text-neutral-400 hover:text-white'
+                            ? 'bg-purple-100 border-purple-400 text-purple-800 font-bold'
+                            : 'bg-white border-slate-200 text-slate-600 hover:text-slate-900'
                         }`}
                       >
                         {pr.title}
@@ -730,8 +730,8 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
 
                 {/* Live Thumbnail Preview */}
                 <div className="pt-1">
-                  <span className="text-[10px] font-mono text-neutral-400 block mb-1">Thumbnail Preview:</span>
-                  <div className="relative aspect-video w-full max-w-[200px] rounded-xl overflow-hidden bg-black/60 border border-[#2b2d42]">
+                  <span className="text-[10px] font-mono text-slate-500 block mb-1">Thumbnail Preview:</span>
+                  <div className="relative aspect-video w-full max-w-[200px] rounded-xl overflow-hidden bg-slate-900 border border-slate-200">
                     <img
                       src={getAutoThumbnail(videoForm.videoUrl, videoForm.thumbnailUrl)}
                       alt="Thumbnail Preview"
@@ -746,34 +746,34 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-neutral-400 block mb-1">Duration (Minutes)</label>
+                  <label className="text-slate-700 font-medium block mb-1">Duration (Minutes)</label>
                   <input
                     type="number"
                     value={videoForm.durationMinutes}
                     onChange={(e) => setVideoForm({ ...videoForm, durationMinutes: Number(e.target.value) })}
-                    className="w-full px-3 py-2 rounded-xl bg-[#171826] border border-[#2a2c42] text-white"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-300 text-slate-900"
                     required
                   />
                 </div>
                 <div>
-                  <label className="text-neutral-400 block mb-1">Category</label>
+                  <label className="text-slate-700 font-medium block mb-1">Category</label>
                   <input
                     type="text"
                     value={videoForm.category}
                     onChange={(e) => setVideoForm({ ...videoForm, category: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-[#171826] border border-[#2a2c42] text-white"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-300 text-slate-900"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-neutral-400 block mb-1">Description</label>
+                <label className="text-slate-700 font-medium block mb-1">Description</label>
                 <textarea
                   rows={3}
                   value={videoForm.description}
                   onChange={(e) => setVideoForm({ ...videoForm, description: e.target.value })}
                   placeholder="Summary of what is taught in this video..."
-                  className="w-full px-3 py-2 rounded-xl bg-[#171826] border border-[#2a2c42] text-white resize-none"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 resize-none"
                   required
                 />
               </div>
@@ -782,13 +782,13 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 rounded-xl bg-[#181928] text-neutral-300 hover:text-white"
+                  className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold"
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-500 hover:to-indigo-500 text-white font-bold cursor-pointer shadow-md shadow-purple-600/20"
                 >
                   {editingLessonId ? 'Save Changes' : 'Publish Video'}
                 </button>
