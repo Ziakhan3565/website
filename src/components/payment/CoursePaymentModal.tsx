@@ -342,614 +342,558 @@ export const CoursePaymentModal: React.FC<CoursePaymentModalProps> = ({
 
   return (
     <>
-      <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2.5 sm:p-5 overflow-y-auto">
-        <div className="relative w-full max-w-4xl max-h-[94vh] overflow-y-auto bg-white border border-purple-200 rounded-2xl sm:rounded-3xl shadow-2xl my-auto">
-          {/* Top Breadcrumbs / Flow Indicator */}
-          <div className="bg-slate-50 border-b border-slate-200 px-4 py-2.5 hidden sm:flex items-center justify-center gap-4 text-xs font-mono">
-            <span className="text-slate-500">Student Account</span>
-            <span className="text-slate-400">›</span>
-            <span className="text-slate-500">Course Selection</span>
-            <span className="text-slate-400">›</span>
-            <span className="text-purple-700 font-bold bg-purple-100 border border-purple-200 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-purple-600 animate-ping" />
-              Secure Payment Checkout
-            </span>
-            <span className="text-slate-400">›</span>
-            <span className="text-slate-500">Instant Access Unlock</span>
+      <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 md:p-6 overflow-y-auto">
+        <div className="relative w-full max-w-[96vw] sm:max-w-lg md:max-w-2xl max-h-[94vh] sm:max-h-[90vh] bg-white border border-purple-200 rounded-2xl sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden my-auto text-slate-900">
+          
+          {/* Header - Fixed & Compact */}
+          <div className="px-4 py-3 sm:px-5 sm:py-3.5 border-b border-slate-200 flex items-center justify-between gap-3 bg-gradient-to-r from-purple-50/70 via-white to-indigo-50/70 shrink-0">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-8 h-8 rounded-xl bg-purple-600/15 border border-purple-200 flex items-center justify-center text-purple-700 shrink-0">
+                <ShieldCheck className="w-4 h-4" />
+              </div>
+              <div className="min-w-0">
+                <h2 className="text-sm sm:text-base font-black text-slate-900 tracking-tight flex items-center gap-1.5 truncate">
+                  <span>Secure Course Checkout</span>
+                </h2>
+                <p className="text-[10px] sm:text-xs text-slate-500 truncate">
+                  {gatewayInfo?.isStripeConfigured ? 'Stripe 256-bit Encrypted' : 'Instant Verified Access'} · Zia Khan Academy
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer shrink-0"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
-          {/* Main Layout Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[540px]">
-            {/* Left Column: Educational Platform Background Card */}
-            <div className="lg:col-span-5 bg-gradient-to-br from-slate-50 via-purple-50/40 to-white p-6 sm:p-7 border-b lg:border-b-0 lg:border-r border-slate-200 flex flex-col justify-between space-y-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase tracking-widest px-2.5 py-1 rounded-full bg-purple-100 text-purple-700 border border-purple-200 font-bold">
-                    SYSTEMATIC ACADEMY
-                  </span>
-
-                  {/* Gateway Status Badge */}
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1 font-bold">
-                    <ShieldCheck className="w-3 h-3 text-emerald-600" />
-                    <span>{gatewayInfo?.isStripeConfigured ? 'Stripe Gateway Live' : 'Test Sandbox Gateway'}</span>
-                  </span>
-                </div>
-
-                <div>
-                  <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-                    <span className="text-slate-900 font-bold">Learn <span className="bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 bg-clip-text text-transparent">and Grow</span></span>
-                    <span className="text-xs font-sans font-medium text-slate-500">Trading Academy</span>
-                  </h3>
-                  <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                    Master professional crypto quantitative strategy, SMC order flow, and institutional risk management with Zia Khan.
-                  </p>
-                </div>
-
-                {/* Plan Selector Pills */}
-                <div className="space-y-2 pt-2">
-                  <label className="text-[11px] font-mono uppercase tracking-wider text-purple-700 font-bold block">
-                    Choose Course Track:
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedPlan('beginner');
-                        setActiveSandboxSession(null);
-                      }}
-                      className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
-                        selectedPlan === 'beginner'
-                          ? 'bg-purple-50 border-purple-400 shadow-xs ring-1 ring-purple-400'
-                          : 'bg-white border-slate-200 hover:border-purple-300'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-slate-900">Beginner Course</span>
-                        <span className="text-xs font-mono font-bold text-purple-700">${pricing.beginnerPrice}</span>
-                      </div>
-                      <span className="text-[10px] text-slate-500 block mt-0.5">Foundations & Risk</span>
-                      {hasBeginnerAccess && (
-                        <span className="inline-block mt-1 text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700">
-                          ✓ Already Owned
-                        </span>
-                      )}
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedPlan('advanced');
-                        setActiveSandboxSession(null);
-                      }}
-                      className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
-                        selectedPlan === 'advanced'
-                          ? 'bg-purple-50 border-purple-400 shadow-xs ring-1 ring-purple-400'
-                          : 'bg-white border-slate-200 hover:border-purple-300'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-slate-900">Advanced VIP</span>
-                        <span className="text-xs font-mono font-bold text-purple-700">${pricing.advancedPrice}</span>
-                      </div>
-                      <span className="text-[10px] text-slate-500 block mt-0.5">Live Desk & Signals</span>
-                      {hasAdvancedAccess && (
-                        <span className="inline-block mt-1 text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700">
-                          ✓ Already Owned
-                        </span>
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Curriculum Bullet Checklist */}
-                <div className="space-y-3 pt-3 border-t border-slate-200 text-xs">
-                  <div>
-                    <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-[11px] uppercase tracking-wider font-mono text-purple-700">
-                      <Sparkles className="w-3.5 h-3.5 text-purple-600" /> Complete Curriculum Access
-                    </h5>
-                    <p className="text-[11px] text-slate-500 mt-0.5 pl-5">
-                      Lifetime access to all video lessons, future updates, and high-resolution chart models.
-                    </p>
-                  </div>
-
-                  <div>
-                    <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-[11px] uppercase tracking-wider font-mono text-purple-700">
-                      <Zap className="w-3.5 h-3.5 text-purple-600" /> Verified Server Unlocking
-                    </h5>
-                    <p className="text-[11px] text-slate-500 mt-0.5 pl-5">
-                      Zero mock success. Orders are verified server-side with anti-duplicate guarantees.
-                    </p>
-                  </div>
-
-                  <div>
-                    <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-[11px] uppercase tracking-wider font-mono text-purple-700">
-                      <GraduationCap className="w-3.5 h-3.5 text-purple-600" /> Student Profile & Receipts
-                    </h5>
-                    <p className="text-[11px] text-slate-500 mt-0.5 pl-5">
-                      Official transaction reference and verifiable proof of enrollment in your profile.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Payment Tutorial CTA Button */}
-              <div className="pt-4 border-t border-slate-200">
+          {/* Scrollable Body */}
+          <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 text-slate-900">
+            {/* 1. Track Selector Pills (Compact Beginner vs Advanced) */}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-[11px] font-mono uppercase tracking-wider text-purple-700 font-bold">
+                  Select Course Track:
+                </label>
                 <button
                   type="button"
                   onClick={() => openTutorialForCurrentMethod()}
-                  className="w-full py-2.5 px-3 rounded-2xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer"
+                  className="text-[11px] text-purple-700 hover:text-purple-800 font-bold flex items-center gap-1 cursor-pointer"
                 >
-                  <PlayCircle className="w-4 h-4 text-purple-600" />
-                  <span>Payment Video Tutorial ({paymentMode === 'card' ? 'Debit/Credit Card' : localMethod === 'crypto' ? 'USDT' : 'Pakistani Desk'} Guide)</span>
+                  <PlayCircle className="w-3.5 h-3.5" />
+                  <span>Video Tutorial</span>
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedPlan('beginner');
+                    setActiveSandboxSession(null);
+                  }}
+                  className={`p-2.5 sm:p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                    selectedPlan === 'beginner'
+                      ? 'bg-purple-50/90 border-purple-500 ring-1 ring-purple-400 shadow-xs'
+                      : 'bg-slate-50/60 border-slate-200 hover:border-purple-300'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-900">Beginner Course</span>
+                    <span className="text-xs font-mono font-black text-purple-700">${pricing.beginnerPrice} USD</span>
+                  </div>
+                  <span className="text-[10px] text-slate-500 block mt-0.5">Foundations & Risk</span>
+                  {hasBeginnerAccess && (
+                    <span className="inline-block mt-1 text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700">
+                      ✓ Active Access
+                    </span>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedPlan('advanced');
+                    setActiveSandboxSession(null);
+                  }}
+                  className={`p-2.5 sm:p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                    selectedPlan === 'advanced'
+                      ? 'bg-purple-50/90 border-purple-500 ring-1 ring-purple-400 shadow-xs'
+                      : 'bg-slate-50/60 border-slate-200 hover:border-purple-300'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-900">Advanced VIP</span>
+                    <span className="text-xs font-mono font-black text-purple-700">${pricing.advancedPrice} USD</span>
+                  </div>
+                  <span className="text-[10px] text-slate-500 block mt-0.5">Live Desk & Signals</span>
+                  {hasAdvancedAccess && (
+                    <span className="inline-block mt-1 text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700">
+                      ✓ Active Access
+                    </span>
+                  )}
                 </button>
               </div>
             </div>
 
-            {/* Right Column: Checkout Execution Console */}
-            <div className="lg:col-span-7 bg-[#ffffff] text-[#111218] p-6 sm:p-8 flex flex-col justify-between space-y-6">
-              <div>
-                {/* Modal Top Bar */}
-                <div className="flex items-center justify-between pb-3 border-b border-neutral-200">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h2 className="text-xl sm:text-2xl font-black text-neutral-900 tracking-tight">
-                        Complete Checkout
-                      </h2>
-                    </div>
-                    <p className="text-xs text-neutral-500 mt-0.5">
-                      Secure payment processor · PCI-DSS Compliant
-                    </p>
-                  </div>
-
+            {/* Anti-Duplicate Warning if already enrolled */}
+            {isAlreadyEnrolled ? (
+              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 space-y-2">
+                <div className="flex items-center gap-2 font-bold text-sm">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                  <span>Course Already Unlocked!</span>
+                </div>
+                <p className="text-xs leading-relaxed text-emerald-800">
+                  Your account already has full, permanent access to the {selectedPlan === 'beginner' ? 'Beginner Academy' : 'Advanced VIP Masterclass'}. You cannot be charged again for the same course.
+                </p>
+                <div className="pt-2 flex gap-2">
                   <button
+                    type="button"
                     onClick={onClose}
-                    className="p-1.5 rounded-full text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors"
+                    className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold font-mono transition-colors cursor-pointer"
                   >
-                    <X className="w-5 h-5" />
+                    Go to My Lessons
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                {/* 2. Method Switcher Pills */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 p-1 rounded-xl bg-slate-100 border border-slate-200 gap-1 text-xs">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPaymentMode('card');
+                      setActiveSandboxSession(null);
+                    }}
+                    className={`py-2 px-3 rounded-lg font-bold text-center text-xs transition-all cursor-pointer ${
+                      paymentMode === 'card'
+                        ? 'bg-white text-purple-700 shadow-xs font-extrabold ring-1 ring-purple-200'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    💳 Debit / Credit Card
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPaymentMode('crypto_local');
+                      setActiveSandboxSession(null);
+                    }}
+                    className={`py-2 px-3 rounded-lg font-bold text-center text-xs transition-all cursor-pointer ${
+                      paymentMode === 'crypto_local'
+                        ? 'bg-white text-purple-700 shadow-xs font-extrabold ring-1 ring-purple-200'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    ⚡ Easypaisa / JazzCash / IBAN / USDT
                   </button>
                 </div>
 
-                {/* Anti-Duplicate Warning if already enrolled */}
-                {isAlreadyEnrolled ? (
-                  <div className="mt-4 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 space-y-2">
-                    <div className="flex items-center gap-2 font-bold text-sm">
-                      <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-                      <span>Course Already Unlocked!</span>
-                    </div>
-                    <p className="text-xs leading-relaxed text-emerald-800">
-                      Your account already has full, permanent access to the {selectedPlan === 'beginner' ? 'Beginner Academy' : 'Advanced VIP Masterclass'}. You cannot be charged again for the same course.
-                    </p>
-                    <div className="pt-2 flex gap-2">
-                      <button
-                        type="button"
-                        onClick={onClose}
-                        className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold font-mono transition-colors"
-                      >
-                        Go to My Lessons
-                      </button>
+                {/* Subscription Details Box */}
+                <div className="p-3 sm:p-3.5 rounded-xl bg-purple-50/70 border border-purple-200 flex items-center justify-between">
+                  <div className="min-w-0 pr-2">
+                    <span className="text-xs font-bold text-slate-900 block truncate">
+                      {selectedPlan === 'beginner' ? 'Beginner Trading Crash Course' : 'Advanced Quant VIP Access & Signals'}
+                    </span>
+                    <span className="text-[10px] text-slate-500 block truncate">
+                      Student: <strong className="text-slate-700">{userEmail}</strong>
+                    </span>
+                  </div>
+
+                  <div className="text-right shrink-0">
+                    <span className="text-xl sm:text-2xl font-black text-purple-700 font-mono">
+                      ${currentPrice}
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-500 ml-0.5">USD</span>
+                  </div>
+                </div>
+
+                {/* Alerts / Error feedback */}
+                {errorMessage && (
+                  <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-mono flex items-start gap-2">
+                    <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-rose-500" />
+                    <div>
+                      <strong className="block font-bold">Transaction Refused</strong>
+                      <span>{errorMessage}</span>
                     </div>
                   </div>
-                ) : (
-                  <>
-                    {/* Method Switcher */}
-                    <div className="flex items-center justify-between mt-4 mb-4">
-                      <div className="flex items-center gap-2 p-1 bg-neutral-100 rounded-full border border-neutral-200 text-xs">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setPaymentMode('card');
-                            setActiveSandboxSession(null);
-                          }}
-                          className={`px-3 py-1 rounded-full font-bold transition-all cursor-pointer ${
-                            paymentMode === 'card'
-                              ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-black shadow-sm'
-                              : 'text-neutral-600 hover:text-neutral-900'
-                          }`}
-                        >
-                          Debit / Credit Card
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setPaymentMode('crypto_local');
-                            setActiveSandboxSession(null);
-                          }}
-                          className={`px-3 py-1 rounded-full font-bold transition-all cursor-pointer ${
-                            paymentMode === 'crypto_local'
-                              ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-black shadow-sm'
-                              : 'text-neutral-600 hover:text-neutral-900'
-                          }`}
-                        >
-                          Easypaisa / JazzCash / Bank / USDT
-                        </button>
-                      </div>
+                )}
+                {successMessage && (
+                  <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-mono flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>{successMessage}</span>
+                  </div>
+                )}
+                {processingStage && (
+                  <div className="p-3 rounded-xl bg-purple-50 border border-purple-200 text-purple-800 text-xs font-mono flex items-center gap-2 animate-pulse">
+                    <span className="w-3 h-3 rounded-full bg-purple-600 animate-ping" />
+                    <span>{processingStage}</span>
+                  </div>
+                )}
 
-                      <button
-                        type="button"
-                        onClick={() => openTutorialForCurrentMethod()}
-                        className="text-xs text-amber-600 hover:text-amber-700 font-bold flex items-center gap-1 cursor-pointer"
-                      >
-                        <PlayCircle className="w-3.5 h-3.5" />
-                        <span>Watch Tutorial</span>
-                      </button>
-                    </div>
-
-                    {/* Subscription Details Box */}
-                    <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between mb-5">
-                      <div>
-                        <span className="text-xs font-bold text-neutral-800 block">
-                          {selectedPlan === 'beginner' ? 'Beginner Trading Crash Course' : 'Advanced Quant VIP Access & Signals'}
-                        </span>
-                        <span className="text-[11px] text-neutral-500">
-                          Student: <strong className="text-neutral-800">{userEmail}</strong>
-                        </span>
-                      </div>
-
-                      <div className="text-right">
-                        <span className="text-2xl font-black text-amber-600 font-mono">
-                          ${currentPrice}
-                        </span>
-                        <span className="text-xs font-bold text-neutral-500 ml-0.5">USD</span>
-                      </div>
-                    </div>
-
-                    {/* Alerts / Error feedback */}
-                    {errorMessage && (
-                      <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-mono flex items-start gap-2">
-                        <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-rose-500" />
-                        <div>
-                          <strong className="block font-bold">Transaction Refused</strong>
-                          <span>{errorMessage}</span>
+                {/* MODE 1: Debit & Credit Card Flow */}
+                {paymentMode === 'card' && (
+                  <div>
+                    {!activeSandboxSession ? (
+                      <div className="space-y-3">
+                        <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5 text-xs">
+                          <div className="flex items-center gap-2 font-bold text-slate-900 text-xs">
+                            <CreditCard className="w-4 h-4 text-purple-600" />
+                            <span>Global Card Checkout</span>
+                          </div>
+                          <p className="text-slate-600 leading-relaxed text-[11px]">
+                            Pay securely using any Visa, Mastercard, or Pakistani International Debit/Credit Card. Raw card numbers and CVV codes are never stored on our server.
+                          </p>
+                          <div className="pt-1 flex flex-wrap items-center gap-1.5 text-[10px] font-mono text-slate-500">
+                            <span className="px-2 py-0.5 bg-white border border-slate-200 rounded font-bold">VISA</span>
+                            <span className="px-2 py-0.5 bg-white border border-slate-200 rounded font-bold">Mastercard</span>
+                            <span className="px-2 py-0.5 bg-white border border-slate-200 rounded font-bold">UnionPay</span>
+                            <span className="px-2 py-0.5 bg-white border border-slate-200 rounded font-bold">Pakistani 3D-Secure</span>
+                          </div>
                         </div>
-                      </div>
-                    )}
-                    {successMessage && (
-                      <div className="mb-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-mono flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                        <span>{successMessage}</span>
-                      </div>
-                    )}
-                    {processingStage && (
-                      <div className="mb-4 p-3 rounded-xl bg-purple-50 border border-purple-200 text-purple-800 text-xs font-mono flex items-center gap-2 animate-pulse">
-                        <span className="w-3 h-3 rounded-full bg-purple-600 animate-ping" />
-                        <span>{processingStage}</span>
-                      </div>
-                    )}
 
-                    {/* MODE 1: Debit & Credit Card Flow */}
-                    {paymentMode === 'card' && (
-                      <div>
-                        {!activeSandboxSession ? (
-                          <div className="space-y-4">
-                            <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-200 space-y-2 text-xs">
-                              <div className="flex items-center gap-2 font-bold text-neutral-800 text-sm">
-                                <CreditCard className="w-4 h-4 text-amber-500" />
-                                <span>Global Card Checkout</span>
-                              </div>
-                              <p className="text-neutral-600 leading-relaxed">
-                                Pay securely using any Visa, Mastercard, or Pakistani International Debit/Credit Card. Raw card numbers and CVV codes are never stored on our server.
-                              </p>
-                              <div className="pt-2 flex flex-wrap items-center gap-2 text-[11px] font-mono text-neutral-500">
-                                <span className="px-2 py-0.5 bg-white border border-neutral-200 rounded font-bold">VISA</span>
-                                <span className="px-2 py-0.5 bg-white border border-neutral-200 rounded font-bold">Mastercard</span>
-                                <span className="px-2 py-0.5 bg-white border border-neutral-200 rounded font-bold">UnionPay</span>
-                                <span className="px-2 py-0.5 bg-white border border-neutral-200 rounded font-bold">Pakistani 3D-Secure</span>
-                              </div>
-                            </div>
+                        <button
+                          type="button"
+                          onClick={handleInitiateCardCheckout}
+                          disabled={loading}
+                          className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-500 hover:to-indigo-500 disabled:opacity-50 text-white text-xs font-bold shadow-md shadow-purple-600/25 transition-all flex items-center justify-center gap-2 uppercase tracking-wide cursor-pointer"
+                        >
+                          {loading ? (
+                            <span>Initializing Gateway...</span>
+                          ) : (
+                            <span>Proceed to Card Checkout (${currentPrice} USD)</span>
+                          )}
+                        </button>
+                      </div>
+                    ) : (
+                      /* Interactive Sandbox Test Gateway Screen */
+                      <form onSubmit={handleExecuteSandboxPayment} className="space-y-3">
+                        <div className="p-2.5 rounded-xl bg-purple-50 border border-purple-200 text-purple-900 text-xs flex items-center justify-between">
+                          <span className="font-bold flex items-center gap-1.5 text-[11px]">
+                            <Shield className="w-3.5 h-3.5 text-purple-600" />
+                            Test Mode (Order: {activeSandboxSession.orderRef})
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setActiveSandboxSession(null)}
+                            className="text-[10px] text-purple-700 underline font-mono cursor-pointer"
+                          >
+                            Cancel
+                          </button>
+                        </div>
 
+                        {/* Preset Buttons for Easy Testing */}
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-mono uppercase text-slate-500 block font-bold">
+                            Quick Fill Test Scenarios:
+                          </label>
+                          <div className="grid grid-cols-3 gap-1">
                             <button
                               type="button"
-                              onClick={handleInitiateCardCheckout}
-                              disabled={loading}
-                              className="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 hover:opacity-95 disabled:opacity-50 text-black text-sm font-black shadow-lg shadow-amber-500/25 transition-all flex items-center justify-center gap-2 uppercase tracking-wide cursor-pointer"
+                              onClick={() => fillTestCard('success')}
+                              className="p-1 rounded-lg border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[10px] font-bold font-mono transition-colors text-center cursor-pointer"
                             >
-                              {loading ? (
-                                <span>Initializing Gateway...</span>
-                              ) : (
-                                <span>Proceed to Card Checkout (${currentPrice})</span>
-                              )}
+                              ✓ Success (4242)
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => fillTestCard('declined')}
+                              className="p-1 rounded-lg border border-rose-300 bg-rose-50 hover:bg-rose-100 text-rose-800 text-[10px] font-bold font-mono transition-colors text-center cursor-pointer"
+                            >
+                              ✕ Declined
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => fillTestCard('funds')}
+                              className="p-1 rounded-lg border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-800 text-[10px] font-bold font-mono transition-colors text-center cursor-pointer"
+                            >
+                              ✕ Low Funds
                             </button>
                           </div>
-                        ) : (
-                          /* Interactive Sandbox Test Gateway Screen */
-                          <form onSubmit={handleExecuteSandboxPayment} className="space-y-4">
-                            <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center justify-between">
-                              <span className="font-bold flex items-center gap-1.5">
-                                <Shield className="w-3.5 h-3.5 text-amber-600" />
-                                Gateway Test Mode Active (Order: {activeSandboxSession.orderRef})
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() => setActiveSandboxSession(null)}
-                                className="text-[11px] text-amber-700 underline font-mono"
-                              >
-                                Cancel Order
-                              </button>
-                            </div>
-
-                            {/* Preset Buttons for Easy Testing */}
-                            <div className="space-y-1.5">
-                              <label className="text-[10px] font-mono uppercase text-neutral-500 block font-bold">
-                                Quick Fill Sandbox Test Scenarios:
-                              </label>
-                              <div className="grid grid-cols-3 gap-1.5">
-                                <button
-                                  type="button"
-                                  onClick={() => fillTestCard('success')}
-                                  className="p-1.5 rounded-lg border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[10px] font-bold font-mono transition-colors text-center"
-                                >
-                                  ✓ Standard Card (4242)
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => fillTestCard('declined')}
-                                  className="p-1.5 rounded-lg border border-rose-300 bg-rose-50 hover:bg-rose-100 text-rose-800 text-[10px] font-bold font-mono transition-colors text-center"
-                                >
-                                  ✕ Declined Test (0002)
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => fillTestCard('funds')}
-                                  className="p-1.5 rounded-lg border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-800 text-[10px] font-bold font-mono transition-colors text-center"
-                                >
-                                  ✕ Insufficient Funds (0069)
-                                </button>
-                              </div>
-                            </div>
-
-                            {/* Card Input Frame */}
-                            <div className="rounded-2xl border-2 border-neutral-300 focus-within:border-[#7c3aed] bg-white overflow-hidden transition-all shadow-sm">
-                              {/* Row 1: Card Number */}
-                              <div className="flex items-center px-3.5 py-2.5 border-b border-neutral-200">
-                                <CreditCard className="w-5 h-5 text-neutral-400 mr-2.5 shrink-0" />
-                                <input
-                                  type="text"
-                                  placeholder="Card number (4242...)"
-                                  value={cardNumber}
-                                  onChange={(e) => handleCardNumberChange(e.target.value)}
-                                  maxLength={19}
-                                  className="w-full text-xs font-mono text-neutral-900 placeholder-neutral-400 focus:outline-none"
-                                  required
-                                />
-                              </div>
-
-                              {/* Row 2: Expiry & CVV */}
-                              <div className="grid grid-cols-2 divide-x divide-neutral-200">
-                                <div className="px-3.5 py-2">
-                                  <input
-                                    type="text"
-                                    placeholder="MM/YY"
-                                    value={cardExpiry}
-                                    onChange={(e) => handleCardExpiryChange(e.target.value)}
-                                    maxLength={5}
-                                    className="w-full text-xs font-mono text-neutral-900 placeholder-neutral-400 focus:outline-none"
-                                    required
-                                  />
-                                </div>
-
-                                <div className="px-3.5 py-2 flex items-center">
-                                  <input
-                                    type="password"
-                                    placeholder="CVV"
-                                    value={cardCvv}
-                                    onChange={(e) => handleCardCvvChange(e.target.value)}
-                                    maxLength={4}
-                                    className="w-full text-xs font-mono text-neutral-900 placeholder-neutral-400 focus:outline-none"
-                                    required
-                                  />
-                                  <Lock className="w-3.5 h-3.5 text-neutral-400 shrink-0 ml-1" />
-                                </div>
-                              </div>
-
-                              {/* Row 3: Cardholder Name */}
-                              <div className="px-3.5 py-2 border-t border-neutral-200">
-                                <input
-                                  type="text"
-                                  placeholder="Cardholder Name"
-                                  value={cardHolder}
-                                  onChange={(e) => setCardHolder(e.target.value)}
-                                  className="w-full text-xs font-sans text-neutral-900 placeholder-neutral-400 focus:outline-none"
-                                  required
-                                />
-                              </div>
-                            </div>
-
-                            <button
-                              type="submit"
-                              disabled={loading}
-                              className="w-full py-3.5 px-5 rounded-2xl bg-[#7c3aed] hover:bg-[#6d28d9] disabled:opacity-50 text-white text-xs font-bold shadow-lg shadow-purple-500/25 transition-all flex items-center justify-center gap-2 uppercase tracking-wide cursor-pointer"
-                            >
-                              {loading ? (
-                                <span>Verifying Card Payment...</span>
-                              ) : (
-                                <span>Authorize & Pay ${currentPrice} USD</span>
-                              )}
-                            </button>
-                          </form>
-                        )}
-                      </div>
-                    )}
-
-                    {/* MODE 2: Alternative Pakistani & Crypto Transfer Desk */}
-                    {paymentMode === 'crypto_local' && (
-                      <form onSubmit={handleLocalCheckout} className="space-y-4">
-                        {/* Method Selector */}
-                        <div className="grid grid-cols-4 gap-1.5">
-                          <button
-                            type="button"
-                            onClick={() => setLocalMethod('crypto')}
-                            className={`p-2 rounded-xl border text-[11px] font-bold transition-all text-center ${
-                              localMethod === 'crypto'
-                                ? 'bg-purple-100 border-[#7c3aed] text-[#7c3aed]'
-                                : 'bg-neutral-50 border-neutral-200 text-neutral-600'
-                            }`}
-                          >
-                            USDT Desk
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setLocalMethod('easypaisa')}
-                            className={`p-2 rounded-xl border text-[11px] font-bold transition-all text-center ${
-                              localMethod === 'easypaisa'
-                                ? 'bg-purple-100 border-[#7c3aed] text-[#7c3aed]'
-                                : 'bg-neutral-50 border-neutral-200 text-neutral-600'
-                            }`}
-                          >
-                            EasyPaisa
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setLocalMethod('jazzcash')}
-                            className={`p-2 rounded-xl border text-[11px] font-bold transition-all text-center ${
-                              localMethod === 'jazzcash'
-                                ? 'bg-purple-100 border-[#7c3aed] text-[#7c3aed]'
-                                : 'bg-neutral-50 border-neutral-200 text-neutral-600'
-                            }`}
-                          >
-                            JazzCash
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setLocalMethod('bank')}
-                            className={`p-2 rounded-xl border text-[11px] font-bold transition-all text-center ${
-                              localMethod === 'bank'
-                                ? 'bg-purple-100 border-[#7c3aed] text-[#7c3aed]'
-                                : 'bg-neutral-50 border-neutral-200 text-neutral-600'
-                            }`}
-                          >
-                            Meezan IBAN
-                          </button>
                         </div>
 
-                        {/* Method Details */}
-                        <div className="p-3.5 rounded-2xl bg-neutral-50 border border-neutral-200 text-xs space-y-2">
-                          {localMethod === 'crypto' && (
-                            <div>
-                              <span className="font-bold text-neutral-800 block mb-1">
-                                USDT (TRC-20 Official Wallet):
-                              </span>
-                              <div className="flex items-center gap-2 bg-white p-2 rounded-xl border border-neutral-200">
-                                <code className="text-[11px] font-mono text-neutral-700 flex-1 truncate">
-                                  {pricing.usdtTrc20Address}
-                                </code>
-                                <button
-                                  type="button"
-                                  onClick={() => handleCopy(pricing.usdtTrc20Address, 'trc20')}
-                                  className="px-2 py-1 rounded bg-neutral-100 hover:bg-neutral-200 text-xs font-bold cursor-pointer"
-                                >
-                                  {copiedKey === 'trc20' ? 'Copied' : 'Copy'}
-                                </button>
-                              </div>
-                            </div>
-                          )}
-
-                          {localMethod === 'easypaisa' && (
-                            <div>
-                              <div className="flex justify-between items-center mb-1">
-                                <span className="font-bold text-neutral-800">EasyPaisa Mobile Number:</span>
-                                <span className="font-mono font-bold text-emerald-700">{pricing.easypaisaNumber}</span>
-                              </div>
-                              <span className="text-neutral-500 text-[11px] block">Title: {pricing.easypaisaTitle}</span>
-                            </div>
-                          )}
-
-                          {localMethod === 'jazzcash' && (
-                            <div>
-                              <div className="flex justify-between items-center mb-1">
-                                <span className="font-bold text-neutral-800">JazzCash Mobile Number:</span>
-                                <span className="font-mono font-bold text-orange-700">{pricing.jazzcashNumber}</span>
-                              </div>
-                              <span className="text-neutral-500 text-[11px] block">Title: {pricing.jazzcashTitle}</span>
-                            </div>
-                          )}
-
-                          {localMethod === 'bank' && (
-                            <div>
-                              <div className="flex justify-between items-center mb-1">
-                                <span className="font-bold text-neutral-800">{pricing.bankName}:</span>
-                                <span className="font-mono font-bold text-blue-700 text-[11px]">{pricing.bankIban}</span>
-                              </div>
-                              <span className="text-neutral-500 text-[11px] block">Title: {pricing.bankAccountTitle}</span>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Transaction Reference Input */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                          <div>
-                            <label className="text-[11px] font-mono text-neutral-600 block mb-1">
-                              Transaction Reference / TID (Required)
-                            </label>
+                        {/* Card Input Frame */}
+                        <div className="rounded-xl border border-slate-300 focus-within:border-purple-600 bg-white overflow-hidden transition-all shadow-xs">
+                          {/* Row 1: Card Number */}
+                          <div className="flex items-center px-3 py-2 border-b border-slate-200">
+                            <CreditCard className="w-4 h-4 text-slate-400 mr-2 shrink-0" />
                             <input
                               type="text"
-                              placeholder="e.g. TID-892042 or TxHash"
-                              value={transactionRef}
-                              onChange={(e) => setTransactionRef(e.target.value)}
-                              className="w-full px-3 py-2 rounded-xl bg-white border border-neutral-300 text-xs text-neutral-900 focus:outline-none focus:border-[#7c3aed]"
+                              placeholder="Card number (4242...)"
+                              value={cardNumber}
+                              onChange={(e) => handleCardNumberChange(e.target.value)}
+                              maxLength={19}
+                              className="w-full text-xs font-mono text-slate-900 placeholder-slate-400 focus:outline-hidden"
                               required
                             />
                           </div>
 
-                          <div>
-                            <label className="text-[11px] font-mono text-neutral-600 block mb-1">
-                              Sender Phone or Account Name
-                            </label>
+                          {/* Row 2: Expiry & CVV */}
+                          <div className="grid grid-cols-2 divide-x divide-slate-200">
+                            <div className="px-3 py-1.5">
+                              <input
+                                type="text"
+                                placeholder="MM/YY"
+                                value={cardExpiry}
+                                onChange={(e) => handleCardExpiryChange(e.target.value)}
+                                maxLength={5}
+                                className="w-full text-xs font-mono text-slate-900 placeholder-slate-400 focus:outline-hidden"
+                                required
+                              />
+                            </div>
+
+                            <div className="px-3 py-1.5 flex items-center">
+                              <input
+                                type="password"
+                                placeholder="CVV"
+                                value={cardCvv}
+                                onChange={(e) => handleCardCvvChange(e.target.value)}
+                                maxLength={4}
+                                className="w-full text-xs font-mono text-slate-900 placeholder-slate-400 focus:outline-hidden"
+                                required
+                              />
+                              <Lock className="w-3.5 h-3.5 text-slate-400 shrink-0 ml-1" />
+                            </div>
+                          </div>
+
+                          {/* Row 3: Cardholder Name */}
+                          <div className="px-3 py-1.5 border-t border-slate-200">
                             <input
                               type="text"
-                              placeholder="e.g. 0300... or Account Title"
-                              value={senderAccount}
-                              onChange={(e) => setSenderAccount(e.target.value)}
-                              className="w-full px-3 py-2 rounded-xl bg-white border border-neutral-300 text-xs text-neutral-900 focus:outline-none focus:border-[#7c3aed]"
+                              placeholder="Cardholder Name"
+                              value={cardHolder}
+                              onChange={(e) => setCardHolder(e.target.value)}
+                              className="w-full text-xs font-sans text-slate-900 placeholder-slate-400 focus:outline-hidden"
+                              required
                             />
                           </div>
-                        </div>
-
-                        {/* Optional Receipt Screenshot Upload */}
-                        <div>
-                          <label className="text-[11px] font-mono text-neutral-600 block mb-1">
-                            Attach Receipt Screenshot (Optional)
-                          </label>
-                          <input
-                            type="file"
-                            accept="image/*,.pdf"
-                            onChange={handleReceiptUpload}
-                            className="w-full text-[10px] text-neutral-600 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-neutral-200 file:text-neutral-800 hover:file:bg-neutral-300 cursor-pointer"
-                          />
-                          {receiptFileName && (
-                            <span className="text-[10px] text-emerald-600 font-mono mt-0.5 block">
-                              ✓ {receiptFileName} attached
-                            </span>
-                          )}
                         </div>
 
                         <button
                           type="submit"
                           disabled={loading}
-                          className="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 hover:opacity-95 disabled:opacity-50 text-black text-xs font-black shadow-lg shadow-amber-500/25 transition-all flex items-center justify-center gap-2 uppercase tracking-wide cursor-pointer"
+                          className="w-full py-3 px-4 rounded-xl bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white text-xs font-bold shadow-md shadow-purple-600/25 transition-all flex items-center justify-center gap-2 uppercase tracking-wide cursor-pointer"
                         >
                           {loading ? (
-                            <span>Submitting Verification...</span>
+                            <span>Verifying Payment...</span>
                           ) : (
-                            <span>Submit Payment Proof (${currentPrice} USD)</span>
+                            <span>Authorize & Pay ${currentPrice} USD</span>
                           )}
                         </button>
                       </form>
                     )}
-                  </>
+                  </div>
                 )}
-              </div>
 
-              {/* Bottom Footer */}
-              <div className="pt-4 border-t border-neutral-200 flex items-center justify-between text-neutral-500 text-xs">
-                <div className="flex items-center gap-1.5 font-medium">
-                  <ShieldCheck className="w-4 h-4 text-amber-500" />
-                  <span>256-bit Encrypted Backend Verification</span>
-                </div>
-                <div className="flex items-center gap-1 font-medium">
-                  <Check className="w-4 h-4 text-emerald-600" />
-                  <span>Anti-Duplicate Protected</span>
-                </div>
-              </div>
+                {/* MODE 2: Alternative Pakistani & Crypto Transfer Desk */}
+                {paymentMode === 'crypto_local' && (
+                  <form onSubmit={handleLocalCheckout} className="space-y-3">
+                    {/* Method Selector */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setLocalMethod('crypto')}
+                        className={`p-2.5 sm:p-2 rounded-xl border text-xs font-bold transition-all text-center cursor-pointer ${
+                          localMethod === 'crypto'
+                            ? 'bg-purple-50 border-purple-500 text-purple-700 shadow-xs ring-1 ring-purple-300'
+                            : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                        }`}
+                      >
+                        💎 USDT Desk
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setLocalMethod('easypaisa')}
+                        className={`p-2.5 sm:p-2 rounded-xl border text-xs font-bold transition-all text-center cursor-pointer ${
+                          localMethod === 'easypaisa'
+                            ? 'bg-purple-50 border-purple-500 text-purple-700 shadow-xs ring-1 ring-purple-300'
+                            : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                        }`}
+                      >
+                        📱 EasyPaisa
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setLocalMethod('jazzcash')}
+                        className={`p-2.5 sm:p-2 rounded-xl border text-xs font-bold transition-all text-center cursor-pointer ${
+                          localMethod === 'jazzcash'
+                            ? 'bg-purple-50 border-purple-500 text-purple-700 shadow-xs ring-1 ring-purple-300'
+                            : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                        }`}
+                      >
+                        ⚡ JazzCash
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setLocalMethod('bank')}
+                        className={`p-2.5 sm:p-2 rounded-xl border text-xs font-bold transition-all text-center cursor-pointer ${
+                          localMethod === 'bank'
+                            ? 'bg-purple-50 border-purple-500 text-purple-700 shadow-xs ring-1 ring-purple-300'
+                            : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                        }`}
+                      >
+                        🏛️ Meezan IBAN
+                      </button>
+                    </div>
+
+                    {/* Method Details */}
+                    <div className="p-3 sm:p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-2">
+                      {localMethod === 'crypto' && (
+                        <div>
+                          <span className="font-bold text-slate-900 block mb-1 text-xs">
+                            USDT (TRC-20 Official Wallet):
+                          </span>
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 bg-white p-2.5 rounded-xl border border-slate-200">
+                            <code className="text-[11px] font-mono text-slate-800 flex-1 break-all select-all">
+                              {pricing.usdtTrc20Address}
+                            </code>
+                            <button
+                              type="button"
+                              onClick={() => handleCopy(pricing.usdtTrc20Address, 'trc20')}
+                              className="px-3 py-1.5 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-bold cursor-pointer self-end sm:self-auto shrink-0 transition-colors"
+                            >
+                              {copiedKey === 'trc20' ? '✓ Copied' : 'Copy'}
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {localMethod === 'easypaisa' && (
+                        <div className="space-y-1.5">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 bg-white p-2.5 rounded-xl border border-slate-200">
+                            <div>
+                              <span className="text-[10px] text-slate-500 block uppercase font-mono font-bold">EasyPaisa Mobile Number:</span>
+                              <span className="font-mono font-bold text-emerald-700 text-sm">{pricing.easypaisaNumber}</span>
+                              <span className="text-slate-500 text-[11px] block mt-0.5">Title: <strong className="text-slate-700">{pricing.easypaisaTitle}</strong></span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleCopy(pricing.easypaisaNumber, 'easypaisa')}
+                              className="px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold cursor-pointer self-end sm:self-auto shrink-0 transition-colors"
+                            >
+                              {copiedKey === 'easypaisa' ? '✓ Copied' : 'Copy Number'}
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {localMethod === 'jazzcash' && (
+                        <div className="space-y-1.5">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 bg-white p-2.5 rounded-xl border border-slate-200">
+                            <div>
+                              <span className="text-[10px] text-slate-500 block uppercase font-mono font-bold">JazzCash Mobile Number:</span>
+                              <span className="font-mono font-bold text-orange-700 text-sm">{pricing.jazzcashNumber}</span>
+                              <span className="text-slate-500 text-[11px] block mt-0.5">Title: <strong className="text-slate-700">{pricing.jazzcashTitle}</strong></span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleCopy(pricing.jazzcashNumber, 'jazzcash')}
+                              className="px-3 py-1.5 rounded-lg bg-orange-50 hover:bg-orange-100 text-orange-700 text-xs font-bold cursor-pointer self-end sm:self-auto shrink-0 transition-colors"
+                            >
+                              {copiedKey === 'jazzcash' ? '✓ Copied' : 'Copy Number'}
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {localMethod === 'bank' && (
+                        <div className="space-y-1.5">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 bg-white p-2.5 rounded-xl border border-slate-200">
+                            <div className="min-w-0 flex-1">
+                              <span className="text-[10px] text-slate-500 block uppercase font-mono font-bold">{pricing.bankName}:</span>
+                              <span className="font-mono font-bold text-blue-700 text-xs sm:text-sm break-all">{pricing.bankIban}</span>
+                              <span className="text-slate-500 text-[11px] block mt-0.5">Title: <strong className="text-slate-700">{pricing.bankAccountTitle}</strong></span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleCopy(pricing.bankIban, 'iban')}
+                              className="px-3 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold cursor-pointer self-end sm:self-auto shrink-0 transition-colors"
+                            >
+                              {copiedKey === 'iban' ? '✓ Copied' : 'Copy IBAN'}
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Transaction Reference Input */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-[10px] font-mono text-slate-700 block mb-1 font-bold">
+                          Transaction Reference / TID (Required)
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. TID-892042 or TxHash"
+                          value={transactionRef}
+                          onChange={(e) => setTransactionRef(e.target.value)}
+                          className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 text-xs text-slate-900 focus:outline-hidden focus:border-purple-600"
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] font-mono text-slate-700 block mb-1 font-bold">
+                          Sender Phone or Account Title
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. 0300... or Account Name"
+                          value={senderAccount}
+                          onChange={(e) => setSenderAccount(e.target.value)}
+                          className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 text-xs text-slate-900 focus:outline-hidden focus:border-purple-600"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Optional Receipt Screenshot Upload */}
+                    <div>
+                      <label className="text-[10px] font-mono text-slate-700 block mb-1 font-bold">
+                        Attach Receipt Screenshot (Optional)
+                      </label>
+                      <input
+                        type="file"
+                        accept="image/*,.pdf"
+                        onChange={handleReceiptUpload}
+                        className="w-full text-[10px] text-slate-600 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-slate-100 file:text-slate-800 hover:file:bg-slate-200 cursor-pointer"
+                      />
+                      {receiptFileName && (
+                        <span className="text-[10px] text-emerald-600 font-mono mt-0.5 block">
+                          ✓ {receiptFileName} attached
+                        </span>
+                      )}
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-500 hover:to-indigo-500 disabled:opacity-50 text-white text-xs font-bold shadow-md shadow-purple-600/25 transition-all flex items-center justify-center gap-2 uppercase tracking-wide cursor-pointer"
+                    >
+                      {loading ? (
+                        <span>Submitting Verification...</span>
+                      ) : (
+                        <span>Submit Payment Proof (${currentPrice} USD)</span>
+                      )}
+                    </button>
+                  </form>
+                )}
+              </>
+            )}
+          </div>
+
+          {/* Footer - Fixed & Compact */}
+          <div className="px-4 py-2.5 sm:px-5 sm:py-3 border-t border-slate-200 bg-slate-50/80 flex items-center justify-between text-slate-500 text-[10px] sm:text-[11px] shrink-0">
+            <div className="flex items-center gap-1.5 font-medium">
+              <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
+              <span>256-bit Encrypted Backend Verification</span>
+            </div>
+            <div className="flex items-center gap-1 font-medium">
+              <Check className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Anti-Duplicate Protected</span>
             </div>
           </div>
         </div>

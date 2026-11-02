@@ -83,18 +83,20 @@ export const PwaInstallBanner: React.FC = () => {
       {/* PWA Install Banner */}
       {showBanner && !isInstalled && (
         <div className="fixed bottom-16 lg:bottom-4 right-4 left-4 sm:left-auto sm:max-w-md z-50 animate-fade-in">
-          <div className="bg-[#0f1018]/95 backdrop-blur-xl border-2 border-amber-500/40 rounded-2xl p-3.5 shadow-2xl flex items-center justify-between gap-3 text-white">
+          <div className="bg-white/95 backdrop-blur-xl border border-slate-200/90 rounded-2xl p-3.5 shadow-2xl flex items-center justify-between gap-3 text-slate-900 ring-1 ring-black/5">
             <div className="flex items-center gap-3 min-w-0">
-              <img
-                src="/pwa-192x192.png"
-                alt="Learn & Grow"
-                className="w-10 h-10 rounded-xl object-contain bg-black border border-amber-500/30 shrink-0"
-              />
+              <div className="w-11 h-11 rounded-xl bg-white border border-slate-200 p-1 shrink-0 flex items-center justify-center shadow-xs">
+                <img
+                  src="/pwa-192x192.png"
+                  alt="Learn & Grow"
+                  className="w-full h-full object-contain"
+                />
+              </div>
               <div className="min-w-0">
-                <h4 className="text-xs font-bold text-white truncate">
+                <h4 className="text-xs font-bold text-slate-900 truncate">
                   Install Learn & Grow App
                 </h4>
-                <p className="text-[11px] text-neutral-400 truncate">
+                <p className="text-[11px] text-slate-500 truncate">
                   Add to home screen for 1-click mobile access
                 </p>
               </div>
@@ -104,7 +106,7 @@ export const PwaInstallBanner: React.FC = () => {
               <button
                 type="button"
                 onClick={handleInstallClick}
-                className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 text-black text-xs font-black shadow-md shadow-amber-500/30 hover:opacity-95 flex items-center gap-1.5 cursor-pointer"
+                className="px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-md shadow-purple-600/25 transition-all flex items-center gap-1.5 cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Install</span>
@@ -112,7 +114,7 @@ export const PwaInstallBanner: React.FC = () => {
               <button
                 type="button"
                 onClick={handleDismiss}
-                className="p-1.5 text-neutral-400 hover:text-white rounded-lg cursor-pointer"
+                className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg cursor-pointer transition-colors"
                 title="Dismiss"
               >
                 <X className="w-4 h-4" />

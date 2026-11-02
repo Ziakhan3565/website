@@ -62,6 +62,28 @@ async function startServer() {
 
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`Zia Research institutional server running on http://0.0.0.0:${PORT}`);
+    
+    // Asynchronously verify Supabase connection and sync existing records
+    import('./server/supabase.ts').then(async ({ testSupabaseHealth, syncAllLocalDataToSupabase, SUPABASE_PROJECT_ID }) => {
+      console.log(`[Supabase] Initializing connection to project: ${SUPABASE_PROJECT_ID}`);
+      const health = await testSupabaseHealth();
+      console.log(`[Supabase Health]:`, health.message);
+      
+      const { storage } = await import('./server/storage.ts');
+      const syncResult = await syncAllLocalDataToSupabase(storage);
+      console.log(`[Supabase Startup Sync] Synced ${syncResult.syncedUsers} users & ${syncResult.syncedTransactions} transactions.`);
+
+      // Automatic continuous background sync every 5 minutes (fully hands-free)
+      setInterval(async () => {
+        try {
+          await syncAllLocalDataToSupabase(storage);
+        } catch (e) {
+          // silent background sync
+        }
+      }, 5 * 60 * 1000);
+    }).catch(err => {
+      console.warn(`[Supabase Startup Notice] Connection check completed with notice:`, err?.message);
+    });
   });
 }
 

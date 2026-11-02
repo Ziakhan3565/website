@@ -180,7 +180,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       setIsDPModalOpen(true);
                     }}
                     className="absolute -bottom-1 -right-1 p-0.5 rounded-full bg-purple-600 hover:bg-purple-500 text-white shadow border border-white"
-                    title="Set Profile Picture from Gallery"
+                    title="Upload Profile Picture from Gallery"
                   >
                     <Camera className="w-2.5 h-2.5" />
                   </button>

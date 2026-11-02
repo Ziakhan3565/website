@@ -10,6 +10,15 @@ import {
   handleStripeWebhookEvent,
   issueStripeRefund
 } from './stripeService.ts';
+import {
+  syncUserToSupabase,
+  syncPaymentToSupabase,
+  syncSignalToSupabase,
+  testSupabaseHealth,
+  syncAllLocalDataToSupabase,
+  SUPABASE_PROJECT_ID,
+  SUPABASE_URL
+} from './supabase.ts';
 
 export const apiRouter = Router();
 
@@ -109,6 +118,10 @@ apiRouter.post('/auth/register', (req: Request, res: Response) => {
 
   const user = storage.createUser({ email: cleanEmail, password, name, role, tier });
   const token = generateToken(user.id, user.role);
+
+  // Synchronize to Supabase backend asynchronously
+  syncUserToSupabase(user).catch(err => console.error('[Supabase Register Sync]', err));
+
   res.json({ user, token });
 });
 
@@ -154,6 +167,10 @@ apiRouter.post('/auth/login', (req: Request, res: Response) => {
 
   const token = generateToken(user.id, user.role);
   const { passwordHash, salt, ...safeUser } = user;
+
+  // Synchronize user to Supabase on active login to ensure fresh profile data
+  syncUserToSupabase(safeUser).catch(() => {});
+
   res.json({ user: safeUser, token });
 });
 
@@ -277,6 +294,10 @@ apiRouter.put('/user/profile', (req: Request, res: Response) => {
   if (!updated) {
     return res.status(404).json({ error: 'User not found' });
   }
+
+  // Synchronize profile changes to Supabase
+  syncUserToSupabase(updated).catch(err => console.error('[Supabase Profile Sync]', err));
+
   res.json({ user: updated });
 });
 
@@ -409,6 +430,13 @@ apiRouter.put('/admin/transactions/:id', requireAdmin, (req: Request, res: Respo
   if (!result.transaction) {
     return res.status(404).json({ error: 'Transaction not found' });
   }
+
+  // Sync updated transaction to Supabase
+  syncPaymentToSupabase(result.transaction).catch(err => console.error('[Supabase Admin Tx Sync]', err));
+  if (result.user) {
+    syncUserToSupabase(result.user).catch(() => {});
+  }
+
   res.json({
     success: true,
     transaction: result.transaction,
@@ -483,9 +511,16 @@ apiRouter.post('/user/payment/checkout', requireAuth, (req: Request, res: Respon
     status
   });
 
+  // Synchronize transaction and enrollment to Supabase backend table
+  syncPaymentToSupabase(tx).catch(err => console.error('[Supabase Checkout Tx Sync]', err));
+
   // Get refreshed user record
   const updatedUser = storage.findUserById(userId);
   const { passwordHash, salt, ...safeUser } = updatedUser!;
+
+  if (tx.status === 'approved') {
+    syncUserToSupabase(safeUser).catch(() => {});
+  }
 
   res.json({
     success: true,
@@ -611,12 +646,14 @@ apiRouter.get('/signals/spot', (_req: Request, res: Response) => {
 
 apiRouter.post('/admin/signals/spot', requireAdmin, (req: Request, res: Response) => {
   const signal = storage.createSpotSignal(req.body);
+  syncSignalToSupabase('spot', signal).catch(() => {});
   res.status(201).json({ signal });
 });
 
 apiRouter.put('/admin/signals/spot/:id', requireAdmin, (req: Request, res: Response) => {
   const updated = storage.updateSpotSignal(req.params.id, req.body);
   if (!updated) return res.status(404).json({ error: 'Signal not found' });
+  syncSignalToSupabase('spot', updated).catch(() => {});
   res.json({ signal: updated });
 });
 
@@ -635,12 +672,14 @@ apiRouter.get('/signals/futures', (_req: Request, res: Response) => {
 
 apiRouter.post('/admin/signals/futures', requireAdmin, (req: Request, res: Response) => {
   const signal = storage.createFuturesSignal(req.body);
+  syncSignalToSupabase('futures', signal).catch(() => {});
   res.status(201).json({ signal });
 });
 
 apiRouter.put('/admin/signals/futures/:id', requireAdmin, (req: Request, res: Response) => {
   const updated = storage.updateFuturesSignal(req.params.id, req.body);
   if (!updated) return res.status(404).json({ error: 'Signal not found' });
+  syncSignalToSupabase('futures', updated).catch(() => {});
   res.json({ signal: updated });
 });
 
@@ -775,6 +814,7 @@ apiRouter.put('/admin/users/:id/tier', requireAdmin, (req: Request, res: Respons
   const { tier } = req.body;
   const updated = storage.updateUser(req.params.id, { tier });
   if (!updated) return res.status(404).json({ error: 'User not found' });
+  syncUserToSupabase(updated).catch(() => {});
   res.json({ user: updated });
 });
 
@@ -782,6 +822,7 @@ apiRouter.put('/admin/users/:id/role', requireAdmin, (req: Request, res: Respons
   const { role } = req.body;
   const updated = storage.updateUser(req.params.id, { role });
   if (!updated) return res.status(404).json({ error: 'User not found' });
+  syncUserToSupabase(updated).catch(() => {});
   res.json({ user: updated });
 });
 
@@ -797,6 +838,7 @@ apiRouter.put('/admin/users/:id/access', requireAdmin, (req: Request, res: Respo
   }
   const updated = storage.updateUser(req.params.id, updates);
   if (!updated) return res.status(404).json({ error: 'User not found' });
+  syncUserToSupabase(updated).catch(() => {});
   res.json({ success: true, user: updated });
 });
 
@@ -896,3 +938,33 @@ apiRouter.get('/market/overview', async (_req: Request, res: Response) => {
     provider: 'Binance Official Market API'
   });
 });
+
+// ================= SUPABASE STATUS & SYNC ROUTES =================
+apiRouter.get('/supabase/status', async (_req: Request, res: Response) => {
+  try {
+    const health = await testSupabaseHealth();
+    res.json(health);
+  } catch (err: any) {
+    res.status(500).json({
+      connected: false,
+      projectId: SUPABASE_PROJECT_ID,
+      url: SUPABASE_URL,
+      error: err?.message
+    });
+  }
+});
+
+apiRouter.post('/supabase/sync-all', async (_req: Request, res: Response) => {
+  try {
+    const result = await syncAllLocalDataToSupabase(storage);
+    res.json({
+      success: true,
+      projectId: SUPABASE_PROJECT_ID,
+      url: SUPABASE_URL,
+      ...result
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err?.message });
+  }
+});
+

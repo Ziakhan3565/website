@@ -522,4 +522,29 @@ export const api = {
       method: 'DELETE',
     });
   },
+
+  // Supabase Backend Integration
+  async getSupabaseStatus(): Promise<{
+    connected: boolean;
+    projectId: string;
+    url: string;
+    tablesStatus: Record<string, string>;
+    message: string;
+  }> {
+    return request('/api/supabase/status');
+  },
+
+  async syncAllToSupabase(): Promise<{
+    success: boolean;
+    projectId: string;
+    url: string;
+    syncedUsers: number;
+    syncedTransactions: number;
+    errors: string[];
+  }> {
+    return request('/api/supabase/sync-all', {
+      method: 'POST',
+    });
+  },
 };
+

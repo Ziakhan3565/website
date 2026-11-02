@@ -80,9 +80,9 @@ export const HomeHeroSection: React.FC<HomeHeroSectionProps> = ({
         {/* Right Column: Branded Graphic Card & Course Floating Card (from user mockup) */}
         <div className="lg:col-span-5 flex flex-col items-center justify-center relative">
           {/* Main Branded White Presentation Card */}
-          <div className="w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 shadow-xl ring-1 ring-slate-200/90 flex flex-col items-center justify-center text-center transform transition-transform duration-300 hover:scale-[1.01]">
+          <div className="w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 shadow-xl ring-1 ring-slate-200/90 flex flex-col items-center justify-center text-center animate-card-3s transition-all duration-300">
             {/* Official Logo (L with Candlesticks and Ascending Arrow) */}
-            <div className="w-48 sm:w-56 h-48 sm:h-56 flex items-center justify-center p-2 relative">
+            <div className="w-48 sm:w-56 h-48 sm:h-56 flex items-center justify-center p-2 relative animate-logo-3s">
               <img
                 src="/assets/aistudio/WhatsApp_Image_2026-10-31_at_9.11.16_PM_3e22bda3.jpeg"
                 alt="Learn and Grow Official Emblem"

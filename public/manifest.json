@@ -7,8 +7,8 @@
   "description": "Cryptocurrency & financial markets trading academy, live classes, order flow, and verified spot & futures signals by Zia Khan.",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "theme_color": "#0b0c10",
-  "background_color": "#08090e",
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
   "icons": [
     {
       "src": "/pwa-192x192.png",

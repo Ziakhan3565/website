@@ -121,3 +121,35 @@
   border-color: #10a37f;
   box-shadow: 0 0 0 2px rgba(16, 163, 127, 0.2);
 }
+
+/* 3-Second Floating & Glow Animation for Hero Presentation Card */
+@keyframes heroCardPulse3s {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 25px 35px -5px rgba(124, 58, 237, 0.22), 0 12px 20px -6px rgba(124, 58, 237, 0.15), 0 0 24px 2px rgba(147, 51, 234, 0.25);
+  }
+}
+
+@keyframes heroLogoBreathe3s {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.05));
+  }
+  50% {
+    transform: scale(1.045);
+    filter: drop-shadow(0 10px 20px rgba(124, 58, 237, 0.25));
+  }
+}
+
+.animate-card-3s {
+  animation: heroCardPulse3s 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.animate-logo-3s {
+  animation: heroLogoBreathe3s 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+

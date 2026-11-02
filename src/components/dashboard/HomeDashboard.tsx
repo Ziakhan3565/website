@@ -10,9 +10,7 @@ import type {
 } from '../../types/index.ts';
 import { HomeHeroSection } from './HomeHeroSection.tsx';
 import { HomeTradingChart } from './HomeTradingChart.tsx';
-import { ExchangeReferralCards } from '../common/ExchangeReferralCards.tsx';
 import { HomeCoursesSection } from './HomeCoursesSection.tsx';
-import { HomeChannelsSection } from './HomeChannelsSection.tsx';
 
 interface HomeDashboardProps {
   onNavigate: (view: string) => void;
@@ -72,18 +70,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
       <HomeTradingChart />
 
       {/* 
-        3. OFFICIAL PARTNER EXCHANGES (MEXC, Binance, Bybit) with $10 Bonus
-      */}
-      {exchanges.length > 0 && (
-        <ExchangeReferralCards
-          exchanges={exchanges}
-          title="Official Partner Exchanges (MEXC • Binance • Bybit)"
-          subtitle="Sign up through our verified partner links below to claim your $10 USDT welcome bonus, 0% maker fees, and exclusive trading discounts."
-        />
-      )}
-
-      {/* 
-        4. FINANCIAL MARKETS COURSE SECTION: Beginner ($2) & Advance ($5) with Pay Now flow (Prompt 9 & 10)
+        3. FINANCIAL MARKETS COURSE SECTION: Beginner ($2) & Advance ($5) with Pay Now flow
       */}
       <HomeCoursesSection
         onNavigate={onNavigate}
@@ -91,13 +78,6 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         beginnerLessons={beginnerLessons}
         advancedLessons={advancedLessons}
         pricing={pricing}
-      />
-
-      {/* 
-        5. BOTTOM CHANNELS SECTION: Official Community & Social Channels (Prompt 10)
-      */}
-      <HomeChannelsSection
-        onOpenChannelModal={onOpenChannelModal}
       />
     </div>
   );

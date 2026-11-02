@@ -58,7 +58,7 @@ export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen
       }
 
       setPreviewUrl(dataUrl);
-      setSuccess('Photo selected from your gallery! Click "Save Profile Picture" below to apply.');
+      setSuccess('Photo selected from your gallery! Click "Upload Profile Picture" below to apply.');
     } catch (err: any) {
       setError(err.message || 'Failed to process selected photo from gallery');
     } finally {
@@ -263,17 +263,17 @@ export const ProfilePictureModal: React.FC<ProfilePictureModalProps> = ({ isOpen
               type="button"
               onClick={handleSave}
               disabled={loading || !previewUrl}
-              className="px-6 py-2 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold shadow-xs transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-5 sm:px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold shadow-md shadow-purple-600/20 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <>
                   <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span>Saving...</span>
+                  <span>Uploading...</span>
                 </>
               ) : (
                 <>
-                  <CheckCircle2 className="w-4 h-4 text-white" />
-                  <span>Save Profile Picture</span>
+                  <Upload className="w-4 h-4 text-white" />
+                  <span>Upload Profile Picture</span>
                 </>
               )}
             </button>

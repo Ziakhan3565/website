@@ -132,7 +132,7 @@ export const Header: React.FC<HeaderProps> = ({
                       className="w-full text-left px-4 py-2 text-xs text-purple-700 hover:bg-purple-50 flex items-center gap-2 cursor-pointer font-medium"
                     >
                       <Camera className="w-3.5 h-3.5 text-purple-600" />
-                      Set Profile Picture (DP)
+                      Upload Profile Picture (DP)
                     </button>
 
                     <button
