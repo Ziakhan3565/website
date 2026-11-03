@@ -310,9 +310,9 @@ export const AdvancedAcademy: React.FC<AdvancedAcademyProps> = ({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {lessons.map((lesson, idx) => {
-            const isCompleted = user?.completedLessons?.includes(lesson.id);
-            const isLocked = !canAccessAdvanced;
+            {lessons.map((lesson, idx) => {
+              const isCompleted = user?.completedLessons?.includes(lesson.id);
+              const isLocked = !canAccessAdvanced;
 
             return (
               <div
@@ -341,9 +341,14 @@ export const AdvancedAcademy: React.FC<AdvancedAcademyProps> = ({
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent z-10" />
                     <div className="absolute inset-0 flex items-center justify-center z-20">
                       {isLocked ? (
-                        <div className="w-12 h-12 rounded-full bg-black/70 border border-purple-400/40 flex items-center justify-center text-purple-300">
+                        <button
+                          type="button"
+                          onClick={() => onOpenPayment?.('advanced')}
+                          className="w-12 h-12 rounded-full bg-black/70 border border-purple-400/40 hover:border-purple-300 hover:bg-black/90 flex items-center justify-center text-purple-300 transition-all hover:scale-105 cursor-pointer"
+                          title="Click to Unlock VIP Masterclass"
+                        >
                           <Lock className="w-5 h-5" />
-                        </div>
+                        </button>
                       ) : (
                         <button
                           type="button"
@@ -482,7 +487,7 @@ export const AdvancedAcademy: React.FC<AdvancedAcademyProps> = ({
             </div>
           )}
         </div>
-      </div>
+    </div>
 
       {/* Official Exchange Referral Accounts (MEXC • Binance • Bybit) */}
       {exchanges && exchanges.length > 0 && (

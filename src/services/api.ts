@@ -22,7 +22,30 @@ import type {
 const TOKEN_KEY = 'course_crash_auth_token';
 
 export function getStoredToken(): string | null {
-  return localStorage.getItem(TOKEN_KEY);
+  const directToken = typeof window !== 'undefined' ? localStorage.getItem(TOKEN_KEY) : null;
+  if (directToken) return directToken;
+
+  // Check Supabase session stored in localStorage
+  if (typeof window !== 'undefined') {
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('sb-') && key.endsWith('-auth-token')) {
+          const raw = localStorage.getItem(key);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed?.access_token) {
+              return parsed.access_token;
+            }
+          }
+        }
+      }
+    } catch {
+      // ignore JSON parse errors
+    }
+  }
+
+  return null;
 }
 
 export function setStoredToken(token: string | null): void {

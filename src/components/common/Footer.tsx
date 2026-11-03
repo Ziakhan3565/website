@@ -140,15 +140,6 @@ export const Footer: React.FC<FooterProps> = ({
                   CFTC Financial Risk Disclosure
                 </button>
               </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() => onOpenLegal('refund')}
-                  className="hover:text-purple-600 transition-colors text-left cursor-pointer"
-                >
-                  Refund & Course Access Policy
-                </button>
-              </li>
             </ul>
           </div>
         </div>

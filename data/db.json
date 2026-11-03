@@ -235,6 +235,12 @@
       "userId": "user_admin",
       "role": "admin",
       "expiresAt": 1795445091219
+    },
+    {
+      "token": "0e2c200710c6f0e249787a7159a64c023ab4d57afa75d4bb36af12c71cd14e3b",
+      "userId": "user_admin",
+      "role": "admin",
+      "expiresAt": 1796300025384
     }
   ],
   "exchanges": [

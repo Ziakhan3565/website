@@ -411,6 +411,35 @@ class StorageManager {
     return cleanUser;
   }
 
+  createUserDirect(user: Partial<User> & { id: string; email: string }): User {
+    const cleanEmail = user.email.trim().toLowerCase();
+    const existing = this.data.users.find(u => u.id === user.id || u.email.toLowerCase() === cleanEmail);
+    if (existing) {
+      return this.updateUser(existing.id, user)!;
+    }
+    const isAdmin = cleanEmail === 'admin@gmail.com' || cleanEmail === 'ziakhan5348@gmail.com';
+    const newUser = {
+      id: user.id,
+      email: cleanEmail,
+      name: user.name || cleanEmail.split('@')[0],
+      role: isAdmin ? ('admin' as const) : (user.role || 'student'),
+      tier: isAdmin ? ('premium' as const) : (user.tier || 'free'),
+      hasBeginnerAccess: isAdmin ? true : !!user.hasBeginnerAccess,
+      hasAdvancedAccess: isAdmin ? true : !!user.hasAdvancedAccess,
+      createdAt: user.createdAt || new Date().toISOString(),
+      completedLessons: user.completedLessons || [],
+      savedSignals: user.savedSignals || [],
+      attendedClasses: user.attendedClasses || [],
+      avatarUrl: user.avatarUrl,
+      passwordHash: '',
+      salt: '',
+    };
+    this.data.users.push(newUser);
+    this.saveData(this.data);
+    const { passwordHash, salt, ...cleanUser } = newUser;
+    return cleanUser;
+  }
+
   updateUser(id: string, updates: Partial<User>): User | null {
     const idx = this.data.users.findIndex(u => u.id === id);
     if (idx === -1) return null;

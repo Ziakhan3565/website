@@ -4,14 +4,14 @@ import {
   Lock,
   Mail,
   User,
-  KeyRound,
   ArrowRight,
   CheckCircle2,
   AlertCircle,
-  AlertTriangle
+  AlertTriangle,
+  RotateCcw
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.tsx';
-import { api } from '../../services/api.ts';
+import { checkSupabaseEmailExists, normalizeEmail } from '../../lib/supabase.ts';
 import { Logo } from '../common/Logo.tsx';
 
 interface AuthModalProps {
@@ -29,15 +29,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   defaultMode = 'login',
   forced = false,
 }) => {
-  const { login, register } = useAuth();
+  const { login, register, resendVerification, forgotPassword } = useAuth();
   const [mode, setMode] = useState<'login' | 'register' | 'forgot' | 'reset'>(defaultMode);
 
   // Form states
   const [identifier, setIdentifier] = useState(''); // Email or Username (e.g. admin)
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const [resetToken, setResetToken] = useState('');
-  const [newPassword, setNewPassword] = useState('');
 
   // Email status for real-time validation
   const [emailStatus, setEmailStatus] = useState<{
@@ -50,22 +48,26 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [showResendBtn, setShowResendBtn] = useState(false);
+  const [resending, setResending] = useState(false);
 
   useEffect(() => {
     setMode(defaultMode);
     setErrorMessage(null);
     setSuccessMessage(null);
     setEmailStatus(null);
+    setShowResendBtn(false);
   }, [defaultMode, isOpen]);
 
   if (!isOpen) return null;
 
   // Real-time email validation
-  const handleIdentifierChange = (val: string) => {
+  const handleIdentifierChange = async (val: string) => {
     setIdentifier(val);
     setErrorMessage(null);
+    setShowResendBtn(false);
 
-    const clean = val.trim();
+    const clean = normalizeEmail(val);
     if (!clean) {
       setEmailStatus(null);
       return;
@@ -85,27 +87,53 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   };
 
   const handleIdentifierBlur = async () => {
-    const clean = identifier.trim();
-    if (!clean) return;
+    const clean = normalizeEmail(identifier);
+    if (!clean || !EMAIL_REGEX.test(clean)) return;
 
-    if (EMAIL_REGEX.test(clean)) {
-      try {
-        const res = await api.checkEmail(clean);
-        setEmailStatus({
-          validFormat: true,
-          checked: true,
-          exists: res.exists,
-          message: res.message,
-        });
+    try {
+      const check = await checkSupabaseEmailExists(clean);
+      setEmailStatus({
+        validFormat: true,
+        checked: true,
+        exists: check.exists,
+        message: check.exists
+          ? 'An account with this email already exists. You can sign in directly.'
+          : 'Email is available for new registration.',
+      });
 
-        if (mode === 'register' && res.exists) {
-          setErrorMessage('This email already exists! You already have an account. Please sign in instead.');
-        } else {
-          setErrorMessage(null);
-        }
-      } catch (e) {
-        // Non-blocking
+      if (mode === 'register' && check.exists) {
+        setErrorMessage('This email is already registered! Please sign in to your existing account.');
       }
+    } catch {
+      // Non-blocking
+    }
+  };
+
+  const switchToLoginWithCurrentEmail = () => {
+    setMode('login');
+    setErrorMessage('This email is already registered. Please enter your password to sign in.');
+    setSuccessMessage(null);
+  };
+
+  const handleResendConfirmation = async () => {
+    const cleanId = normalizeEmail(identifier);
+    if (!cleanId) {
+      setErrorMessage('Please enter your email address to resend verification.');
+      return;
+    }
+    setResending(true);
+    setErrorMessage(null);
+    try {
+      const res = await resendVerification(cleanId);
+      if (res.success) {
+        setSuccessMessage(res.message);
+      } else {
+        setErrorMessage(res.message);
+      }
+    } catch (err: any) {
+      setErrorMessage(err?.message || 'Failed to resend confirmation email.');
+    } finally {
+      setResending(false);
     }
   };
 
@@ -113,10 +141,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     e.preventDefault();
     setErrorMessage(null);
     setSuccessMessage(null);
+    setShowResendBtn(false);
 
-    const cleanId = identifier.trim();
-    if (!cleanId || !password) {
-      setErrorMessage('Please provide both username/email and password.');
+    const cleanId = normalizeEmail(identifier);
+    if (!cleanId) {
+      setErrorMessage('Please enter your email address.');
+      return;
+    }
+
+    if (mode === 'login' && !password) {
+      setErrorMessage('Please enter your password.');
       return;
     }
 
@@ -125,8 +159,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         setErrorMessage('Invalid email format. Please enter a valid email address (e.g. name@gmail.com).');
         return;
       }
-      if (password.length < 6) {
+      if (!password || password.length < 6) {
         setErrorMessage('Password must be at least 6 characters.');
+        return;
+      }
+
+      // Check if email already exists before signup
+      setLoading(true);
+      const emailCheck = await checkSupabaseEmailExists(cleanId);
+      if (emailCheck.exists) {
+        setLoading(false);
+        switchToLoginWithCurrentEmail();
         return;
       }
     }
@@ -135,25 +178,35 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
     try {
       if (mode === 'login') {
-        await login(cleanId, password);
+        const res = await login(cleanId, password);
+        if (res.requiresVerification) {
+          setErrorMessage(res.message || 'Your email is not verified yet.');
+          setShowResendBtn(true);
+          setLoading(false);
+          return;
+        }
         onClose();
       } else if (mode === 'register') {
-        await register(name.trim() || cleanId.split('@')[0], cleanId, password);
-        onClose();
-      } else if (mode === 'forgot') {
-        const res = await api.forgotPassword(cleanId);
-        setSuccessMessage(res.message);
-        if (res.resetToken) {
-          setResetToken(res.resetToken);
-          setMode('reset');
+        const res = await register(name.trim() || cleanId.split('@')[0], cleanId, password);
+        if (res.requiresVerification) {
+          setSuccessMessage(res.message || 'Verification email sent! Please check your inbox to confirm your account.');
+          setShowResendBtn(true);
+          setMode('login');
+        } else {
+          onClose();
         }
-      } else if (mode === 'reset') {
-        const res = await api.resetPassword(resetToken, newPassword);
-        setSuccessMessage(res.message);
-        setMode('login');
+      } else if (mode === 'forgot') {
+        const res = await forgotPassword(cleanId);
+        setSuccessMessage(res.message || 'Password reset link sent! Please check your inbox.');
       }
     } catch (err: any) {
-      setErrorMessage(err.message || 'Authentication failed. Please verify credentials.');
+      const msg = err.message || 'Authentication failed. Please verify credentials.';
+      setErrorMessage(msg);
+      if (msg.toLowerCase().includes('already registered')) {
+        switchToLoginWithCurrentEmail();
+      } else if (msg.toLowerCase().includes('verify') || msg.toLowerCase().includes('confirm')) {
+        setShowResendBtn(true);
+      }
     } finally {
       setLoading(false);
     }
@@ -183,6 +236,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               setMode('login');
               setErrorMessage(null);
               setSuccessMessage(null);
+              setShowResendBtn(false);
             }}
             className={`py-2 px-3 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
               mode === 'login'
@@ -199,6 +253,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               setMode('register');
               setErrorMessage(null);
               setSuccessMessage(null);
+              setShowResendBtn(false);
             }}
             className={`py-2 px-3 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
               mode === 'register'
@@ -219,9 +274,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             {mode === 'reset' && 'Set New Password'}
           </h2>
           <p className="text-xs text-slate-500 mt-1">
-            {mode === 'login' && 'Enter your username or email and password to access the learning portal.'}
-            {mode === 'register' && 'Join the community. Complete your registration for full curriculum access.'}
-            {mode === 'forgot' && 'Enter your registered email address to receive password reset instructions.'}
+            {mode === 'login' && 'Enter your registered email and password to access your Student Dashboard.'}
+            {mode === 'register' && 'Join the academy. Permanent student account with real-time progress tracking.'}
+            {mode === 'forgot' && 'Enter your registered email to receive an official Supabase password reset link.'}
           </p>
         </div>
 
@@ -233,7 +288,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           </div>
         )}
 
-        {/* Warning if email already registered */}
+        {/* Banner if email already registered */}
         {mode === 'register' && emailStatus?.exists && (
           <div className="mb-3 p-3 rounded-xl bg-purple-50 border border-purple-200 text-purple-900 text-xs flex flex-col gap-1.5">
             <div className="flex items-center gap-2">
@@ -241,14 +296,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <span className="font-bold">Account Already Exists!</span>
             </div>
             <p className="text-[11px] text-purple-700 leading-relaxed">
-              An account with this email address is already registered. You can log in directly.
+              An account with this email address is already registered. Please sign in directly.
             </p>
             <button
               type="button"
-              onClick={() => {
-                setMode('login');
-                setErrorMessage(null);
-              }}
+              onClick={switchToLoginWithCurrentEmail}
               className="mt-1 py-1 px-3 rounded-lg bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white font-bold text-xs text-center hover:opacity-90 w-fit cursor-pointer"
             >
               Switch to Login
@@ -261,6 +313,22 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           <div className="mb-3 p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2 font-mono">
             <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
             <span>{errorMessage}</span>
+          </div>
+        )}
+
+        {/* Resend Verification Email Button */}
+        {showResendBtn && (
+          <div className="mb-3 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+            <span>Didn't receive verification email?</span>
+            <button
+              type="button"
+              onClick={handleResendConfirmation}
+              disabled={resending}
+              className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs flex items-center gap-1.5 shrink-0 transition-colors cursor-pointer"
+            >
+              <RotateCcw className={`w-3.5 h-3.5 ${resending ? 'animate-spin' : ''}`} />
+              <span>{resending ? 'Sending...' : 'Resend Email'}</span>
+            </button>
           </div>
         )}
 
@@ -277,7 +345,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           {mode === 'register' && (
             <div>
               <label className="text-slate-700 text-xs font-semibold block mb-1">
-                Full Name / Username
+                Full Name / Student Name
               </label>
               <div className="relative">
                 <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -297,7 +365,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="text-slate-700 text-xs font-semibold">
-                  {mode === 'register' ? 'Gmail / Email Address' : 'Email Address or Username'}
+                  {mode === 'register' ? 'Gmail / Email Address' : 'Email Address'}
                 </label>
                 {emailStatus?.validFormat && emailStatus?.checked && (
                   <span className={`text-[10px] font-mono ${emailStatus.exists ? 'text-purple-600 font-bold' : 'text-slate-500'}`}>
@@ -308,8 +376,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <div className="relative">
                 <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
-                  type={mode === 'register' ? 'email' : 'text'}
-                  placeholder={mode === 'register' ? 'you@gmail.com' : 'Username or Email'}
+                  type="email"
+                  placeholder="name@gmail.com"
                   value={identifier}
                   onChange={(e) => handleIdentifierChange(e.target.value)}
                   onBlur={handleIdentifierBlur}
@@ -330,6 +398,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     onClick={() => {
                       setMode('forgot');
                       setErrorMessage(null);
+                      setSuccessMessage(null);
                     }}
                     className="text-[11px] text-purple-700 hover:text-purple-900 font-medium cursor-pointer"
                   >
@@ -351,32 +420,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
           )}
 
-          {mode === 'reset' && (
-            <>
-              <div>
-                <label className="text-slate-700 text-xs block mb-1">Reset Token</label>
-                <input
-                  type="text"
-                  value={resetToken}
-                  onChange={(e) => setResetToken(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 font-mono focus:bg-white focus:outline-none focus:border-purple-600"
-                  required
-                />
-              </div>
-              <div>
-                <label className="text-slate-700 text-xs block mb-1">New Password</label>
-                <input
-                  type="password"
-                  placeholder="Minimum 6 characters"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-purple-600"
-                  required
-                />
-              </div>
-            </>
-          )}
-
           <button
             type="submit"
             disabled={loading}
@@ -386,7 +429,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <span>Authenticating...</span>
             ) : (
               <>
-                <span>{mode === 'login' ? 'Sign In' : mode === 'register' ? 'Create Account' : 'Submit'}</span>
+                <span>
+                  {mode === 'login' && 'Sign In'}
+                  {mode === 'register' && 'Create Account'}
+                  {mode === 'forgot' && 'Send Reset Link'}
+                </span>
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
@@ -403,6 +450,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 onClick={() => {
                   setMode('register');
                   setErrorMessage(null);
+                  setSuccessMessage(null);
+                  setShowResendBtn(false);
                 }}
                 className="text-purple-700 hover:text-purple-900 hover:underline font-bold cursor-pointer"
               >
@@ -417,6 +466,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 onClick={() => {
                   setMode('login');
                   setErrorMessage(null);
+                  setSuccessMessage(null);
+                  setShowResendBtn(false);
                 }}
                 className="text-purple-700 hover:text-purple-900 hover:underline font-bold cursor-pointer"
               >

@@ -1,14 +1,13 @@
 import React from 'react';
-import { Play, TrendingUp, GraduationCap, ArrowRight } from 'lucide-react';
+import { Play, GraduationCap, ArrowRight } from 'lucide-react';
 
 interface HomeHeroSectionProps {
   onStartLearning: () => void;
-  onExploreCourses: () => void;
+  onExploreCourses?: () => void;
 }
 
 export const HomeHeroSection: React.FC<HomeHeroSectionProps> = ({
   onStartLearning,
-  onExploreCourses,
 }) => {
   return (
     <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#f8f9ff] via-white to-[#f3f0ff] border border-purple-100/90 p-6 sm:p-10 lg:p-12 shadow-xl">
@@ -65,19 +64,10 @@ export const HomeHeroSection: React.FC<HomeHeroSectionProps> = ({
               <span>Start Learning</span>
               <ArrowRight className="w-4 h-4" />
             </button>
-
-            <button
-              onClick={onExploreCourses}
-              className="inline-flex items-center gap-2.5 px-6 sm:px-7 py-3 sm:py-3.5 rounded-full bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 hover:border-purple-400 font-semibold text-sm transition-all hover:scale-[1.02] shadow-xs cursor-pointer"
-            >
-              <TrendingUp className="w-4 h-4 text-purple-600" />
-              <span>Explore Courses</span>
-              <ArrowRight className="w-4 h-4 text-slate-500" />
-            </button>
           </div>
         </div>
 
-        {/* Right Column: Branded Graphic Card & Course Floating Card (from user mockup) */}
+        {/* Right Column: Branded Graphic Card (from user mockup) */}
         <div className="lg:col-span-5 flex flex-col items-center justify-center relative">
           {/* Main Branded White Presentation Card */}
           <div className="w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 shadow-xl ring-1 ring-slate-200/90 flex flex-col items-center justify-center text-center animate-card-3s transition-all duration-300">
@@ -102,27 +92,6 @@ export const HomeHeroSection: React.FC<HomeHeroSectionProps> = ({
                 — LEARN • TRADE • INVEST • GROW —
               </p>
             </div>
-          </div>
-
-          {/* Floating Course Callout Card underneath (as in user mockup) */}
-          <div
-            onClick={onExploreCourses}
-            className="w-full max-w-md mt-4 p-4 rounded-2xl bg-white border border-purple-200/90 hover:border-purple-400 shadow-md flex items-center justify-between cursor-pointer group transition-all"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center text-white shadow-sm group-hover:scale-110 transition-transform">
-                <Play className="w-4 h-4 fill-white" />
-              </div>
-              <div className="text-left">
-                <p className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-purple-700 transition-colors">
-                  Watch Our Trading Courses
-                </p>
-                <p className="text-[11px] text-slate-500">
-                  Learn from experts, anytime
-                </p>
-              </div>
-            </div>
-            <ArrowRight className="w-4 h-4 text-purple-600 group-hover:translate-x-1 transition-transform" />
           </div>
         </div>
       </div>

@@ -57,8 +57,8 @@ export const CoursePaymentModal: React.FC<CoursePaymentModalProps> = ({
 
   // Dynamic pricing config loaded from server
   const [pricing, setPricing] = useState<CoursePricingConfig>({
-    beginnerPrice: 10,
-    advancedPrice: 24,
+    beginnerPrice: 2,
+    advancedPrice: 5,
     currency: 'USD',
     usdtTrc20Address: 'TQ3aXm9yKLZpTRC20LearnAndGrowDesk99',
     usdtBep20Address: '0x71C...b48LearnAndGrowOfficialWallet',

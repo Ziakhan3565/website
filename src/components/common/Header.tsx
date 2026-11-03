@@ -50,7 +50,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               type="button"
               onClick={onToggleSidebar}
-              className="flex items-center justify-center p-2 rounded-xl text-slate-600 hover:text-purple-600 hover:bg-purple-50 border border-slate-200 transition-all cursor-pointer shadow-xs"
+              className="hidden lg:flex items-center justify-center p-2 rounded-xl text-slate-600 hover:text-purple-600 hover:bg-purple-50 border border-slate-200 transition-all cursor-pointer shadow-xs"
               aria-label="Toggle Navigation Sidebar"
               title="Toggle Sidebar Menu"
             >

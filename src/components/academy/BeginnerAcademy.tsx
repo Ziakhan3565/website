@@ -339,9 +339,14 @@ export const BeginnerAcademy: React.FC<BeginnerAcademyProps> = ({
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent z-10" />
                     <div className="absolute inset-0 flex items-center justify-center z-20">
                       {isLocked ? (
-                        <div className="w-12 h-12 rounded-full bg-black/70 border border-purple-400/40 flex items-center justify-center text-purple-300">
+                        <button
+                          type="button"
+                          onClick={() => onOpenPayment?.('beginner')}
+                          className="w-12 h-12 rounded-full bg-black/70 hover:bg-black/90 border border-purple-400/40 flex items-center justify-center text-purple-300 transition-transform hover:scale-110 cursor-pointer"
+                          title={`Unlock Course ($${beginnerPrice})`}
+                        >
                           <Lock className="w-5 h-5" />
-                        </div>
+                        </button>
                       ) : (
                         <button
                           type="button"

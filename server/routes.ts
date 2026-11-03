@@ -11,6 +11,7 @@ import {
   issueStripeRefund
 } from './stripeService.ts';
 import {
+  getSupabase,
   syncUserToSupabase,
   syncPaymentToSupabase,
   syncSignalToSupabase,
@@ -29,12 +30,48 @@ function generateToken(userId: string, role: UserRole): string {
   return token;
 }
 
-export function authMiddleware(req: Request, res: Response, next: NextFunction) {
+export async function authMiddleware(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return next();
   }
   const token = authHeader.split(' ')[1];
+  if (!token) return next();
+
+  // 1. Supabase JWT token verification
+  if (token.split('.').length === 3) {
+    try {
+      const supabase = getSupabase();
+      const { data: { user: sbUser }, error } = await supabase.auth.getUser(token);
+      if (!error && sbUser) {
+        const cleanEmail = (sbUser.email || '').trim().toLowerCase();
+        const isAdmin = cleanEmail === 'admin@gmail.com' || cleanEmail === 'ziakhan5348@gmail.com';
+        (req as any).userId = sbUser.id;
+        (req as any).userRole = isAdmin ? 'admin' : 'student';
+        (req as any).userEmail = cleanEmail;
+        (req as any).token = token;
+
+        // Ensure user is present in local cache for fast lookups
+        const existing = storage.findUserById(sbUser.id) || storage.findUserByEmail(cleanEmail);
+        if (!existing) {
+          storage.createUserDirect({
+            id: sbUser.id,
+            email: cleanEmail,
+            name: sbUser.user_metadata?.name || cleanEmail.split('@')[0],
+            role: isAdmin ? 'admin' : 'student',
+            tier: isAdmin ? 'premium' : 'free',
+            hasBeginnerAccess: isAdmin,
+            hasAdvancedAccess: isAdmin,
+          });
+        }
+        return next();
+      }
+    } catch {
+      // Continue to local session check
+    }
+  }
+
+  // 2. Local session fallback
   const session = storage.findSession(token);
   if (session && session.expiresAt > Date.now()) {
     (req as any).userId = session.userId;
@@ -69,7 +106,7 @@ export function requireAdmin(req: Request, res: Response, next: NextFunction) {
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-apiRouter.post('/auth/check-email', (req: Request, res: Response) => {
+apiRouter.post('/auth/check-email', async (req: Request, res: Response) => {
   const { email } = req.body;
   if (!email || typeof email !== 'string') {
     return res.status(400).json({ error: 'Email address is required' });
@@ -82,13 +119,28 @@ apiRouter.post('/auth/check-email', (req: Request, res: Response) => {
       error: 'Invalid email address format. Please enter a valid Gmail / Email (e.g. user@gmail.com)'
     });
   }
-  const existing = storage.findUserByEmail(cleanEmail);
+
+  let existingUser: any = null;
+  try {
+    const supabase = getSupabase();
+    const { data } = await supabase.from('users').select('*').ilike('email', cleanEmail).maybeSingle();
+    if (data) {
+      existingUser = data;
+    }
+  } catch {
+    // fallback to storage
+  }
+
+  if (!existingUser) {
+    existingUser = storage.findUserByEmail(cleanEmail);
+  }
+
   return res.json({
     validFormat: true,
-    exists: !!existing,
+    exists: !!existingUser,
     email: cleanEmail,
-    name: existing ? existing.name : undefined,
-    message: existing
+    name: existingUser ? existingUser.name : undefined,
+    message: existingUser
       ? 'An account with this email already exists. You can sign in directly.'
       : 'Email is available for new registration.'
   });

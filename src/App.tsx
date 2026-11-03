@@ -37,7 +37,7 @@ import type {
 } from './types/index.ts';
 
 function MainApp() {
-  const { user, refreshUser } = useAuth();
+  const { user, loading, refreshUser } = useAuth();
   const [currentView, setCurrentView] = useState('home');
   const [sidebarOpen, setSidebarOpen] = useState(() => (typeof window !== 'undefined' ? window.innerWidth >= 1024 : true));
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -82,21 +82,24 @@ function MainApp() {
     }
   }, []);
 
-  // Strict access guard & Auto-onboarding tutorial on login/signup:
+  // Strict access guard: wait until Supabase session restoration completes
   useEffect(() => {
+    if (loading) return; // Wait for persistent session restoration
+
     if (!user) {
       setAuthModalOpen(true);
       if (currentView === 'admin') {
         setCurrentView('home');
       }
-    } else if (user.role === 'admin') {
-      setCurrentView('admin');
     } else {
-      if (currentView === 'admin') {
+      setAuthModalOpen(false);
+      if (user.role === 'admin') {
+        setCurrentView('admin');
+      } else if (currentView === 'admin') {
         setCurrentView('home');
       }
     }
-  }, [user]);
+  }, [user, loading]);
 
   // Reset scroll to top whenever navigation changes
   useEffect(() => {
