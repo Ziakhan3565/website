@@ -253,7 +253,7 @@ export const TopNavModals: React.FC<TopNavModalsProps> = ({ activeModal, onClose
                 </div>
 
                 <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-600">
-                  Direct Administrator Email: <strong className="text-slate-900 font-mono">admin@gmail.com</strong>
+                  Direct Administrator Email: <strong className="text-slate-900 font-mono">learnandgrow8433@gmail.com</strong>
                 </div>
 
                 <button

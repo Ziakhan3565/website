@@ -61,19 +61,27 @@ export function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
 }
 
+export const OFFICIAL_ADMIN_EMAIL = 'learnandgrow8433@gmail.com';
+export const OFFICIAL_ADMIN_NAME = 'Learn and Grow';
+
+export function isOfficialAdmin(email?: string | null): boolean {
+  if (!email || typeof email !== 'string') return false;
+  return normalizeEmail(email) === OFFICIAL_ADMIN_EMAIL;
+}
+
 /**
  * Maps a Supabase database row to the application's User object
  */
 export function mapSupabaseRowToUser(row: any): User {
   const email = normalizeEmail(row.email || '');
-  const isAdminEmail = email === 'admin@gmail.com' || email === 'ziakhan5348@gmail.com';
-  const role: UserRole = isAdminEmail ? 'admin' : (row.role === 'admin' ? 'admin' : 'student');
+  const isAdminEmail = isOfficialAdmin(email);
+  const role: UserRole = isAdminEmail ? 'admin' : 'student';
   const tier: MembershipTier = isAdminEmail ? 'premium' : (row.tier === 'premium' ? 'premium' : 'free');
 
   return {
     id: row.id,
     email,
-    name: row.name || email.split('@')[0] || 'Student',
+    name: row.name || (isAdminEmail ? OFFICIAL_ADMIN_NAME : email.split('@')[0]) || 'Student',
     role,
     tier,
     hasBeginnerAccess: isAdminEmail ? true : !!row.has_beginner_access,
@@ -130,14 +138,14 @@ export async function fetchSupabaseUserProfile(userId: string, email?: string): 
  */
 export async function upsertSupabaseUserProfile(user: Partial<User> & { id: string; email: string }): Promise<User | null> {
   const cleanEmail = normalizeEmail(user.email);
-  const isAdminEmail = cleanEmail === 'admin@gmail.com' || cleanEmail === 'ziakhan5348@gmail.com';
-  const role = isAdminEmail ? 'admin' : (user.role || 'student');
-  const tier = isAdminEmail ? 'premium' : (user.tier || 'free');
+  const isAdminEmail = isOfficialAdmin(cleanEmail);
+  const role: UserRole = isAdminEmail ? 'admin' : 'student';
+  const tier: MembershipTier = isAdminEmail ? 'premium' : (user.tier || 'free');
 
   const payload: any = {
     id: user.id,
     email: cleanEmail,
-    name: user.name || cleanEmail.split('@')[0],
+    name: user.name || (isAdminEmail ? OFFICIAL_ADMIN_NAME : cleanEmail.split('@')[0]),
     role,
     tier,
     has_beginner_access: isAdminEmail ? true : !!user.hasBeginnerAccess,
@@ -171,21 +179,66 @@ export async function upsertSupabaseUserProfile(user: Partial<User> & { id: stri
 }
 
 /**
- * Check if an email is already registered in Supabase
+ * Translates Supabase Auth errors into clear, actionable, accurate descriptions
  */
-export async function checkSupabaseEmailExists(email: string): Promise<{ exists: boolean; name?: string; role?: string }> {
+export function formatSupabaseAuthError(error: any): string {
+  if (!error) return 'An unexpected authentication error occurred.';
+  const code = (error.code || '').toLowerCase();
+  const msg = (error.message || '').toLowerCase();
+  const status = error.status || 0;
+
+  if (code === 'over_email_send_rate_limit' || status === 429 || msg.includes('rate limit') || msg.includes('too many')) {
+    return 'Supabase email send rate limit reached (The free tier shared mailer allows only ~3-4 emails/hour). Please wait before resending, or configure a Custom SMTP provider (such as Gmail App Password, Resend, or SendGrid) in your Supabase Dashboard.';
+  }
+
+  if (code === 'email_address_not_authorized' || msg.includes('not authorized')) {
+    return 'Email address not authorized. In Supabase evaluation sandbox mode, emails are restricted to confirmed project team members. Please configure Custom SMTP in your Supabase Dashboard.';
+  }
+
+  if (code === 'email_address_invalid' || msg.includes('is invalid')) {
+    return 'Supabase email delivery failed: The email address or its domain could not be verified by the Supabase mail server. Please ensure the address is correct and uses a standard provider (e.g. @gmail.com).';
+  }
+
+  if (code === 'otp_expired' || msg.includes('otp expired') || msg.includes('token has expired')) {
+    return 'The 6-digit verification code has expired or is invalid. Please request a new code using the resend button.';
+  }
+
+  if (code === 'user_already_exists' || msg.includes('already registered')) {
+    return 'This email address is already registered! Please sign in to your existing account.';
+  }
+
+  if (msg.includes('email not confirmed') || msg.includes('not confirmed')) {
+    return 'Your email address is not verified yet. Please enter the 6-digit confirmation code sent to your inbox or click resend.';
+  }
+
+  if (msg.includes('invalid login credentials') || msg.includes('invalid credentials')) {
+    return 'Incorrect password or email. Please verify your credentials or click "Forgot Password".';
+  }
+
+  if (msg.includes('smtp') || msg.includes('connection error') || msg.includes('delivery')) {
+    return `SMTP delivery failure: Supabase could not deliver the email (${error.message}). Please verify your SMTP settings in the Supabase Dashboard.`;
+  }
+
+  return error.message || 'Authentication request failed.';
+}
+
+/**
+ * Check if an email is already registered in Supabase
+ * Note: Does not claim an email is invalid if not found
+ */
+export async function checkSupabaseEmailExists(email: string): Promise<{ exists: boolean }> {
   const cleanEmail = normalizeEmail(email);
   if (!cleanEmail) return { exists: false };
 
   try {
     const { data, error } = await supabase
       .from('users')
-      .select('id, email, name, role')
+      .select('id')
       .ilike('email', cleanEmail)
       .maybeSingle();
 
     if (!error && data) {
-      return { exists: true, name: data.name, role: data.role };
+      return { exists: true };
     }
     return { exists: false };
   } catch {
@@ -194,43 +247,174 @@ export async function checkSupabaseEmailExists(email: string): Promise<{ exists:
 }
 
 /**
+ * Verify a 6-digit OTP confirmation code using real Supabase Auth
+ */
+export async function verifyEmailOtp(email: string, token: string): Promise<{
+  success: boolean;
+  message: string;
+  session?: any;
+  user?: any;
+}> {
+  const cleanEmail = normalizeEmail(email);
+  const cleanToken = token.trim();
+
+  if (!cleanEmail) {
+    return { success: false, message: 'Please enter a valid email address.' };
+  }
+  if (!cleanToken || cleanToken.length < 6) {
+    return { success: false, message: 'Please enter the 6-digit verification code sent to your email.' };
+  }
+
+  try {
+    // 1. Attempt signup OTP confirmation
+    let { data, error } = await supabase.auth.verifyOtp({
+      email: cleanEmail,
+      token: cleanToken,
+      type: 'signup',
+    });
+
+    // 2. Fallback to 'email' magiclink/OTP type if signup verification indicates token mismatch
+    if (error && (error.code === 'otp_expired' || error.message.toLowerCase().includes('token'))) {
+      const fallback = await supabase.auth.verifyOtp({
+        email: cleanEmail,
+        token: cleanToken,
+        type: 'email',
+      });
+      if (!fallback.error && fallback.data?.session) {
+        data = fallback.data;
+        error = null;
+      }
+    }
+
+    if (error) {
+      return { success: false, message: formatSupabaseAuthError(error) };
+    }
+
+    if (data?.session && data?.user) {
+      return {
+        success: true,
+        session: data.session,
+        user: data.user,
+        message: 'Email successfully verified! Welcome to Learn and Grow.',
+      };
+    }
+
+    return {
+      success: true,
+      user: data?.user,
+      message: 'Email successfully verified! You can now sign in with your credentials.',
+    };
+  } catch (err: any) {
+    return { success: false, message: formatSupabaseAuthError(err) };
+  }
+}
+
+/**
  * Resend email verification through Supabase Auth
+ * Accurately surfaces rate limits, delivery failures, or confirmation success
  */
 export async function resendVerificationEmail(email: string): Promise<{ success: boolean; message: string }> {
   const cleanEmail = normalizeEmail(email);
+  if (!cleanEmail) {
+    return { success: false, message: 'Please enter a valid email address.' };
+  }
+
   try {
     const { error } = await supabase.auth.resend({
       type: 'signup',
       email: cleanEmail,
     });
     if (error) {
-      return { success: false, message: error.message };
+      return { success: false, message: formatSupabaseAuthError(error) };
     }
-    return { success: true, message: 'Verification email has been resent. Please check your inbox and spam folder.' };
+    return {
+      success: true,
+      message: 'A fresh verification email with your 6-digit confirmation code has been sent. Please check your inbox and Spam folder.',
+    };
   } catch (err: any) {
-    return { success: false, message: err?.message || 'Failed to resend confirmation email.' };
+    return { success: false, message: formatSupabaseAuthError(err) };
   }
 }
 
 /**
- * Request password reset through Supabase Auth
+ * Dynamically resolves the current application origin and generates the Reset Password URL
  */
-export async function requestPasswordReset(email: string): Promise<{ success: boolean; message: string }> {
+export function getAppResetRedirectUrl(): string {
+  if (typeof window !== 'undefined' && window.location && window.location.origin) {
+    const origin = window.location.origin.replace(/\/+$/, '');
+    return `${origin}/#reset-password`;
+  }
+  return '';
+}
+
+/**
+ * Request password reset through Supabase Auth
+ * Sends recovery link to the user's Gmail address pointing to the dedicated Reset Password page
+ */
+export async function requestPasswordReset(email: string): Promise<{ success: boolean; message: string; redirectTo?: string }> {
   const cleanEmail = normalizeEmail(email);
+  if (!cleanEmail) {
+    return { success: false, message: 'Please enter a valid email address.' };
+  }
+
   try {
-    const redirectTo = typeof window !== 'undefined' ? window.location.origin : undefined;
+    // Dynamically use the actual current application origin for the recovery redirect URL
+    const redirectTo = getAppResetRedirectUrl();
+
     const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
-      redirectTo,
+      ...(redirectTo ? { redirectTo } : {}),
     });
+
+    if (error) {
+      return { success: false, message: formatSupabaseAuthError(error) };
+    }
+
+    return {
+      success: true,
+      message: 'If an account exists with this email address, a password recovery link has been dispatched. Please check your Gmail inbox and Spam folder.',
+      redirectTo,
+    };
+  } catch (err: any) {
+    return { success: false, message: formatSupabaseAuthError(err) };
+  }
+}
+
+/**
+ * Update user password using Supabase Auth recovery session
+ * Verifies that the recovery session is established before updating
+ */
+export async function updateUserPassword(newPassword: string): Promise<{ success: boolean; message: string }> {
+  if (!newPassword || newPassword.length < 6) {
+    return { success: false, message: 'Password must be at least 6 characters long.' };
+  }
+
+  try {
+    // Verify that the recovery session is established
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError) {
+      return { success: false, message: `Session error: ${sessionError.message}` };
+    }
+    if (!session?.user) {
+      return {
+        success: false,
+        message: 'No active password recovery session found. Your recovery link may have expired or is invalid. Please request a new link.',
+      };
+    }
+
+    const { data, error } = await supabase.auth.updateUser({
+      password: newPassword,
+    });
+
     if (error) {
       return { success: false, message: error.message };
     }
+
     return {
       success: true,
-      message: 'Password reset link has been sent to your email. Please check your inbox.',
+      message: 'Password has been updated successfully in Supabase Auth.',
     };
   } catch (err: any) {
-    return { success: false, message: err?.message || 'Failed to send password reset email.' };
+    return { success: false, message: err?.message || 'Failed to update password.' };
   }
 }
 

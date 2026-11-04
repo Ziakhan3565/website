@@ -540,12 +540,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         <p className="text-xs text-slate-400 mt-2 leading-relaxed">
           The Admin Control Panel is restricted to authorized Learn and Grow personnel for content publishing, signal dispatches, and user management.
         </p>
-        <button
-          onClick={() => switchDemoAccount('admin')}
-          className="mt-5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold"
-        >
-          Switch to Zia Khan (Admin View)
-        </button>
+        <div className="mt-5 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs">
+          Please sign in using your administrator credentials via Supabase Auth to access this panel.
+        </div>
       </div>
     );
   }
@@ -810,7 +807,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           <div className="flex items-center gap-2 shrink-0">
             <div className="px-3.5 py-2 rounded-xl bg-white border border-purple-200 text-xs font-mono text-purple-700 shadow-xs flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Admin: <strong>admin@gmail.com</strong></span>
+              <span>Super Admin: <strong>learnandgrow8433@gmail.com</strong></span>
             </div>
           </div>
         </div>
@@ -1728,11 +1725,27 @@ ALTER TABLE public.course_enrollments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.signals ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.contact_messages ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Allow all anon users" ON public.users FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all anon payments" ON public.payments FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all anon enrollments" ON public.course_enrollments FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all anon signals" ON public.signals FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow all anon contact" ON public.contact_messages FOR ALL USING (true) WITH CHECK (true);
+-- RLS Policies: Super Admin learnandgrow8433@gmail.com & Student Row Protection
+CREATE POLICY "Super Admin users access" ON public.users FOR ALL
+  USING ((auth.jwt() ->> 'email') = 'learnandgrow8433@gmail.com' OR auth.uid()::text = id)
+  WITH CHECK ((auth.jwt() ->> 'email') = 'learnandgrow8433@gmail.com' OR auth.uid()::text = id);
+
+CREATE POLICY "Super Admin payments access" ON public.payments FOR ALL
+  USING ((auth.jwt() ->> 'email') = 'learnandgrow8433@gmail.com' OR auth.uid()::text = user_id)
+  WITH CHECK ((auth.jwt() ->> 'email') = 'learnandgrow8433@gmail.com' OR auth.uid()::text = user_id);
+
+CREATE POLICY "Super Admin enrollments access" ON public.course_enrollments FOR ALL
+  USING ((auth.jwt() ->> 'email') = 'learnandgrow8433@gmail.com' OR auth.uid()::text = user_id)
+  WITH CHECK ((auth.jwt() ->> 'email') = 'learnandgrow8433@gmail.com' OR auth.uid()::text = user_id);
+
+CREATE POLICY "Public signals read" ON public.signals FOR SELECT USING (true);
+CREATE POLICY "Super Admin signals write" ON public.signals FOR ALL
+  USING ((auth.jwt() ->> 'email') = 'learnandgrow8433@gmail.com')
+  WITH CHECK ((auth.jwt() ->> 'email') = 'learnandgrow8433@gmail.com');
+
+CREATE POLICY "Public contact insert" ON public.contact_messages FOR INSERT WITH CHECK (true);
+CREATE POLICY "Super Admin contact read" ON public.contact_messages FOR SELECT
+  USING ((auth.jwt() ->> 'email') = 'learnandgrow8433@gmail.com');
 `;
                           navigator.clipboard.writeText(sqlScript).then(() => {
                             setCopiedSql(true);

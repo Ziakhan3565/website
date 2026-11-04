@@ -55,32 +55,24 @@ export function createPasswordRecord(password: string) {
 }
 
 function getInitialData(): DatabaseSchema {
-  const adminCreds = createPasswordRecord('ZIA@#1234@#1');
-  const studentCreds = createPasswordRecord('studentPass123!');
+  // Use cryptographically secure random values for initial schema placeholders
+  // Real authentication is handled by Supabase Auth with zero hardcoded credentials
+  const adminCreds = {
+    salt: crypto.randomBytes(16).toString('hex'),
+    passwordHash: crypto.randomBytes(32).toString('hex'),
+  };
+  const studentCreds = {
+    salt: crypto.randomBytes(16).toString('hex'),
+    passwordHash: crypto.randomBytes(32).toString('hex'),
+  };
 
   return {
     sessions: [],
     users: [
       {
-        id: 'user_admin',
-        email: 'admin@gmail.com',
-        name: 'Zia Khan',
-        role: 'admin',
-        tier: 'premium',
-        hasBeginnerAccess: true,
-        hasAdvancedAccess: true,
-        createdAt: '2026-01-10T10:00:00Z',
-        completedLessons: [],
-        savedSignals: [],
-        attendedClasses: [],
-        avatarUrl: '/src/assets/images/instructor_lead_avatar_1792164740686.jpg',
-        passwordHash: adminCreds.passwordHash,
-        salt: adminCreds.salt,
-      },
-      {
-        id: 'user_admin_zia',
-        email: 'ziakhan5348@gmail.com',
-        name: 'Zia Khan',
+        id: 'user_admin_learnandgrow',
+        email: 'learnandgrow8433@gmail.com',
+        name: 'Learn and Grow',
         role: 'admin',
         tier: 'premium',
         hasBeginnerAccess: true,
@@ -293,44 +285,26 @@ class StorageManager {
 
         // Ensure users list has both admin accounts and all registered students
         if (parsed.users && Array.isArray(parsed.users)) {
-          const defaultAdminCreds = createPasswordRecord('ZIA@#1234@#1');
+          const defaultAdminCreds = {
+            salt: crypto.randomBytes(16).toString('hex'),
+            passwordHash: crypto.randomBytes(32).toString('hex'),
+          };
 
-          // Ensure admin@gmail.com exists
-          let admin1 = parsed.users.find((u: any) => u.email === 'admin@gmail.com');
-          if (!admin1) {
-            parsed.users.unshift({
-              id: 'user_admin',
-              email: 'admin@gmail.com',
-              name: 'Zia Khan',
-              role: 'admin',
-              tier: 'premium',
-              hasBeginnerAccess: true,
-              hasAdvancedAccess: true,
-              createdAt: '2026-01-10T10:00:00Z',
-              completedLessons: [],
-              savedSignals: [],
-              attendedClasses: [],
-              avatarUrl: '/src/assets/images/instructor_lead_avatar_1792164740686.jpg',
-              passwordHash: defaultAdminCreds.passwordHash,
-              salt: defaultAdminCreds.salt,
-            });
-          } else {
-            admin1.role = 'admin';
-            admin1.hasBeginnerAccess = true;
-            admin1.hasAdvancedAccess = true;
-            if (!admin1.passwordHash || !admin1.salt) {
-              admin1.passwordHash = defaultAdminCreds.passwordHash;
-              admin1.salt = defaultAdminCreds.salt;
+          // Demote any old hardcoded admin emails to regular student role (preserving their account and records)
+          for (const u of parsed.users) {
+            const email = (u.email || '').toLowerCase().trim();
+            if (email === 'admin@gmail.com' || email === 'ziakhan5348@gmail.com') {
+              u.role = 'student';
             }
           }
 
-          // Ensure ziakhan5348@gmail.com also exists as an admin
-          let admin2 = parsed.users.find((u: any) => u.email === 'ziakhan5348@gmail.com');
-          if (!admin2) {
+          // Ensure official Super Admin learnandgrow8433@gmail.com exists
+          let admin = parsed.users.find((u: any) => u.email === 'learnandgrow8433@gmail.com');
+          if (!admin) {
             parsed.users.unshift({
-              id: 'user_admin_zia',
-              email: 'ziakhan5348@gmail.com',
-              name: 'Zia Khan',
+              id: 'user_admin_learnandgrow',
+              email: 'learnandgrow8433@gmail.com',
+              name: 'Learn and Grow',
               role: 'admin',
               tier: 'premium',
               hasBeginnerAccess: true,
@@ -344,12 +318,14 @@ class StorageManager {
               salt: defaultAdminCreds.salt,
             });
           } else {
-            admin2.role = 'admin';
-            admin2.hasBeginnerAccess = true;
-            admin2.hasAdvancedAccess = true;
-            if (!admin2.passwordHash || !admin2.salt) {
-              admin2.passwordHash = defaultAdminCreds.passwordHash;
-              admin2.salt = defaultAdminCreds.salt;
+            admin.role = 'admin';
+            admin.name = 'Learn and Grow';
+            admin.tier = 'premium';
+            admin.hasBeginnerAccess = true;
+            admin.hasAdvancedAccess = true;
+            if (!admin.passwordHash || !admin.salt) {
+              admin.passwordHash = defaultAdminCreds.passwordHash;
+              admin.salt = defaultAdminCreds.salt;
             }
           }
         }
@@ -417,11 +393,11 @@ class StorageManager {
     if (existing) {
       return this.updateUser(existing.id, user)!;
     }
-    const isAdmin = cleanEmail === 'admin@gmail.com' || cleanEmail === 'ziakhan5348@gmail.com';
+    const isAdmin = cleanEmail === 'learnandgrow8433@gmail.com';
     const newUser = {
       id: user.id,
       email: cleanEmail,
-      name: user.name || cleanEmail.split('@')[0],
+      name: user.name || (isAdmin ? 'Learn and Grow' : cleanEmail.split('@')[0]),
       role: isAdmin ? ('admin' as const) : (user.role || 'student'),
       tier: isAdmin ? ('premium' as const) : (user.tier || 'free'),
       hasBeginnerAccess: isAdmin ? true : !!user.hasBeginnerAccess,

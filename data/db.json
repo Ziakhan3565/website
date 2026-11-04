@@ -1,9 +1,9 @@
 {
   "users": [
     {
-      "id": "user_admin_zia",
-      "email": "ziakhan5348@gmail.com",
-      "name": "Zia Khan",
+      "id": "user_admin_learnandgrow",
+      "email": "learnandgrow8433@gmail.com",
+      "name": "Learn and Grow",
       "role": "admin",
       "tier": "premium",
       "hasBeginnerAccess": true,
@@ -17,13 +17,29 @@
       "salt": "23a003a571a789b1206aceb2f3aec549"
     },
     {
-      "id": "user_admin",
-      "email": "admin@gmail.com",
+      "id": "user_admin_zia",
+      "email": "ziakhan5348@gmail.com",
       "name": "Zia Khan",
-      "role": "admin",
-      "tier": "premium",
+      "role": "student",
+      "tier": "free",
       "hasBeginnerAccess": true,
       "hasAdvancedAccess": true,
+      "createdAt": "2026-01-10T10:00:00Z",
+      "completedLessons": [],
+      "savedSignals": [],
+      "attendedClasses": [],
+      "avatarUrl": "/src/assets/images/instructor_lead_avatar_1792164740686.jpg",
+      "passwordHash": "b649b891e64ff19fd409c20a2a237f0108a7c67ed4fac44c76b12a90c14f766590651003bf5af954091dfeeedcaea356632017c85149f9a67bfaf3ab708ef948",
+      "salt": "23a003a571a789b1206aceb2f3aec549"
+    },
+    {
+      "id": "user_admin",
+      "email": "admin@gmail.com",
+      "name": "Admin User",
+      "role": "student",
+      "tier": "free",
+      "hasBeginnerAccess": false,
+      "hasAdvancedAccess": false,
       "createdAt": "2026-01-10T10:00:00Z",
       "completedLessons": [],
       "savedSignals": [],

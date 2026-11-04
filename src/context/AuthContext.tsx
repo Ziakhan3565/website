@@ -9,7 +9,12 @@ import {
   checkSupabaseEmailExists,
   resendVerificationEmail,
   requestPasswordReset,
-  mapSupabaseRowToUser
+  mapSupabaseRowToUser,
+  OFFICIAL_ADMIN_EMAIL,
+  OFFICIAL_ADMIN_NAME,
+  isOfficialAdmin,
+  formatSupabaseAuthError,
+  verifyEmailOtp,
 } from '../lib/supabase.ts';
 
 export interface AuthContextType {
@@ -37,7 +42,13 @@ export interface AuthContextType {
   updateProfile: (params: { name?: string; avatarUrl?: string }) => Promise<void>;
   refreshUser: () => Promise<void>;
   resendVerification: (email: string) => Promise<{ success: boolean; message: string }>;
+  verifyOtp: (email: string, token: string) => Promise<{ success: boolean; message: string }>;
   forgotPassword: (email: string) => Promise<{ success: boolean; message: string }>;
+  updatePassword: (newPassword: string) => Promise<{ success: boolean; message: string }>;
+  isPasswordRecovery: boolean;
+  setIsPasswordRecovery: (active: boolean) => void;
+  recoveryError: string | null;
+  clearRecoveryState: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -45,6 +56,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isPasswordRecovery, setIsPasswordRecovery] = useState(false);
+  const [recoveryError, setRecoveryError] = useState<string | null>(null);
 
   /**
    * Helper: Resolves and loads the full Student Profile from Supabase
@@ -55,7 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     const cleanEmail = normalizeEmail(authUser.email || '');
-    const isAdminEmail = cleanEmail === 'admin@gmail.com' || cleanEmail === 'ziakhan5348@gmail.com';
+    const isAdminEmail = isOfficialAdmin(cleanEmail);
 
     // 1. Fetch profile from Supabase 'users' table
     let profile = await fetchSupabaseUserProfile(authUser.id, cleanEmail);
@@ -65,7 +78,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       profile = await upsertSupabaseUserProfile({
         id: authUser.id,
         email: cleanEmail,
-        name: authUser.user_metadata?.name || cleanEmail.split('@')[0],
+        name: authUser.user_metadata?.name || (isAdminEmail ? OFFICIAL_ADMIN_NAME : cleanEmail.split('@')[0]),
         role: isAdminEmail ? 'admin' : 'student',
         tier: isAdminEmail ? 'premium' : 'free',
         hasBeginnerAccess: isAdminEmail,
@@ -73,21 +86,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
     }
 
-    // Always enforce admin privileges for admin accounts
+    // Enforce official admin privileges ONLY for learnandgrow8433@gmail.com
     if (isAdminEmail && profile) {
       profile.role = 'admin';
       profile.tier = 'premium';
       profile.hasBeginnerAccess = true;
       profile.hasAdvancedAccess = true;
+      profile.name = OFFICIAL_ADMIN_NAME;
       if (!profile.avatarUrl) {
         profile.avatarUrl = '/src/assets/images/instructor_lead_avatar_1792164740686.jpg';
       }
+    } else if (profile && profile.role === 'admin') {
+      // Revoke admin from previous administrator email addresses
+      profile.role = 'student';
     }
 
     const resolvedUser: User = profile || {
       id: authUser.id,
       email: cleanEmail,
-      name: authUser.user_metadata?.name || cleanEmail.split('@')[0],
+      name: authUser.user_metadata?.name || (isAdminEmail ? OFFICIAL_ADMIN_NAME : cleanEmail.split('@')[0]),
       role: isAdminEmail ? 'admin' : 'student',
       tier: isAdminEmail ? 'premium' : 'free',
       hasBeginnerAccess: isAdminEmail,
@@ -115,8 +132,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const { data: { session }, error } = await supabase.auth.getSession();
 
         if (session?.user && isMounted) {
-          console.log('[Supabase Auth] Restored existing session for:', session.user.email);
-          await loadStudentProfile(session.user, session.access_token);
+          const isConfirmed = isOfficialAdmin(session.user.email) ||
+            !!session.user.email_confirmed_at ||
+            !!session.user.confirmed_at;
+
+          if (!isConfirmed) {
+            console.warn('[Supabase Auth] Denying unverified user session on boot:', session.user.email);
+            setUser(null);
+          } else {
+            console.log('[Supabase Auth] Restored verified session for:', session.user.email);
+            await loadStudentProfile(session.user, session.access_token);
+          }
         } else {
           // Check if there was an active token or backend session
           const storedToken = getStoredToken();
@@ -155,13 +181,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     restoreSession();
 
-    // 2. Listen to Supabase Auth State Changes (Login, Logout, Token Refresh, Session Restored)
+    // 2. Listen to Supabase Auth State Changes (Login, Logout, Token Refresh, Password Recovery)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log(`[Supabase Auth Event]: ${event}`);
 
-      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+      if (event === 'PASSWORD_RECOVERY') {
+        console.log('[Supabase Auth] PASSWORD_RECOVERY event received');
+        if (isMounted) {
+          setIsPasswordRecovery(true);
+          setRecoveryError(null);
+        }
+      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
         if (session?.user && isMounted) {
-          await loadStudentProfile(session.user, session.access_token);
+          const isConfirmed = isOfficialAdmin(session.user.email) ||
+            !!session.user.email_confirmed_at ||
+            !!session.user.confirmed_at;
+
+          if (!isConfirmed) {
+            console.warn('[Supabase Auth] Blocked unconfirmed session event:', session.user.email);
+            setUser(null);
+          } else {
+            await loadStudentProfile(session.user, session.access_token);
+          }
         }
       } else if (event === 'SIGNED_OUT') {
         if (isMounted) {
@@ -176,6 +217,66 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       subscription.unsubscribe();
     };
   }, [loadStudentProfile]);
+
+  // 3. Detect recovery tokens, errors, or reset hash in URL
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const parseRecoveryFromUrl = () => {
+      const hash = window.location.hash || '';
+      const search = window.location.search || '';
+
+      let errDesc: string | null = null;
+      let hasRecoveryToken = false;
+      let isResetRoute = false;
+
+      // Extract all key-value pairs across hash and search components
+      const rawParams = (hash + '&' + search).split(/[#&?]/).filter(Boolean);
+      for (const pair of rawParams) {
+        if (!pair.includes('=')) continue;
+        const [k, ...vParts] = pair.split('=');
+        const key = decodeURIComponent(k || '').trim();
+        const val = decodeURIComponent(vParts.join('=') || '').trim();
+
+        if (key === 'error_description') {
+          errDesc = val.replace(/\+/g, ' ');
+        } else if (key === 'error_code' && !errDesc) {
+          errDesc = `Auth Error: ${val}`;
+        } else if (key === 'error' && !errDesc) {
+          errDesc = val.replace(/\+/g, ' ');
+        } else if (key === 'type' && val === 'recovery') {
+          hasRecoveryToken = true;
+        } else if (key === 'mode' && val === 'reset-password') {
+          isResetRoute = true;
+        }
+      }
+
+      if (
+        hash.toLowerCase().includes('reset-password') ||
+        search.toLowerCase().includes('reset-password') ||
+        window.location.pathname.toLowerCase().includes('reset-password')
+      ) {
+        isResetRoute = true;
+      }
+
+      if (errDesc) {
+        console.warn('[Supabase Auth] Recovery error in URL:', errDesc);
+        setRecoveryError(errDesc);
+        setIsPasswordRecovery(true);
+      } else if (hasRecoveryToken || isResetRoute) {
+        console.log('[Supabase Auth] Recovery URL or reset-password route detected');
+        setIsPasswordRecovery(true);
+      }
+    };
+
+    parseRecoveryFromUrl();
+    window.addEventListener('hashchange', parseRecoveryFromUrl);
+    window.addEventListener('popstate', parseRecoveryFromUrl);
+    return () => {
+      window.removeEventListener('hashchange', parseRecoveryFromUrl);
+      window.removeEventListener('popstate', parseRecoveryFromUrl);
+    };
+  }, []);
 
   /**
    * User Login with Email & Password
@@ -195,48 +296,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (error) {
       const errMsg = error.message.toLowerCase();
 
-      // Check for unverified email
+      // Check for unverified email error from Supabase
       if (errMsg.includes('email not confirmed') || errMsg.includes('not confirmed')) {
         return {
           success: false,
           requiresVerification: true,
-          message: 'Your email address is not verified yet. Please check your inbox for the confirmation email or click below to resend it.'
+          message: 'Your email address is not verified yet. Please enter the 6-digit confirmation code from your inbox or click resend below.'
         };
       }
 
-      // Check if credentials failed in Supabase Auth:
-      // Fallback check against backend API for legacy pre-seeded accounts (e.g. admin@gmail.com with ZIA@#1234@#1)
-      try {
-        const backendRes = await api.login(cleanEmail, password);
-        if (backendRes?.user) {
-          // Successfully authenticated with backend!
-          setUser(backendRes.user);
-
-          // Asynchronously ensure profile exists in Supabase users table
-          await upsertSupabaseUserProfile({
-            id: backendRes.user.id,
-            email: backendRes.user.email,
-            name: backendRes.user.name,
-            role: backendRes.user.role,
-            tier: backendRes.user.tier,
-            hasBeginnerAccess: backendRes.user.hasBeginnerAccess,
-            hasAdvancedAccess: backendRes.user.hasAdvancedAccess,
-          });
-
-          return { success: true, message: 'Welcome back!' };
-        }
-      } catch {
-        // Fallback also failed, raise clean user-facing error
-      }
-
-      if (errMsg.includes('invalid login credentials') || errMsg.includes('invalid credentials')) {
-        throw new Error('Incorrect password or email. Please verify your credentials or click "Forgot Password".');
-      }
-
-      throw new Error(error.message);
+      throw new Error(formatSupabaseAuthError(error));
     }
 
     if (data.session?.user) {
+      const isConfirmed = isOfficialAdmin(data.session.user.email) ||
+        !!data.session.user.email_confirmed_at ||
+        !!data.session.user.confirmed_at;
+
+      if (!isConfirmed) {
+        await supabase.auth.signOut();
+        return {
+          success: false,
+          requiresVerification: true,
+          message: 'Your email address is not verified yet. Please enter the 6-digit confirmation code sent to your email.'
+        };
+      }
+
       await loadStudentProfile(data.session.user, data.session.access_token);
       return { success: true, message: 'Welcome back!' };
     }
@@ -276,18 +361,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
 
     if (error) {
-      const errMsg = error.message.toLowerCase();
-      if (errMsg.includes('already registered') || error.code === 'user_already_exists') {
-        throw new Error('This email address is already registered! Please sign in to your existing account.');
-      }
-      if (errMsg.includes('rate limit')) {
-        throw new Error('Supabase email rate limit reached. If this account was already registered, please sign in.');
-      }
-      throw new Error(error.message);
+      throw new Error(formatSupabaseAuthError(error));
     }
 
-    // Determine admin status
-    const isAdminEmail = cleanEmail === 'admin@gmail.com' || cleanEmail === 'ziakhan5348@gmail.com';
+    // Check if Supabase silently ignored duplicate registration
+    if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+      throw new Error('This email address is already registered! Please sign in to your existing account or click Forgot Password.');
+    }
+
+    // Determine admin status strictly for official admin email
+    const isAdminEmail = isOfficialAdmin(cleanEmail);
     const role = isAdminEmail ? 'admin' : 'student';
     const tier = isAdminEmail ? 'premium' : 'free';
 
@@ -296,7 +379,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await upsertSupabaseUserProfile({
         id: data.user.id,
         email: cleanEmail,
-        name: cleanName,
+        name: isAdminEmail ? OFFICIAL_ADMIN_NAME : cleanName,
         role,
         tier,
         hasBeginnerAccess: isAdminEmail,
@@ -305,17 +388,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
     }
 
-    // 4. Check if session was returned immediately (Email auto-confirm enabled)
-    if (data.session?.user) {
+    // 4. Check if email is verified
+    const isConfirmed = isAdminEmail || !!data.user?.email_confirmed_at || !!data.user?.confirmed_at;
+
+    if (isConfirmed && data.session?.user) {
       await loadStudentProfile(data.session.user, data.session.access_token);
       return { success: true, requiresVerification: false, message: 'Account created successfully! Welcome to Learn and Grow.' };
     }
 
-    // 5. If email confirmation is required by Supabase settings:
+    // 5. Email confirmation is required - never allow unverified access
     return {
       success: true,
       requiresVerification: true,
-      message: 'Account created! A confirmation email has been sent to your address. Please verify your email to log in.'
+      message: 'Account created! Please check your email inbox and enter the 6-digit confirmation code below to activate your account.'
     };
   };
 
@@ -346,6 +431,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   /**
+   * Verify 6-digit OTP confirmation code
+   */
+  const verifyOtp = async (email: string, token: string): Promise<{ success: boolean; message: string }> => {
+    const res = await verifyEmailOtp(email, token);
+    if (res.success && res.session?.user) {
+      await loadStudentProfile(res.session.user, res.session.access_token);
+    }
+    return { success: res.success, message: res.message };
+  };
+
+  /**
    * Forgot Password Link
    */
   const forgotPassword = async (email: string) => {
@@ -353,14 +449,85 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   /**
-   * Switch Demo Account (for testing & demonstration)
+   * Update User Password using Supabase Auth recovery session
+   * Verifies that the recovery session is established before updating
+   */
+  const updatePassword = async (newPassword: string): Promise<{ success: boolean; message: string }> => {
+    if (!newPassword || newPassword.length < 6) {
+      return { success: false, message: 'Password must be at least 6 characters long.' };
+    }
+
+    try {
+      // Requirement 8: Verify that the recovery session is established before allowing password updates
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+      if (sessionError) {
+        return {
+          success: false,
+          message: `Authentication session error: ${sessionError.message}. Please request a new recovery link.`,
+        };
+      }
+
+      if (!session?.user) {
+        return {
+          success: false,
+          message: 'No active password recovery session found. Your recovery link may have expired or was already used. Please request a new recovery link.',
+        };
+      }
+
+      // Requirement 5: Use Supabase updateUser({ password: newPassword })
+      const { data, error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (error) {
+        return { success: false, message: error.message };
+      }
+
+      // Synchronize with local database storage
+      if (data?.user?.id) {
+        try {
+          await api.syncPassword(newPassword);
+        } catch {
+          // Non-blocking
+        }
+      }
+
+      setIsPasswordRecovery(false);
+      setRecoveryError(null);
+
+      if (typeof window !== 'undefined') {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      return {
+        success: true,
+        message: 'Password updated successfully! You can now log in with your new password.',
+      };
+    } catch (err: any) {
+      return {
+        success: false,
+        message: err?.message || 'Failed to update password. Recovery session may have expired.',
+      };
+    }
+  };
+
+  /**
+   * Clear Password Recovery state and clean up URL
+   */
+  const clearRecoveryState = () => {
+    setIsPasswordRecovery(false);
+    setRecoveryError(null);
+    if (typeof window !== 'undefined') {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  };
+
+  /**
+   * Switch Account Role (Requires authenticating with verified account credentials)
    */
   const switchDemoAccount = async (role: 'admin' | 'student') => {
-    if (role === 'admin') {
-      await login('admin@gmail.com', 'ZIA@#1234@#1');
-    } else {
-      await login('student@coursecrash.io', 'studentPass123!');
-    }
+    console.info(`[Auth] User requested ${role} role view. Please log in with your verified ${role} account.`);
   };
 
   /**
@@ -520,7 +687,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const isAdmin = user?.role === 'admin' || user?.email?.toLowerCase() === 'ziakhan5348@gmail.com' || user?.email?.toLowerCase() === 'admin@gmail.com';
+  const isAdmin = isOfficialAdmin(user?.email);
   const isPremium = user?.tier === 'premium' || isAdmin;
   const hasBeginnerAccess = isAdmin || isPremium || !!user?.hasBeginnerAccess;
   const hasAdvancedAccess = isAdmin || isPremium || !!user?.hasAdvancedAccess;
@@ -545,7 +712,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         updateProfile,
         refreshUser,
         resendVerification,
+        verifyOtp,
         forgotPassword,
+        updatePassword,
+        isPasswordRecovery,
+        setIsPasswordRecovery,
+        recoveryError,
+        clearRecoveryState,
       }}
     >
       {children}

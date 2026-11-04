@@ -326,7 +326,7 @@ export const CoursePaymentModal: React.FC<CoursePaymentModalProps> = ({
       if (res.status === 'approved' || pricing.autoApproveInstant) {
         setSuccessMessage('Payment Verified! Course access is now active on your account.');
       } else {
-        setSuccessMessage('Payment details submitted! Zia Khan Desk will verify your reference and activate your account.');
+        setSuccessMessage('Payment details submitted! Learn and Grow Desk will verify your reference and activate your account.');
       }
 
       setTimeout(() => {
@@ -356,7 +356,7 @@ export const CoursePaymentModal: React.FC<CoursePaymentModalProps> = ({
                   <span>Secure Course Checkout</span>
                 </h2>
                 <p className="text-[10px] sm:text-xs text-slate-500 truncate">
-                  {gatewayInfo?.isStripeConfigured ? 'Stripe 256-bit Encrypted' : 'Instant Verified Access'} · Zia Khan Academy
+                  {gatewayInfo?.isStripeConfigured ? 'Stripe 256-bit Encrypted' : 'Instant Verified Access'} · Learn and Grow Academy
                 </p>
               </div>
             </div>

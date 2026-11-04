@@ -22,6 +22,7 @@ import { LegalModals, type LegalModalType } from './components/common/LegalModal
 import { TopNavModals } from './components/navigation/TopNavModals.tsx';
 import { MobileBottomNav } from './components/navigation/MobileBottomNav.tsx';
 import { PwaInstallBanner } from './components/common/PwaInstallBanner.tsx';
+import { ResetPasswordPage } from './components/auth/ResetPasswordPage.tsx';
 import { api } from './services/api.ts';
 import type {
   Lesson,
@@ -37,10 +38,11 @@ import type {
 } from './types/index.ts';
 
 function MainApp() {
-  const { user, loading, refreshUser } = useAuth();
+  const { user, loading, isAdmin, refreshUser, isPasswordRecovery, clearRecoveryState } = useAuth();
   const [currentView, setCurrentView] = useState('home');
   const [sidebarOpen, setSidebarOpen] = useState(() => (typeof window !== 'undefined' ? window.innerWidth >= 1024 : true));
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<'login' | 'register' | 'forgot' | 'reset'>('login');
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [paymentPlan, setPaymentPlan] = useState<'beginner' | 'advanced'>('beginner');
   const [paymentAlert, setPaymentAlert] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
@@ -86,6 +88,11 @@ function MainApp() {
   useEffect(() => {
     if (loading) return; // Wait for persistent session restoration
 
+    if (isPasswordRecovery) {
+      setAuthModalOpen(false);
+      return;
+    }
+
     if (!user) {
       setAuthModalOpen(true);
       if (currentView === 'admin') {
@@ -93,13 +100,13 @@ function MainApp() {
       }
     } else {
       setAuthModalOpen(false);
-      if (user.role === 'admin') {
+      if (isAdmin) {
         setCurrentView('admin');
       } else if (currentView === 'admin') {
         setCurrentView('home');
       }
     }
-  }, [user, loading]);
+  }, [user, loading, isAdmin, isPasswordRecovery]);
 
   // Reset scroll to top whenever navigation changes
   useEffect(() => {
@@ -287,6 +294,29 @@ function MainApp() {
     }
   };
 
+  // When Supabase password recovery mode is active, render dedicated Reset Password screen
+  if (isPasswordRecovery) {
+    return (
+      <ResetPasswordPage
+        onSuccess={() => {
+          clearRecoveryState();
+          setAuthModalMode('login');
+          setAuthModalOpen(true);
+        }}
+        onNavigateToLogin={() => {
+          clearRecoveryState();
+          setAuthModalMode('login');
+          setAuthModalOpen(true);
+        }}
+        onRequestNewLink={() => {
+          clearRecoveryState();
+          setAuthModalMode('forgot');
+          setAuthModalOpen(true);
+        }}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-white text-slate-900 flex">
       {/* Sidebar - Controlled on Laptop via Three Lines Menu Button */}
@@ -451,7 +481,7 @@ function MainApp() {
           )}
 
           {currentView === 'admin' && (
-            (user?.role === 'admin' || user?.email?.toLowerCase() === 'ziakhan5348@gmail.com' || user?.email?.toLowerCase() === 'admin@gmail.com') ? (
+            isAdmin ? (
               <AdminPanel
                 beginnerLessons={beginnerLessons}
                 advancedLessons={advancedLessons}
@@ -493,6 +523,7 @@ function MainApp() {
       <AuthModal
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
+        defaultMode={authModalMode}
       />
 
       {/* Global Course Payment & VIP Unlock Modal */}

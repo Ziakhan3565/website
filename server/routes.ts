@@ -45,7 +45,7 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
       const { data: { user: sbUser }, error } = await supabase.auth.getUser(token);
       if (!error && sbUser) {
         const cleanEmail = (sbUser.email || '').trim().toLowerCase();
-        const isAdmin = cleanEmail === 'admin@gmail.com' || cleanEmail === 'ziakhan5348@gmail.com';
+        const isAdmin = cleanEmail === 'learnandgrow8433@gmail.com';
         (req as any).userId = sbUser.id;
         (req as any).userRole = isAdmin ? 'admin' : 'student';
         (req as any).userEmail = cleanEmail;
@@ -57,7 +57,7 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
           storage.createUserDirect({
             id: sbUser.id,
             email: cleanEmail,
-            name: sbUser.user_metadata?.name || cleanEmail.split('@')[0],
+            name: sbUser.user_metadata?.name || (isAdmin ? 'Learn and Grow' : cleanEmail.split('@')[0]),
             role: isAdmin ? 'admin' : 'student',
             tier: isAdmin ? 'premium' : 'free',
             hasBeginnerAccess: isAdmin,
@@ -91,11 +91,9 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
 
 export function requireAdmin(req: Request, res: Response, next: NextFunction) {
   const userId = (req as any).userId;
-  const userRole = (req as any).userRole;
   const user = userId ? storage.findUserById(userId) : null;
-  const isAuthorizedAdmin =
-    userRole === 'admin' ||
-    (user && (user.role === 'admin' || user.email?.toLowerCase() === 'ziakhan5348@gmail.com' || user.email?.toLowerCase() === 'admin@gmail.com'));
+  const userEmail = (req as any).userEmail || user?.email?.toLowerCase();
+  const isAuthorizedAdmin = userEmail === 'learnandgrow8433@gmail.com';
   if (!userId || !isAuthorizedAdmin) {
     return res.status(403).json({ error: 'Administrative privileges required' });
   }
@@ -138,11 +136,9 @@ apiRouter.post('/auth/check-email', async (req: Request, res: Response) => {
   return res.json({
     validFormat: true,
     exists: !!existingUser,
-    email: cleanEmail,
-    name: existingUser ? existingUser.name : undefined,
     message: existingUser
       ? 'An account with this email already exists. You can sign in directly.'
-      : 'Email is available for new registration.'
+      : 'Email is available for registration.'
   });
 });
 
@@ -164,11 +160,11 @@ apiRouter.post('/auth/register', (req: Request, res: Response) => {
   }
 
   // If email matches admin's email, give admin role
-  const isDefaultAdmin = cleanEmail === 'admin@gmail.com';
+  const isDefaultAdmin = cleanEmail === 'learnandgrow8433@gmail.com';
   const role = isDefaultAdmin ? 'admin' : 'student';
   const tier = isDefaultAdmin ? 'premium' : 'free';
 
-  const user = storage.createUser({ email: cleanEmail, password, name, role, tier });
+  const user = storage.createUser({ email: cleanEmail, password, name: isDefaultAdmin ? 'Learn and Grow' : name, role, tier });
   const token = generateToken(user.id, user.role);
 
   // Synchronize to Supabase backend asynchronously
@@ -177,52 +173,101 @@ apiRouter.post('/auth/register', (req: Request, res: Response) => {
   res.json({ user, token });
 });
 
-apiRouter.post('/auth/login', (req: Request, res: Response) => {
+apiRouter.post('/auth/login', async (req: Request, res: Response) => {
   const emailInput = req.body.email || req.body.identifier;
   const password = req.body.password;
   if (!emailInput || !password) {
     return res.status(400).json({ error: 'Email or username and password are required' });
   }
   const identifier = String(emailInput).trim();
-  let user: any = null;
-
-  // Check if identifier is "admin" or "admin@gmail.com"
-  if (identifier.toLowerCase() === 'admin' || identifier.toLowerCase() === 'admin@gmail.com') {
-    user = storage.findUserByEmail('admin@gmail.com');
-  } else if (EMAIL_REGEX.test(identifier.toLowerCase())) {
-    user = storage.findUserByEmail(identifier.toLowerCase());
-  } else {
-    // Search by username / display name
-    user = storage.getUsers().find(u =>
-      u.name.toLowerCase() === identifier.toLowerCase() ||
-      u.email.toLowerCase() === identifier.toLowerCase()
-    );
+  let cleanEmail = identifier.toLowerCase();
+  if (cleanEmail === 'admin') {
+    cleanEmail = 'learnandgrow8433@gmail.com';
   }
 
-  if (!user) {
-    return res.status(404).json({ error: 'No account found with this email or username. Please check or sign up.' });
-  }
+  const isAdminEmail = cleanEmail === 'learnandgrow8433@gmail.com';
 
-  // Password verification
-  let valid = verifyPassword(password, user.passwordHash, user.salt);
-  
-  // Admin password check for ZIA@#1234@#1
-  if (!valid && (user.role === 'admin' || user.email === 'admin@gmail.com')) {
-    if (password === 'ZIA@#1234@#1') {
-      valid = true;
+  // Admin authentication strictly requires Supabase Auth password verification only
+  if (isAdminEmail) {
+    try {
+      const supabase = getSupabase();
+      const { data: sbData, error: sbError } = await supabase.auth.signInWithPassword({
+        email: cleanEmail,
+        password: password,
+      });
+
+      if (!sbError && sbData?.user && sbData.session) {
+        let user: any = storage.findUserById(sbData.user.id) || storage.findUserByEmail(cleanEmail);
+        if (!user) {
+          user = storage.createUserDirect({
+            id: sbData.user.id,
+            email: cleanEmail,
+            name: sbData.user.user_metadata?.name || 'Learn and Grow',
+            role: 'admin',
+            tier: 'premium',
+            hasBeginnerAccess: true,
+            hasAdvancedAccess: true,
+          });
+        } else {
+          user.role = 'admin';
+          user.name = 'Learn and Grow';
+          user.tier = 'premium';
+          user.hasBeginnerAccess = true;
+          user.hasAdvancedAccess = true;
+        }
+        const token = sbData.session.access_token || generateToken(user?.id || sbData.user.id, (user?.role as UserRole) || 'admin');
+        const { passwordHash, salt, ...safeUser } = (user || {}) as any;
+        return res.json({ user: safeUser, token });
+      }
+
+      return res.status(401).json({ error: 'Incorrect credentials. Administrator access requires verified Supabase Auth.' });
+    } catch {
+      return res.status(401).json({ error: 'Authentication failed. Please verify administrator credentials.' });
     }
   }
 
+  // For regular student accounts, attempt Supabase Auth first
+  try {
+    const supabase = getSupabase();
+    const { data: sbData, error: sbError } = await supabase.auth.signInWithPassword({
+      email: cleanEmail,
+      password: password,
+    });
+
+    if (!sbError && sbData?.user && sbData.session) {
+      let user: any = storage.findUserById(sbData.user.id) || storage.findUserByEmail(cleanEmail);
+      if (!user) {
+        user = storage.createUserDirect({
+          id: sbData.user.id,
+          email: cleanEmail,
+          name: sbData.user.user_metadata?.name || cleanEmail.split('@')[0],
+          role: 'student',
+          tier: 'free',
+          hasBeginnerAccess: false,
+          hasAdvancedAccess: false,
+        });
+      }
+      const token = sbData.session.access_token || generateToken(user?.id || sbData.user.id, (user?.role as UserRole) || 'student');
+      const { passwordHash, salt, ...safeUser } = (user || {}) as any;
+      return res.json({ user: safeUser, token });
+    }
+  } catch {
+    // Proceed to verify local storage credentials
+  }
+
+  // Local storage credentials for students only (strictly disallowed for admin accounts)
+  const user = storage.findUserByEmail(cleanEmail);
+  if (!user || user.role === 'admin') {
+    return res.status(401).json({ error: 'Incorrect email or password.' });
+  }
+
+  const valid = verifyPassword(password, user.passwordHash, user.salt);
   if (!valid) {
-    return res.status(401).json({ error: 'Incorrect password. Please verify and try again.' });
+    return res.status(401).json({ error: 'Incorrect email or password.' });
   }
 
   const token = generateToken(user.id, user.role);
   const { passwordHash, salt, ...safeUser } = user;
-
-  // Synchronize user to Supabase on active login to ensure fresh profile data
-  syncUserToSupabase(safeUser).catch(() => {});
-
   res.json({ user: safeUser, token });
 });
 
@@ -279,6 +324,19 @@ apiRouter.post('/auth/reset-password', (req: Request, res: Response) => {
   res.json({ message: 'Password has been updated successfully. Please log in.' });
 });
 
+apiRouter.post('/auth/sync-password', requireAuth, (req: Request, res: Response) => {
+  const userId = (req as any).userId;
+  const { newPassword } = req.body;
+  if (!newPassword || typeof newPassword !== 'string' || newPassword.length < 6) {
+    return res.status(400).json({ error: 'Valid password of at least 6 characters is required' });
+  }
+  const user = storage.findUserById(userId);
+  if (user) {
+    storage.setUserPassword(user.id, newPassword);
+  }
+  res.json({ success: true, message: 'Password synchronized.' });
+});
+
 // User updates (progress, bookmarks)
 apiRouter.post('/user/progress', requireAuth, (req: Request, res: Response) => {
   const userId = (req as any).userId;
@@ -324,15 +382,10 @@ apiRouter.post('/user/tier', requireAuth, (req: Request, res: Response) => {
   res.json({ user: updated });
 });
 
-apiRouter.put('/user/profile', (req: Request, res: Response) => {
-  let userId = (req as any).userId;
+apiRouter.put('/user/profile', requireAuth, (req: Request, res: Response) => {
+  const userId = (req as any).userId;
   if (!userId) {
-    const allUsers = storage.getUsers();
-    if (allUsers.length > 0) {
-      userId = allUsers[0].id;
-    } else {
-      return res.status(401).json({ error: 'Authentication required' });
-    }
+    return res.status(401).json({ error: 'Authentication required' });
   }
   const { name, avatarUrl } = req.body;
   const updates: Record<string, any> = {};
@@ -580,7 +633,7 @@ apiRouter.post('/user/payment/checkout', requireAuth, (req: Request, res: Respon
     status: tx.status,
     message: tx.status === 'approved'
       ? `Payment of $${amount} verified! ${courseType === 'beginner' ? 'Beginner Course Crash' : 'Advanced VIP Masterclass & Signals'} is now active!`
-      : `Payment receipt submitted (Ref: ${tx.transactionReference}). Access will activate automatically as soon as verified by Zia Khan Desk.`,
+      : `Payment receipt submitted (Ref: ${tx.transactionReference}). Access will activate automatically as soon as verified by Learn and Grow Desk.`,
     user: safeUser
   });
 });

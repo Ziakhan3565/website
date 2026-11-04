@@ -130,6 +130,13 @@ export const api = {
     });
   },
 
+  async syncPassword(newPassword: string): Promise<{ success: boolean }> {
+    return request('/api/auth/sync-password', {
+      method: 'POST',
+      body: JSON.stringify({ newPassword }),
+    });
+  },
+
   async toggleLessonProgress(lessonId: string, completed: boolean): Promise<{ user: User }> {
     return request<{ user: User }>('/api/user/progress', {
       method: 'POST',
