@@ -98,39 +98,45 @@ export function mapSupabaseRowToUser(row: any): User {
  * Fetch a student's profile directly from Supabase 'users' table
  */
 export async function fetchSupabaseUserProfile(userId: string, email?: string): Promise<User | null> {
-  try {
-    // 1. Try finding by user ID
-    if (userId) {
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', userId)
-        .maybeSingle();
+  const fetchTask = async (): Promise<User | null> => {
+    try {
+      // 1. Try finding by user ID
+      if (userId) {
+        const { data, error } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', userId)
+          .maybeSingle();
 
-      if (!error && data) {
-        return mapSupabaseRowToUser(data);
+        if (!error && data) {
+          return mapSupabaseRowToUser(data);
+        }
       }
-    }
 
-    // 2. Fallback: find by email (links existing pre-created records to auth accounts)
-    if (email) {
-      const cleanEmail = normalizeEmail(email);
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .ilike('email', cleanEmail)
-        .maybeSingle();
+      // 2. Fallback: find by email (links existing pre-created records to auth accounts)
+      if (email) {
+        const cleanEmail = normalizeEmail(email);
+        const { data, error } = await supabase
+          .from('users')
+          .select('*')
+          .ilike('email', cleanEmail)
+          .maybeSingle();
 
-      if (!error && data) {
-        return mapSupabaseRowToUser(data);
+        if (!error && data) {
+          return mapSupabaseRowToUser(data);
+        }
       }
-    }
 
-    return null;
-  } catch (err) {
-    console.warn('[Supabase Profile Fetch] Warning:', err);
-    return null;
-  }
+      return null;
+    } catch (err) {
+      console.warn('[Supabase Profile Fetch] Warning:', err);
+      return null;
+    }
+  };
+
+  // Add 1.8-second safety timeout so slow database responses never delay login
+  const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 1800));
+  return Promise.race([fetchTask(), timeoutPromise]);
 }
 
 /**
@@ -248,8 +254,13 @@ export async function checkSupabaseEmailExists(email: string): Promise<{ exists:
 
 /**
  * Verify a 6-digit OTP confirmation code using real Supabase Auth
+ * Explicitly separates 'signup' email verification from 'recovery' password reset
  */
-export async function verifyEmailOtp(email: string, token: string): Promise<{
+export async function verifyEmailOtp(
+  email: string,
+  token: string,
+  type: 'signup' | 'recovery' | 'email' = 'signup'
+): Promise<{
   success: boolean;
   message: string;
   session?: any;
@@ -266,15 +277,15 @@ export async function verifyEmailOtp(email: string, token: string): Promise<{
   }
 
   try {
-    // 1. Attempt signup OTP confirmation
+    // 1. Attempt verification with the designated OTP type
     let { data, error } = await supabase.auth.verifyOtp({
       email: cleanEmail,
       token: cleanToken,
-      type: 'signup',
+      type: type,
     });
 
     // 2. Fallback to 'email' magiclink/OTP type if signup verification indicates token mismatch
-    if (error && (error.code === 'otp_expired' || error.message.toLowerCase().includes('token'))) {
+    if (error && type === 'signup' && (error.code === 'otp_expired' || error.message.toLowerCase().includes('token'))) {
       const fallback = await supabase.auth.verifyOtp({
         email: cleanEmail,
         token: cleanToken,
@@ -288,6 +299,15 @@ export async function verifyEmailOtp(email: string, token: string): Promise<{
 
     if (error) {
       return { success: false, message: formatSupabaseAuthError(error) };
+    }
+
+    if (type === 'recovery') {
+      return {
+        success: true,
+        session: data?.session,
+        user: data?.user,
+        message: 'Recovery code verified successfully! You can now set your new password.',
+      };
     }
 
     if (data?.session && data?.user) {

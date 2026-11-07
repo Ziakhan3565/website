@@ -4,7 +4,12 @@ import {
   ShieldCheck,
   Camera,
   Upload,
-  Sparkles
+  Lock,
+  Eye,
+  EyeOff,
+  KeyRound,
+  CheckCircle2,
+  AlertCircle,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.tsx';
 import type { Lesson, LiveClass, SpotSignal, FuturesSignal, ExchangeReferral } from '../../types/index.ts';
@@ -25,10 +30,21 @@ interface ProfileViewProps {
 export const ProfileView: React.FC<ProfileViewProps> = ({
   exchanges = [],
 }) => {
-  const { user, isAdmin, isPremium, upgradeTier, updateProfile } = useAuth();
+  const { user, isAdmin, isPremium, updateProfile, changePassword } = useAuth();
   const [isDPModalOpen, setIsDPModalOpen] = useState(false);
   const [uploadingDirect, setUploadingDirect] = useState(false);
   const quickFileInputRef = useRef<HTMLInputElement>(null);
+
+  // Change Password state
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
+  const [passwordUpdating, setPasswordUpdating] = useState(false);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null);
 
   if (!user) {
     return (
@@ -53,6 +69,39 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
     } finally {
       setUploadingDirect(false);
       if (quickFileInputRef.current) quickFileInputRef.current.value = '';
+    }
+  };
+
+  const handleChangePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPasswordError(null);
+    setPasswordSuccess(null);
+
+    if (!newPassword || newPassword.length < 6) {
+      setPasswordError('New password must be at least 6 characters long.');
+      return;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      setPasswordError('New password and confirm password do not match.');
+      return;
+    }
+
+    setPasswordUpdating(true);
+    try {
+      const res = await changePassword(newPassword, currentPassword || undefined);
+      if (res.success) {
+        setPasswordSuccess(res.message);
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmNewPassword('');
+      } else {
+        setPasswordError(res.message);
+      }
+    } catch (err: any) {
+      setPasswordError(err?.message || 'Failed to update password.');
+    } finally {
+      setPasswordUpdating(false);
     }
   };
 
@@ -152,21 +201,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             </div>
           </div>
 
-          {/* Upgrade Tier CTA if free */}
-          {!isAdmin && !isPremium && (
-            <div className="p-4 rounded-2xl bg-white border border-purple-200 text-left md:text-right md:max-w-xs shadow-xs">
-              <span className="text-xs font-bold text-slate-900 block mb-1">Upgrade to Premium Track</span>
-              <p className="text-[11px] text-slate-600 leading-tight mb-3">
-                Unlock all Advanced Order Flow modules, CVD case studies, and live masterclass replays.
-              </p>
-              <button
-                onClick={() => upgradeTier('premium')}
-                className="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-md shadow-purple-600/20 transition-all cursor-pointer"
-              >
-                <Sparkles className="w-3.5 h-3.5" /> Upgrade Account
-              </button>
-            </div>
-          )}
+
         </div>
       </div>
 
@@ -178,6 +213,142 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           subtitle="Direct registration links and bracketed fee discount codes for your student trading terminal."
         />
       )}
+
+      {/* Account Security & Password Management */}
+      <div className="rounded-3xl bg-white border border-slate-200 p-5 sm:p-7 shadow-xs">
+        <div className="flex items-center gap-3 mb-5 pb-3 border-b border-slate-100">
+          <div className="p-2.5 rounded-2xl bg-purple-50 text-purple-700">
+            <KeyRound className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-base sm:text-lg font-bold text-slate-900">Security & Password Management</h2>
+            <p className="text-xs text-slate-500">
+              Update your account password securely through Supabase Authentication.
+            </p>
+          </div>
+        </div>
+
+        {passwordError && (
+          <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2 font-mono">
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
+            <span>{passwordError}</span>
+          </div>
+        )}
+
+        {passwordSuccess && (
+          <div className="mb-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs flex items-center gap-2 font-mono">
+            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+            <span>{passwordSuccess}</span>
+          </div>
+        )}
+
+        <form onSubmit={handleChangePasswordSubmit} className="space-y-4 max-w-lg">
+          <div>
+            <label className="text-xs font-semibold text-slate-700 block mb-1">
+              Current Password <span className="text-[11px] text-slate-400 font-normal">(optional security check)</span>
+            </label>
+            <div className="relative">
+              <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type={showCurrentPassword ? 'text' : 'password'}
+                placeholder="Enter current password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-purple-600 focus:ring-1 focus:ring-purple-600 transition-colors"
+              />
+              <button
+                type="button"
+                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                tabIndex={-1}
+                aria-label={showCurrentPassword ? 'Hide password' : 'Show password'}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-700 focus:outline-none cursor-pointer"
+              >
+                {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label className="text-xs font-semibold text-slate-700 block mb-1">
+              New Password <span className="text-[11px] text-slate-400 font-normal">(minimum 6 characters)</span>
+            </label>
+            <div className="relative">
+              <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type={showNewPassword ? 'text' : 'password'}
+                placeholder="Enter new password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+                className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-purple-600 focus:ring-1 focus:ring-purple-600 transition-colors"
+              />
+              <button
+                type="button"
+                onClick={() => setShowNewPassword(!showNewPassword)}
+                tabIndex={-1}
+                aria-label={showNewPassword ? 'Hide password' : 'Show password'}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-700 focus:outline-none cursor-pointer"
+              >
+                {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-xs font-semibold text-slate-700">Confirm New Password</label>
+              {confirmNewPassword && newPassword && (
+                <span className={`text-[10px] font-mono font-bold ${
+                  confirmNewPassword === newPassword ? 'text-emerald-600' : 'text-rose-500'
+                }`}>
+                  {confirmNewPassword === newPassword ? '✓ Passwords Match' : '✗ Passwords do not match'}
+                </span>
+              )}
+            </div>
+            <div className="relative">
+              <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type={showConfirmNewPassword ? 'text' : 'password'}
+                placeholder="Re-enter new password"
+                value={confirmNewPassword}
+                onChange={(e) => setConfirmNewPassword(e.target.value)}
+                required
+                className={`w-full pl-10 pr-10 py-2.5 rounded-xl bg-slate-50 border text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-1 transition-colors ${
+                  confirmNewPassword && newPassword && confirmNewPassword !== newPassword
+                    ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-500'
+                    : confirmNewPassword && newPassword && confirmNewPassword === newPassword
+                    ? 'border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500'
+                    : 'border-slate-200 focus:border-purple-600 focus:ring-purple-600'
+                }`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmNewPassword(!showConfirmNewPassword)}
+                tabIndex={-1}
+                aria-label={showConfirmNewPassword ? 'Hide password' : 'Show password'}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-700 focus:outline-none cursor-pointer"
+              >
+                {showConfirmNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={passwordUpdating || newPassword.length < 6 || (confirmNewPassword.length > 0 && newPassword !== confirmNewPassword)}
+            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-500 hover:to-indigo-500 disabled:opacity-50 text-white text-xs font-bold shadow-md shadow-purple-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:cursor-not-allowed"
+          >
+            {passwordUpdating ? (
+              <span>Updating Password...</span>
+            ) : (
+              <>
+                <KeyRound className="w-3.5 h-3.5" />
+                <span>Update Password</span>
+              </>
+            )}
+          </button>
+        </form>
+      </div>
 
       {/* Profile Picture / DP Gallery Modal */}
       <ProfilePictureModal

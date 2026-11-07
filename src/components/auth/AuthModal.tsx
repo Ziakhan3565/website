@@ -11,6 +11,8 @@ import {
   RotateCcw,
   ShieldCheck,
   KeyRound,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.tsx';
 import { checkSupabaseEmailExists, normalizeEmail, formatSupabaseAuthError } from '../../lib/supabase.ts';
@@ -39,14 +41,22 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       setMode(defaultMode);
       setErrorMessage(null);
       setSuccessMessage(null);
+      setPassword('');
+      setConfirmPassword('');
+      setShowPassword(false);
+      setShowConfirmPassword(false);
     }
   }, [defaultMode, isOpen]);
 
   // Form states
   const [identifier, setIdentifier] = useState(''); // Email or Username (e.g. admin)
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [name, setName] = useState('');
   const [otpCode, setOtpCode] = useState('');
+  const [otpType, setOtpType] = useState<'signup' | 'recovery'>('signup');
 
   // 60-Second Cooldown Timer for Resending Verification Emails / OTP
   const [resendCooldown, setResendCooldown] = useState(0);
@@ -179,12 +189,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setErrorMessage(null);
 
     try {
-      const res = await verifyOtp(cleanId, cleanOtp);
+      const res = await verifyOtp(cleanId, cleanOtp, otpType);
       if (res.success) {
         setSuccessMessage(res.message);
         setTimeout(() => {
           onClose();
-        }, 1200);
+        }, otpType === 'recovery' ? 300 : 1200);
       } else {
         setErrorMessage(res.message);
       }
@@ -224,6 +234,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         setErrorMessage('Password must be at least 6 characters long.');
         return;
       }
+      if (!confirmPassword) {
+        setErrorMessage('Please confirm your password.');
+        return;
+      }
+      if (password !== confirmPassword) {
+        setErrorMessage('Passwords do not match! Please enter matching passwords in both fields.');
+        return;
+      }
 
       // Check if email already exists before signup
       setLoading(true);
@@ -252,6 +270,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         const res = await register(name.trim() || cleanId.split('@')[0], cleanId, password);
         if (res.requiresVerification) {
           setSuccessMessage(res.message || 'Verification email dispatched! Please check your inbox and enter the 6-digit code below.');
+          setOtpType('signup');
           setMode('verify-otp');
           setResendCooldown(60);
         } else {
@@ -259,7 +278,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         }
       } else if (mode === 'forgot') {
         const res = await forgotPassword(cleanId);
-        setSuccessMessage(res.message || 'If this email is registered, a password recovery link has been sent to your inbox.');
+        setSuccessMessage(res.message || 'If this email is registered, a password recovery email has been sent to your inbox.');
+        setOtpType('recovery');
       }
     } catch (err: any) {
       const msg = err.message || 'Authentication failed. Please verify credentials.';
@@ -295,7 +315,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         {mode === 'verify-otp' ? (
           <div className="flex items-center gap-2 mt-4 mb-4 p-2.5 bg-indigo-50 border border-indigo-200 rounded-2xl text-indigo-900 text-xs font-semibold">
             <ShieldCheck className="w-4 h-4 text-indigo-600 shrink-0" />
-            <span>Email Verification Required</span>
+            <span>{otpType === 'recovery' ? 'Password Recovery Verification' : 'Email Verification Required'}</span>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-2 mt-5 mb-5 p-1 bg-slate-100 rounded-full border border-slate-200">
@@ -306,6 +326,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 setErrorMessage(null);
                 setSuccessMessage(null);
                 setShowResendBtn(false);
+                setConfirmPassword('');
+                setShowPassword(false);
+                setShowConfirmPassword(false);
               }}
               className={`py-2 px-3 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
                 mode === 'login'
@@ -323,6 +346,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 setErrorMessage(null);
                 setSuccessMessage(null);
                 setShowResendBtn(false);
+                setConfirmPassword('');
+                setShowPassword(false);
+                setShowConfirmPassword(false);
               }}
               className={`py-2 px-3 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
                 mode === 'register'
@@ -342,13 +368,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             {mode === 'register' && 'Create Your Student Account'}
             {mode === 'forgot' && 'Reset Password'}
             {mode === 'reset' && 'Set New Password'}
-            {mode === 'verify-otp' && 'Verify Your Email'}
+            {mode === 'verify-otp' && (otpType === 'recovery' ? 'Enter Recovery Code' : 'Verify Your Email')}
           </h2>
           <p className="text-xs text-slate-500 mt-1">
             {mode === 'login' && 'Enter your registered email and password to access your Student Dashboard.'}
             {mode === 'register' && 'Join the academy. Permanent student account with real-time progress tracking.'}
-            {mode === 'forgot' && 'Enter your registered email to receive an official Supabase password reset link.'}
-            {mode === 'verify-otp' && `Enter the 6-digit confirmation code sent to ${identifier || 'your email'} to activate your account.`}
+            {mode === 'forgot' && 'Enter your registered email to receive an official Supabase password reset link or recovery code.'}
+            {mode === 'verify-otp' && (otpType === 'recovery'
+              ? `Enter the 6-digit password recovery code sent to ${identifier || 'your email'} to reset your password.`
+              : `Enter the 6-digit confirmation code sent to ${identifier || 'your email'} to activate your account.`)}
           </p>
         </div>
 
@@ -436,7 +464,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <div>
                 <div className="flex items-center justify-between mb-1">
                   <label className="text-slate-700 text-xs font-semibold">
-                    6-Digit Confirmation Code (OTP)
+                    {otpType === 'recovery' ? '6-Digit Recovery Code' : '6-Digit Confirmation Code (OTP)'}
                   </label>
                   <span className="text-[10px] text-slate-400">Check inbox & spam</span>
                 </div>
@@ -456,7 +484,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   />
                 </div>
                 <p className="text-[11px] text-slate-500 mt-1">
-                  You can also click the direct confirmation link sent to your email.
+                  {otpType === 'recovery'
+                    ? 'You can also click the direct reset link in the recovery email.'
+                    : 'You can also click the direct confirmation link sent to your email.'}
                 </p>
               </div>
 
@@ -469,7 +499,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   <span>Verifying Code...</span>
                 ) : (
                   <>
-                    <span>Verify Code & Sign In</span>
+                    <span>{otpType === 'recovery' ? 'Verify Code & Set New Password' : 'Verify Code & Sign In'}</span>
                     <ShieldCheck className="w-4 h-4" />
                   </>
                 )}
@@ -556,7 +586,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               {(mode === 'login' || mode === 'register') && (
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="text-slate-700 text-xs font-semibold">Password</label>
+                    <label className="text-slate-700 text-xs font-semibold">
+                      {mode === 'register' ? 'Enter Password' : 'Password'}
+                    </label>
                     {mode === 'login' && (
                       <button
                         type="button"
@@ -574,13 +606,63 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   <div className="relative">
                     <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                     <input
-                      type="password"
+                      type={showPassword ? 'text' : 'password'}
                       placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-purple-600 focus:ring-1 focus:ring-purple-600 transition-colors"
+                      className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-purple-600 focus:ring-1 focus:ring-purple-600 transition-colors"
                       required
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      tabIndex={-1}
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-700 focus:outline-none cursor-pointer transition-colors"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {mode === 'register' && (
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-slate-700 text-xs font-semibold">Confirm Password</label>
+                    {confirmPassword && password && (
+                      <span className={`text-[10px] font-mono font-bold ${
+                        confirmPassword === password ? 'text-emerald-600' : 'text-rose-500'
+                      }`}>
+                        {confirmPassword === password ? '✓ Passwords Match' : '✗ Passwords do not match'}
+                      </span>
+                    )}
+                  </div>
+                  <div className="relative">
+                    <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className={`w-full pl-10 pr-10 py-2.5 rounded-xl bg-slate-50 border text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-1 transition-colors ${
+                        confirmPassword && password && confirmPassword !== password
+                          ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-500'
+                          : confirmPassword && password && confirmPassword === password
+                          ? 'border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500'
+                          : 'border-slate-200 focus:border-purple-600 focus:ring-purple-600'
+                      }`}
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      tabIndex={-1}
+                      aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-700 focus:outline-none cursor-pointer transition-colors"
+                    >
+                      {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
                   </div>
                 </div>
               )}
@@ -603,6 +685,23 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   </>
                 )}
               </button>
+
+              {mode === 'forgot' && successMessage && (
+                <div className="p-3 bg-purple-50 border border-purple-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-3">
+                  <span className="text-xs text-purple-900 font-medium">Received a 6-digit recovery code in your email?</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOtpType('recovery');
+                      setMode('verify-otp');
+                      setErrorMessage(null);
+                    }}
+                    className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold text-xs shrink-0 cursor-pointer shadow-xs"
+                  >
+                    Enter 6-Digit Code
+                  </button>
+                </div>
+              )}
             </>
           )}
         </form>
@@ -634,6 +733,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   setErrorMessage(null);
                   setSuccessMessage(null);
                   setShowResendBtn(false);
+                  setConfirmPassword('');
+                  setShowPassword(false);
+                  setShowConfirmPassword(false);
                 }}
                 className="text-purple-700 hover:text-purple-900 hover:underline font-bold cursor-pointer"
               >
@@ -650,6 +752,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   setErrorMessage(null);
                   setSuccessMessage(null);
                   setShowResendBtn(false);
+                  setConfirmPassword('');
+                  setShowPassword(false);
+                  setShowConfirmPassword(false);
                 }}
                 className="text-purple-700 hover:text-purple-900 hover:underline font-bold cursor-pointer"
               >

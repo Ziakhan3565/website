@@ -309,15 +309,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     setPricingLoading(true);
     try {
       const [pRes, tRes, gRes] = await Promise.all([
-        api.getPricing(),
-        api.getAdminTransactions(),
-        api.getPaymentGatewayInfo(),
+        api.getPricing().catch(() => ({ pricing: null })),
+        api.getAdminTransactions().catch(() => ({ transactions: [] })),
+        api.getPaymentGatewayInfo().catch(() => ({ gateway: null })),
       ]);
-      if (pRes.pricing) setPricingConfig(pRes.pricing);
-      if (tRes.transactions) setTransactions(tRes.transactions);
-      if (gRes.gateway) setGatewayInfo(gRes.gateway);
+      if (pRes?.pricing) setPricingConfig(pRes.pricing);
+      if (tRes?.transactions) setTransactions(tRes.transactions);
+      if (gRes?.gateway) setGatewayInfo(gRes.gateway);
     } catch (e) {
-      console.error('Failed to load pricing or transactions', e);
+      console.warn('Notice: Could not load pricing or transactions', e);
     } finally {
       setPricingLoading(false);
     }
@@ -326,10 +326,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const loadStudents = async () => {
     setUsersLoading(true);
     try {
-      const res = await api.getAdminUsers();
+      const res = await api.getAdminUsers().catch(() => ({ users: [] }));
       if (res && res.users) setUsersList(res.users);
     } catch (e) {
-      console.error('Failed to load users', e);
+      console.warn('Notice: Could not load users', e);
     } finally {
       setUsersLoading(false);
     }

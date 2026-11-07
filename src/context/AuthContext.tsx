@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import type { User } from '../types/index.ts';
 import { api, getStoredToken, setStoredToken } from '../services/api.ts';
 import {
@@ -42,9 +42,10 @@ export interface AuthContextType {
   updateProfile: (params: { name?: string; avatarUrl?: string }) => Promise<void>;
   refreshUser: () => Promise<void>;
   resendVerification: (email: string) => Promise<{ success: boolean; message: string }>;
-  verifyOtp: (email: string, token: string) => Promise<{ success: boolean; message: string }>;
-  forgotPassword: (email: string) => Promise<{ success: boolean; message: string }>;
+  verifyOtp: (email: string, token: string, type?: 'signup' | 'recovery') => Promise<{ success: boolean; message: string; session?: any; user?: any }>;
+  forgotPassword: (email: string) => Promise<{ success: boolean; message: string; redirectTo?: string }>;
   updatePassword: (newPassword: string) => Promise<{ success: boolean; message: string }>;
+  changePassword: (newPassword: string, currentPassword?: string) => Promise<{ success: boolean; message: string }>;
   isPasswordRecovery: boolean;
   setIsPasswordRecovery: (active: boolean) => void;
   recoveryError: string | null;
@@ -58,9 +59,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const [isPasswordRecovery, setIsPasswordRecovery] = useState(false);
   const [recoveryError, setRecoveryError] = useState<string | null>(null);
+  const inFlightProfiles = useRef<Map<string, Promise<User>>>(new Map());
 
   /**
    * Helper: Resolves and loads the full Student Profile from Supabase
+   * Optimized with in-flight deduplication and instant fallback to avoid login lag
    */
   const loadStudentProfile = useCallback(async (authUser: any, accessToken?: string): Promise<User> => {
     if (accessToken) {
@@ -70,38 +73,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const cleanEmail = normalizeEmail(authUser.email || '');
     const isAdminEmail = isOfficialAdmin(cleanEmail);
 
-    // 1. Fetch profile from Supabase 'users' table
-    let profile = await fetchSupabaseUserProfile(authUser.id, cleanEmail);
-
-    if (!profile) {
-      // Create new profile record in Supabase users table
-      profile = await upsertSupabaseUserProfile({
-        id: authUser.id,
-        email: cleanEmail,
-        name: authUser.user_metadata?.name || (isAdminEmail ? OFFICIAL_ADMIN_NAME : cleanEmail.split('@')[0]),
-        role: isAdminEmail ? 'admin' : 'student',
-        tier: isAdminEmail ? 'premium' : 'free',
-        hasBeginnerAccess: isAdminEmail,
-        hasAdvancedAccess: isAdminEmail,
-      });
-    }
-
-    // Enforce official admin privileges ONLY for learnandgrow8433@gmail.com
-    if (isAdminEmail && profile) {
-      profile.role = 'admin';
-      profile.tier = 'premium';
-      profile.hasBeginnerAccess = true;
-      profile.hasAdvancedAccess = true;
-      profile.name = OFFICIAL_ADMIN_NAME;
-      if (!profile.avatarUrl) {
-        profile.avatarUrl = '/src/assets/images/instructor_lead_avatar_1792164740686.jpg';
-      }
-    } else if (profile && profile.role === 'admin') {
-      // Revoke admin from previous administrator email addresses
-      profile.role = 'student';
-    }
-
-    const resolvedUser: User = profile || {
+    const fallbackUser: User = {
       id: authUser.id,
       email: cleanEmail,
       name: authUser.user_metadata?.name || (isAdminEmail ? OFFICIAL_ADMIN_NAME : cleanEmail.split('@')[0]),
@@ -109,14 +81,66 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       tier: isAdminEmail ? 'premium' : 'free',
       hasBeginnerAccess: isAdminEmail,
       hasAdvancedAccess: isAdminEmail,
-      createdAt: new Date().toISOString(),
+      createdAt: authUser.created_at || new Date().toISOString(),
       completedLessons: [],
       savedSignals: [],
       attendedClasses: [],
     };
 
-    setUser(resolvedUser);
-    return resolvedUser;
+    // Fast-path: Set optimistic user immediately so UI doesn't stall
+    setUser((prev) => prev || fallbackUser);
+
+    const cacheKey = authUser.id || cleanEmail;
+    if (inFlightProfiles.current.has(cacheKey)) {
+      return inFlightProfiles.current.get(cacheKey)!;
+    }
+
+    const task = (async (): Promise<User> => {
+      try {
+        // 1. Fetch profile from Supabase 'users' table
+        let profile = await fetchSupabaseUserProfile(authUser.id, cleanEmail);
+
+        if (!profile) {
+          // Asynchronously create profile record in Supabase users table without blocking UI
+          upsertSupabaseUserProfile({
+            id: authUser.id,
+            email: cleanEmail,
+            name: authUser.user_metadata?.name || (isAdminEmail ? OFFICIAL_ADMIN_NAME : cleanEmail.split('@')[0]),
+            role: isAdminEmail ? 'admin' : 'student',
+            tier: isAdminEmail ? 'premium' : 'free',
+            hasBeginnerAccess: isAdminEmail,
+            hasAdvancedAccess: isAdminEmail,
+          }).catch(() => {});
+        }
+
+        // Enforce official admin privileges ONLY for learnandgrow8433@gmail.com
+        if (isAdminEmail && profile) {
+          profile.role = 'admin';
+          profile.tier = 'premium';
+          profile.hasBeginnerAccess = true;
+          profile.hasAdvancedAccess = true;
+          profile.name = OFFICIAL_ADMIN_NAME;
+          if (!profile.avatarUrl) {
+            profile.avatarUrl = '/src/assets/images/instructor_lead_avatar_1792164740686.jpg';
+          }
+        } else if (profile && profile.role === 'admin') {
+          profile.role = 'student';
+        }
+
+        const resolvedUser: User = profile || fallbackUser;
+        setUser(resolvedUser);
+        return resolvedUser;
+      } catch (err) {
+        console.warn('[Profile loading fallback]:', err);
+        setUser(fallbackUser);
+        return fallbackUser;
+      } finally {
+        inFlightProfiles.current.delete(cacheKey);
+      }
+    })();
+
+    inFlightProfiles.current.set(cacheKey, task);
+    return task;
   }, []);
 
   /**
@@ -322,7 +346,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         };
       }
 
-      await loadStudentProfile(data.session.user, data.session.access_token);
+      // Fast-path: Immediately store token & populate user state so login finishes in < 300ms!
+      if (data.session.access_token) {
+        setStoredToken(data.session.access_token);
+      }
+      const isAdminEmail = isOfficialAdmin(data.session.user.email);
+      const immediateUser: User = {
+        id: data.session.user.id,
+        email: cleanEmail,
+        name: data.session.user.user_metadata?.name || (isAdminEmail ? OFFICIAL_ADMIN_NAME : cleanEmail.split('@')[0]),
+        role: isAdminEmail ? 'admin' : 'student',
+        tier: isAdminEmail ? 'premium' : 'free',
+        hasBeginnerAccess: isAdminEmail,
+        hasAdvancedAccess: isAdminEmail,
+        createdAt: data.session.user.created_at || new Date().toISOString(),
+        completedLessons: [],
+        savedSignals: [],
+        attendedClasses: [],
+      };
+      setUser(immediateUser);
+
+      // Sync full database profile in the background without blocking the UI
+      loadStudentProfile(data.session.user, data.session.access_token).catch(() => {});
+
       return { success: true, message: 'Welcome back!' };
     }
 
@@ -432,20 +478,87 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   /**
    * Verify 6-digit OTP confirmation code
+   * Handles 'signup' email verification or 'recovery' password reset OTP
    */
-  const verifyOtp = async (email: string, token: string): Promise<{ success: boolean; message: string }> => {
-    const res = await verifyEmailOtp(email, token);
+  const verifyOtp = async (
+    email: string,
+    token: string,
+    type: 'signup' | 'recovery' = 'signup'
+  ): Promise<{ success: boolean; message: string; session?: any; user?: any }> => {
+    const res = await verifyEmailOtp(email, token, type);
     if (res.success && res.session?.user) {
-      await loadStudentProfile(res.session.user, res.session.access_token);
+      if (type === 'recovery') {
+        setIsPasswordRecovery(true);
+      } else {
+        await loadStudentProfile(res.session.user, res.session.access_token);
+      }
     }
-    return { success: res.success, message: res.message };
+    return res;
   };
 
   /**
-   * Forgot Password Link
+   * Forgot Password Link (Triggers Supabase password recovery flow)
    */
   const forgotPassword = async (email: string) => {
     return requestPasswordReset(email);
+  };
+
+  /**
+   * Change Password for Authenticated User
+   * Allows an authenticated student or admin to change their password securely
+   * Validates current password (if supplied) and updates via Supabase Auth
+   */
+  const changePassword = async (
+    newPassword: string,
+    currentPassword?: string
+  ): Promise<{ success: boolean; message: string }> => {
+    if (!user?.email) {
+      return { success: false, message: 'You must be logged in to change your password.' };
+    }
+    if (!newPassword || newPassword.length < 6) {
+      return { success: false, message: 'New password must be at least 6 characters long.' };
+    }
+
+    try {
+      // 1. If current password is provided, verify it first with Supabase Auth
+      if (currentPassword) {
+        const { error: verifyError } = await supabase.auth.signInWithPassword({
+          email: user.email,
+          password: currentPassword,
+        });
+        if (verifyError) {
+          return { success: false, message: 'Current password does not match. Please verify your current password.' };
+        }
+      }
+
+      // 2. Update password securely through Supabase Auth updateUser
+      const { data, error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (error) {
+        return { success: false, message: formatSupabaseAuthError(error) };
+      }
+
+      // 3. Synchronize with local storage/database if applicable
+      if (data?.user?.id) {
+        try {
+          await api.syncPassword(newPassword);
+        } catch {
+          // non-blocking
+        }
+      }
+
+      return {
+        success: true,
+        message: 'Your password has been changed successfully! Your next login will use your new password.',
+      };
+    } catch (err: any) {
+      return {
+        success: false,
+        message: formatSupabaseAuthError(err),
+      };
+    }
   };
 
   /**
@@ -715,6 +828,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         verifyOtp,
         forgotPassword,
         updatePassword,
+        changePassword,
         isPasswordRecovery,
         setIsPasswordRecovery,
         recoveryError,

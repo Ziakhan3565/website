@@ -6,6 +6,7 @@ interface LogoProps {
   showTagline?: boolean;
   className?: string;
   isLive?: boolean;
+  isLight?: boolean;
 }
 
 export const Logo: React.FC<LogoProps> = ({
@@ -14,6 +15,7 @@ export const Logo: React.FC<LogoProps> = ({
   showTagline = true,
   className = '',
   isLive = false,
+  isLight = false,
 }) => {
   const [imgFailed, setImgFailed] = React.useState(false);
 
@@ -70,8 +72,8 @@ export const Logo: React.FC<LogoProps> = ({
               className={`font-black tracking-tight leading-none uppercase font-serif transition-all text-xs sm:text-base ${dimensions.title}`}
               style={{ fontFamily: "'Cinzel', 'Playfair Display', serif, system-ui" }}
             >
-              <span className="text-slate-900">Learn </span>
-              <span className="bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-600 bg-clip-text text-transparent">
+              <span className={isLight ? "text-white" : "text-slate-900"}>Learn </span>
+              <span className={isLight ? "text-white font-extrabold" : "bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-600 bg-clip-text text-transparent"}>
                 and Grow
               </span>
             </span>
@@ -84,7 +86,7 @@ export const Logo: React.FC<LogoProps> = ({
 
           {showTagline && (
             <div className="hidden xs:flex sm:flex items-center gap-1.5 mt-1">
-              <span className={`font-mono uppercase font-bold text-slate-500 tracking-wider leading-none text-[8px] sm:text-[9px] flex items-center gap-1 ${dimensions.sub}`}>
+              <span className={`font-mono uppercase font-bold tracking-wider leading-none text-[8px] sm:text-[9px] flex items-center gap-1 ${dimensions.sub} ${isLight ? 'text-white/80' : 'text-slate-500'}`}>
                 <span>— LEARN • TRADE • INVEST • GROW —</span>
               </span>
             </div>
